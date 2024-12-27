@@ -7,6 +7,8 @@ import {
   Image,
   Platform,
   Button,
+  KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -130,306 +132,321 @@ const Register = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: "#000000" }} className="h-full">
-      <ScrollView>
-        <View className="w-full justify-center min-h-[85vh] px-4 my-6">
-          <View className="items-center" style={{ marginBottom: 20 }}>
-            <Image
-              source={logo}
-              className="w-[130px] h-[84px]"
-              resizeMode="contain"
-            />
-          </View>
-          {step === 1 && (
-            <View>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 18,
-                  marginBottom: 8,
-                  fontWeight: "bold",
-                }}
-              >
-                Personal Information
-              </Text>
-              <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
-                Provide your real name to make it easier for family and friends
-                to find you on Hotostash.
-              </Text>
-              <FormField
-                title="Firstname"
-                value={form.firstname}
-                placeholder="Firstname"
-                handleChangeText={(value) =>
-                  setForm({ ...form, firstname: value })
-                }
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        // style={styles.container}
+      >
+        <ScrollView>
+          <View className="w-full justify-center min-h-[85vh] px-4 my-6">
+            <View className="items-center" style={{ marginBottom: 20 }}>
+              <Image
+                source={logo}
+                className="w-[130px] h-[84px]"
+                resizeMode="contain"
               />
-              <FormField
-                title="Lastname"
-                value={form.lastname}
-                placeholder="Lastname"
-                handleChangeText={(value) =>
-                  setForm({ ...form, lastname: value })
-                }
-                otherStyles="mt-5"
-              />
-              <View style={{ alignItems: "flex-end" }}>
-                <CustomNextButton
-                  handlePress={validateFirstStep}
-                  isLoading={loading}
-                />
-              </View>
             </View>
-          )}
-
-          {step === 2 && (
-            <View>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 18,
-                  marginBottom: 8,
-                  fontWeight: "bold",
-                }}
-              >
-                What's your Birthday?
-              </Text>
-              <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
-                Let us know your birthday so friends can celebrate with you.
-              </Text>
-              <View style={{ flexDirection: "row", gap: 10 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <DateTimePicker
-                    value={form.dob}
-                    mode="date"
-                    display={Platform.OS === "ios" ? "spinner" : "default"}
-                    onChange={(event, selectedDate) => {
-                      if (selectedDate) {
-                        // Resetting the time to 00:00:00 UTC to only keep the date
-                        const newDate = new Date(selectedDate);
-                        newDate.setUTCHours(0, 0, 0, 0); // Set time to midnight UTC
-                        setForm({ ...form, dob: newDate }); // Set the state with the date-only object
-                      }
-                    }}
-                    themeVariant="dark"
-                    minimumDate={new Date(1950, 0, 1)}
-                    maximumDate={new Date(2010, 11, 31)}
-                  />
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  //   marginTop: 16,
-                }}
-              >
-                <CustomPrevButton title="Back" handlePress={prevStep} />
-                <View style={{ alignItems: "flex-end" }}>
-                  <CustomNextButton
-                    handlePress={validateDob}
-                    isLoading={loading}
-                  />
-                </View>
-              </View>
-            </View>
-          )}
-          {step === 3 && (
-            <View>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 18,
-                  marginBottom: 8,
-                  fontWeight: "bold",
-                }}
-              >
-                Contact Information
-              </Text>
-              <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
-                Provide your contact details to stay connected with friends and
-                receive important updates.
-              </Text>
-              <FormField
-                title="Phone"
-                value={form.phone}
-                placeholder="Phone"
-                handleChangeText={(value) => setForm({ ...form, phone: value })}
-              />
-              <FormField
-                title="Email"
-                value={form.email}
-                placeholder="Email"
-                handleChangeText={(value) => setForm({ ...form, email: value })}
-                otherStyles="mt-5"
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  //   marginTop: 16,
-                }}
-              >
-                <CustomPrevButton title="Back" handlePress={prevStep} />
-                <View style={{ alignItems: "flex-end" }}>
-                  <CustomNextButton
-                    handlePress={validatePhoneEmail}
-                    isLoading={loading}
-                  />
-                </View>
-              </View>
-            </View>
-          )}
-          {step === 4 && (
-            <View>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 18,
-                  marginBottom: 8,
-                  fontWeight: "bold",
-                }}
-              >
-                Account Information
-              </Text>
-              <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
-                Create a unique username and secure password for your account.
-              </Text>
-              <FormField
-                title="Username"
-                value={form.username}
-                placeholder="Username"
-                handleChangeText={(value) => {
-                  // Apply regex transformations
-                  const cleanedValue = value
-                    .replace(/\s+/g, "") // Remove all whitespaces
-                    .replace(/[^a-zA-Z0-9_]/g, "") // Remove all non-alphanumeric characters except underscores
-                    .replace(
-                      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}]/gu,
-                      "" // Remove emojis
-                    );
-
-                  // Update state with the cleaned value
-                  setForm({ ...form, username: cleanedValue });
-                }}
-              />
-
-              <View>
-                <TextInput
-                  style={{
-                    backgroundColor: grey1,
-                    padding: 14,
-                    border: "none",
-                    borderRadius: 5,
-                    color: "white",
-                  }}
-                  value={form.password}
-                  className="mt-5"
-                  placeholder={"Password"}
-                  onChangeText={(value) =>
-                    setForm({ ...form, password: value })
-                  }
-                  placeholderTextColor={grey3}
-                  secureTextEntry={!showPassword}
-                />
-                <TextInput
-                  style={{
-                    backgroundColor: grey1,
-                    padding: 14,
-                    border: "none",
-                    borderRadius: 5,
-                    color: "white",
-                  }}
-                  value={form.confirmPassword}
-                  className="mt-5"
-                  placeholder={"Confirm password"}
-                  onChangeText={(value) =>
-                    setForm({ ...form, confirmPassword: value })
-                  }
-                  placeholderTextColor={grey3}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Text style={{ color: "white", marginTop: 16 }}>
-                    {showPassword ? "Hide password" : "Show password"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            {step === 1 && (
               <View>
                 <Text
                   style={{
                     color: "white",
-
-                    marginTop: 40,
+                    fontSize: 18,
+                    marginBottom: 8,
+                    fontWeight: "bold",
                   }}
                 >
-                  By clicking the "Check" button, you agree to our{" "}
-                  <Link
-                    href="https://www.hotostash.com/terms"
-                    style={{ color: orange }}
-                  >
-                    Terms and Conditions,
-                  </Link>{" "}
-                  <Link
-                    href="https://www.hotostash.com/privacy-policy"
-                    style={{ color: orange }}
-                  >
-                    Privacy Policy.
-                  </Link>{" "}
+                  Personal Information
                 </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <CustomPrevButton title="Back" handlePress={prevStep} />
+                <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
+                  Provide your real name to make it easier for family and
+                  friends to find you on Hotostash.
+                </Text>
+                <FormField
+                  title="Firstname"
+                  value={form.firstname}
+                  placeholder="Firstname"
+                  handleChangeText={(value) =>
+                    setForm({ ...form, firstname: value })
+                  }
+                />
+                <FormField
+                  title="Lastname"
+                  value={form.lastname}
+                  placeholder="Lastname"
+                  handleChangeText={(value) =>
+                    setForm({ ...form, lastname: value })
+                  }
+                  otherStyles="mt-5"
+                />
                 <View style={{ alignItems: "flex-end" }}>
-                  {/* {!loading ? ( */}
                   <CustomNextButton
-                    handlePress={validateFinalStep}
+                    handlePress={validateFirstStep}
                     isLoading={loading}
-                    title={"final"}
                   />
-                  {/* ) : ( */}
-                  {/* <Text style={{ color: "white" }}>ffff</Text> */}
-                  {/* )} */}
                 </View>
               </View>
-            </View>
-          )}
-          <View style={{ marginTop: 20 }}>
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Already have an account?{" "}
-              <Link href="/login" style={{ color: orange }}>
-                Log in
-              </Link>
-            </Text>
-          </View>
+            )}
 
-          <CustomModal
-            modalTitle={"Error"}
-            modalText={error}
-            okText={"OK"}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              setModalVisible2(false);
-            }}
-            loading={loading}
-            modalVisible={modalVisible2} // Pass modalVisible as a prop
-            setModalVisible={setModalVisible2} // Pass the setter function to update the state
-          />
-        </View>
-      </ScrollView>
+            {step === 2 && (
+              <View>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    marginBottom: 8,
+                    fontWeight: "bold",
+                  }}
+                >
+                  What's your Birthday?
+                </Text>
+                <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
+                  Let us know your birthday so friends can celebrate with you.
+                </Text>
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <DateTimePicker
+                      value={form.dob}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      onChange={(event, selectedDate) => {
+                        if (selectedDate) {
+                          // Resetting the time to 00:00:00 UTC to only keep the date
+                          const newDate = new Date(selectedDate);
+                          newDate.setUTCHours(0, 0, 0, 0); // Set time to midnight UTC
+                          setForm({ ...form, dob: newDate }); // Set the state with the date-only object
+                        }
+                      }}
+                      themeVariant="dark"
+                      minimumDate={new Date(1950, 0, 1)}
+                      maximumDate={new Date(2010, 11, 31)}
+                    />
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    //   marginTop: 16,
+                  }}
+                >
+                  <CustomPrevButton title="Back" handlePress={prevStep} />
+                  <View style={{ alignItems: "flex-end" }}>
+                    <CustomNextButton
+                      handlePress={validateDob}
+                      isLoading={loading}
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
+            {step === 3 && (
+              <View>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    marginBottom: 8,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Contact Information
+                </Text>
+                <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
+                  Provide your contact details to stay connected with friends
+                  and receive important updates.
+                </Text>
+                <FormField
+                  title="Phone"
+                  value={form.phone}
+                  placeholder="Phone"
+                  handleChangeText={(value) =>
+                    setForm({ ...form, phone: value })
+                  }
+                />
+                <FormField
+                  title="Email"
+                  value={form.email}
+                  placeholder="Email"
+                  handleChangeText={(value) =>
+                    setForm({ ...form, email: value })
+                  }
+                  otherStyles="mt-5"
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    //   marginTop: 16,
+                  }}
+                >
+                  <CustomPrevButton title="Back" handlePress={prevStep} />
+                  <View style={{ alignItems: "flex-end" }}>
+                    <CustomNextButton
+                      handlePress={validatePhoneEmail}
+                      isLoading={loading}
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
+            {step === 4 && (
+              <View>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    marginBottom: 8,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Account Information
+                </Text>
+                <Text style={{ color: "grey", fontSize: 12, marginBottom: 16 }}>
+                  Create a unique username and secure password for your account.
+                </Text>
+                <FormField
+                  title="Username"
+                  value={form.username}
+                  placeholder="Username"
+                  handleChangeText={(value) => {
+                    // Apply regex transformations
+                    const cleanedValue = value
+                      .replace(/\s+/g, "") // Remove all whitespaces
+                      .replace(/[^a-zA-Z0-9_]/g, "") // Remove all non-alphanumeric characters except underscores
+                      .replace(
+                        /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FAFF}]/gu,
+                        "" // Remove emojis
+                      );
+
+                    // Update state with the cleaned value
+                    setForm({ ...form, username: cleanedValue });
+                  }}
+                />
+
+                <View>
+                  <TextInput
+                    style={{
+                      backgroundColor: grey1,
+                      padding: 14,
+                      border: "none",
+                      borderRadius: 5,
+                      color: "white",
+                    }}
+                    value={form.password}
+                    className="mt-5"
+                    placeholder={"Password"}
+                    onChangeText={(value) =>
+                      setForm({ ...form, password: value })
+                    }
+                    placeholderTextColor={grey3}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TextInput
+                    style={{
+                      backgroundColor: grey1,
+                      padding: 14,
+                      border: "none",
+                      borderRadius: 5,
+                      color: "white",
+                    }}
+                    value={form.confirmPassword}
+                    className="mt-5"
+                    placeholder={"Confirm password"}
+                    onChangeText={(value) =>
+                      setForm({ ...form, confirmPassword: value })
+                    }
+                    placeholderTextColor={grey3}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Text style={{ color: "white", marginTop: 16 }}>
+                      {showPassword ? "Hide password" : "Show password"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <Text
+                    style={{
+                      color: "white",
+
+                      marginTop: 40,
+                    }}
+                  >
+                    By clicking the "Check" button, you agree to our{" "}
+                    <Link
+                      href="https://www.hotostash.com/terms"
+                      style={{ color: orange }}
+                    >
+                      Terms and Conditions,
+                    </Link>{" "}
+                    <Link
+                      href="https://www.hotostash.com/privacy-policy"
+                      style={{ color: orange }}
+                    >
+                      Privacy Policy.
+                    </Link>{" "}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <CustomPrevButton title="Back" handlePress={prevStep} />
+                  <View style={{ alignItems: "flex-end" }}>
+                    {/* {!loading ? ( */}
+                    <CustomNextButton
+                      handlePress={validateFinalStep}
+                      isLoading={loading}
+                      title={loading ? "loader" : "final"}
+                    />
+                    {/* ) : ( */}
+                    {/* <Text style={{ color: "white" }}>ffff</Text> */}
+                    {/* )} */}
+                  </View>
+                </View>
+              </View>
+            )}
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ color: "white", textAlign: "center" }}>
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  style={{ color: orange, fontWeight: "bold" }}
+                >
+                  Log in
+                </Link>
+              </Text>
+            </View>
+
+            <CustomModal
+              modalTitle={"Error"}
+              modalText={error}
+              okText={"OK"}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible2(false);
+              }}
+              loading={loading}
+              handleOkPress={() => {
+                setModalVisible2(false);
+              }}
+              modalVisible={modalVisible2} // Pass modalVisible as a prop
+              setModalVisible={setModalVisible2} // Pass the setter function to update the state
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

@@ -29,7 +29,7 @@ const registrationMessage = () => {
                 color: "white",
                 fontSize: 24,
                 marginBottom: 8,
-                fontWeight: "bold",
+                fontWeight: "900",
               }}
             >
               Verify your email

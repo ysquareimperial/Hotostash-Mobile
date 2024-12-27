@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,7 +25,7 @@ import { api } from "../../helpers/helpers";
 import axios from "axios";
 import CustomModal from "../../components/CustomModal";
 
-const resendMail = () => {
+const ForgotPassword = () => {
   const [form, setForm] = useState({ email: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,9 @@ const resendMail = () => {
   const handleSubmit = () => {
     setLoading(true);
     axios
-      .post(`${api}resend-verification-email/?email=${form.email}`)
+      .post(`${api}password_reset`, {
+        email: form.email,
+      })
       .then((response) => {
         setLoading(false);
         console.log(response);
@@ -42,7 +45,6 @@ const resendMail = () => {
         if (response.status === 200) {
           //   console.log("rrrrrrrrr");
           //   alert("A confirmation link has been sent to your email address.");
-          setForm({ email: "" });
           setModalVisible(true);
           //   setModalVisible(true)
         }
@@ -81,13 +83,13 @@ const resendMail = () => {
                   fontWeight: "900",
                 }}
               >
-                Resend verification link
+                Password reset
               </Text>
             </View>
 
             <Text style={{ color: "white", marginTop: 10 }}>
-              Please provide the email address associated with your newly
-              created account to receive a new confirmation link.
+              Please provide the email linked to your account in order to reset
+              your password.
             </Text>
             <FormField
               placeholder={"Email"}
@@ -107,7 +109,7 @@ const resendMail = () => {
                   loading ? (
                     <ActivityIndicator size="small" color="white" />
                   ) : (
-                    "Send link"
+                    "Send reset link"
                   )
                 }
                 handlePress={handleSubmit}
@@ -129,13 +131,15 @@ const resendMail = () => {
               </Link>
               <CustomModal
                 modalTitle={"Link sent"}
-                modalText={
-                  "A confirmation link has been sent to your email address. Please check your inbox or spam folder to complete the verification process."
-                }
+                modalText={`A reset link has been sent to ${form.email}. Kindly check your inbox or spam folder.`}
                 okText={"OK"}
                 onRequestClose={() => {
                   Alert.alert("Modal has been closed.");
                   setModalVisible(false);
+                }}
+                handleOkPress={() => {
+                  setForm({ email: "" });
+                  setModalVisible(!modalVisible);
                 }}
                 loading={loading}
                 modalVisible={modalVisible} // Pass modalVisible as a prop
@@ -161,4 +165,4 @@ const resendMail = () => {
   );
 };
 
-export default resendMail;
+export default ForgotPassword;

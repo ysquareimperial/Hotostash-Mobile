@@ -1,6 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { grey1, grey3 } from "./colors";
+import { Link } from "expo-router";
 
 const FormField = ({
   title,
@@ -41,14 +42,19 @@ const FormField = ({
               }}
             >
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Text style={{ color: "white", marginTop: 16 }}>
+                <Text
+                  style={{ color: "white", marginTop: 16, fontWeight: "bold" }}
+                >
                   {showPassword ? "Hide password" : "Show password"}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity>
-                <Text style={{ color: "white", marginTop: 16 }}>
+                <Link
+                  href="/forgotPassword"
+                  style={{ color: "white", marginTop: 16, fontWeight: "bold" }}
+                >
                   Forgot password?
-                </Text>
+                </Link>
               </TouchableOpacity>
             </View>
           )}

@@ -11,17 +11,17 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { grey1, grey2, grey3 } from "../components/colors";
+import { grey1, grey2, grey3 } from "../../components/colors";
 import { useRouter } from "expo-router";
-import Header from "../components/header";
-import BottomDrawer from "../components/BottomDrawer";
-import { useUser } from "../context/UserContext";
-import CustomButton from "../components/CustomButton";
-import { api } from "../helpers/helpers";
+import Header from "../../components/header";
+import BottomDrawer from "../../components/BottomDrawer";
+import { useUser } from "../../context/UserContext";
+import CustomButton from "../../components/CustomButton";
+import { api } from "../../helpers/helpers";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import CustomModal from "../components/CustomModal";
-import Logout from "./(auth)/logout";
+import CustomModal from "../../components/CustomModal";
+import Logout from "../(auth)/logout";
 
 export default function Settings() {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -418,8 +418,9 @@ export default function Settings() {
               width: "100%",
             }}
             onPress={() => {
-              setSettingsMenu("password");
-              handleSnapPress(0);
+              // setSettingsMenu("password");
+              // handleSnapPress(0);
+              router.push("/userSettings/changePassword");
             }}
           >
             <View style={{ marginRight: 15 }}>

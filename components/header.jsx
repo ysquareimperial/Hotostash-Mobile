@@ -21,7 +21,7 @@ const Header = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => router.push("/settings")}
+          onPress={() => router.push("/userSettings/settings")}
         >
           <AntDesign name="setting" size={22} color="#fff" />
         </TouchableOpacity>

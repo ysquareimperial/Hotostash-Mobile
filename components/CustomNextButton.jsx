@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 
@@ -30,11 +36,15 @@ const CustomNextButton = ({
       className="mt-5"
     >
       <Text style={[styles.buttonText, validTextStyles]}>
-        <MaterialIcons
-          name={title === "final" ? `check` : `arrow-forward-ios`}
-          size={24}
-          style={{ margin: 0 }}
-        />
+        {title === "loader" ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <MaterialIcons
+            name={title === "final" ? `check` : `arrow-forward-ios`}
+            size={24}
+            style={{ margin: 0 }}
+          />
+        )}
       </Text>
     </TouchableOpacity>
   );

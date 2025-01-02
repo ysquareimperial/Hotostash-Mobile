@@ -121,20 +121,24 @@ export default function ChangePassword() {
             </Text>
           </View>
           <TouchableOpacity onPress={updatePassword}>
-            <Text
-              style={{
-                fontWeight: "bold",
-                color: "white",
-                fontSize: 20,
-                textAlign: "center",
-              }}
-            >
-              {loading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                "Save"
-              )}
-            </Text>
+            {form.currentPassword.length > 3 &&
+              form.newPassword.length > 3 &&
+              (form.confirmPassword.length > 3 && (
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    color: "white",
+                    fontSize: 20,
+                    textAlign: "center",
+                  }}
+                >
+                  {loading ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    "Save"
+                  )}
+                </Text>
+              ))}
           </TouchableOpacity>
         </View>
 

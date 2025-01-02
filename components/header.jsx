@@ -4,11 +4,11 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import logo from "../assets/Hotostash PNG/77.png";
 import { grey2 } from "./colors";
 import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 
 const Header = () => {
   return (
-    <View style={styles.header}>
+    <View style={styles.header} className='px-4'>
       {/* App Logo */}
       <Image
         source={logo} // Replace with your logo path
@@ -19,6 +19,8 @@ const Header = () => {
         <TouchableOpacity style={styles.icon}>
           <AntDesign name="bells" size={22} color="#fff" />
         </TouchableOpacity>
+        {/* <Link>
+        </Link> */}
         <TouchableOpacity
           style={styles.icon}
           onPress={() => router.push("/userSettings/settings")}
@@ -39,12 +41,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
     borderBottomWidth: 1,
     borderBottomColor: grey2,
-    padding: 10,
+    // padding: 10,
     paddingTop: 50, // Add some padding for the status bar on iOS
   },
   logo: {
-    width: 100,
-    height: 30,
+    width: 110,
+    height: 40,
     resizeMode: "contain",
   },
   icons: {

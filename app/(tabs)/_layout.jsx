@@ -41,8 +41,8 @@ const TabsLayout = () => {
             backgroundColor: "black",
             borderTopWidth: 1,
             borderTopColor: grey2,
-            paddingBottom: 10,
-            paddingTop: 5,
+            // paddingBottom: 10,
+            paddingTop: 10,
             height: 84,
           },
         }}
@@ -57,8 +57,8 @@ const TabsLayout = () => {
               <TabIcon
                 color={color}
                 focused={focused}
-                icon={<AntDesign name="home" size={20} color={color} />}
-                name="Stashes"
+                icon={<AntDesign name="home" size={25} color={color} />}
+                // name="Stashes"
               />
             ),
           }}
@@ -72,8 +72,8 @@ const TabsLayout = () => {
               <TabIcon
                 color={color}
                 focused={focused}
-                icon={<AntDesign name="calendar" size={20} color={color} />}
-                name="Events"
+                icon={<AntDesign name="hearto" size={25} color={color} />}
+                // name="Events"
               />
             ),
           }}
@@ -87,8 +87,8 @@ const TabsLayout = () => {
               <TabIcon
                 color={color}
                 focused={focused}
-                icon={<AntDesign name="bells" size={20} color={color} />}
-                name="Notifications"
+                icon={<AntDesign name="bells" size={25} color={color} />}
+                // name="Notifications"
               />
             ),
           }}
@@ -102,13 +102,19 @@ const TabsLayout = () => {
               <TabIcon
                 color={color}
                 focused={focused}
-                icon={<AntDesign name="user" size={20} color={color} />}
-                name="Profile"
+                icon={<AntDesign name="user" size={25} color={color} />}
+                // name="Profile"
               />
             ),
           }}
         />
-       
+
+        <Tabs.Screen
+          name="viewStash"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </>
   );

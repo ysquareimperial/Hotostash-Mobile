@@ -7,6 +7,7 @@ import CustomButton3 from "./CustomButton3";
 
 const CustomModal = ({
   modalText,
+  modalExtraText,
   modalTitle,
   cancelText,
   okText,
@@ -29,6 +30,7 @@ const CustomModal = ({
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>{modalTitle}</Text>
             <Text style={styles.modalText}>{modalText}</Text>
+            <Text style={styles.modalExtraText}>{modalExtraText}</Text>
             <View
               style={{
                 flexDirection: "row",
@@ -107,6 +109,11 @@ const styles = StyleSheet.create({
   },
   modalText: {
     color: "white",
+    // textAlign: "center",
+  },
+  modalExtraText: {
+    color: "white",
+    marginTop:10,
     // textAlign: "center",
   },
   modalTitle: {

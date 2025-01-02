@@ -26,13 +26,8 @@ import { useUser } from "../../context/UserContext";
 import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
 
-// WebBrowser.maybeCompleteAuthSession();
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
   const [userInfo, setUserInfo] = useState(null);
@@ -48,67 +43,58 @@ const Login = () => {
 
   //C O N T I N U E  W I T H  G O O G L E
   // Dynamically determine environment
-  // const isDevelopment = process.env.NODE_ENV === "development";
+  const isDevelopment = process.env.NODE_ENV === "development";
 
-  // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   androidClientId:
-  //     "624550916436-fe5inf1rl5cr6naef052991qlcs8n1k3.apps.googleusercontent.com",
-  //   iosClientId:
-  //     "624550916436-cii74emo59u9renvhlp3jbhft6du2p48.apps.googleusercontent.com",
-  //   scopes: ["profile", "email", "openid"],
-  //   redirectUri: isDevelopment
-  //     ? makeRedirectUri({ useProxy: true }) // Use Expo proxy during development
-  //     : makeRedirectUri({ useProxy: false }), // Use native URI in production
-  // });
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId:
+      "624550916436-fe5inf1rl5cr6naef052991qlcs8n1k3.apps.googleusercontent.com",
+    iosClientId:
+      "624550916436-cii74emo59u9renvhlp3jbhft6du2p48.apps.googleusercontent.com",
+    scopes: ["profile", "email", "openid"],
+    redirectUri: isDevelopment
+      ? makeRedirectUri({ useProxy: true }) // Use Expo proxy during development
+      : makeRedirectUri({ useProxy: false }), // Use native URI in production
+  });
 
   // Debugging: Log the redirect URI to ensure it matches the expected format
-  // console.log("Redirect URI:", request?.redirectUri);
+  console.log("Redirect URI:", request?.redirectUri);
 
-  // useEffect(() => {
-  //   if (response?.type === "success") {
-  //     const { authentication } = response;
-  //     handleUserAuthentication(authentication.accessToken);
-  //   }
-  // }, [response]);
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      handleUserAuthentication(authentication.accessToken);
+    }
+  }, [response]);
 
-  // const handleUserAuthentication = async (token) => {
-  //   try {
-  //     const userGoogle = await AsyncStorage.getItem("@user");
-  //     if (!userGoogle && token) {
-  //       await getUserInfo(token); // Fetch and store user info
-  //     } else {
-  //       setUserInfo(JSON.parse(userGoogle)); // Load user info from AsyncStorage
-  //     }
-  //   } catch (error) {
-  //     console.error("Error authenticating user:", error);
-  //   }
-  // };
+  const handleUserAuthentication = async (token) => {
+    try {
+      const userGoogle = await AsyncStorage.getItem("@user");
+      if (!userGoogle && token) {
+        await getUserInfo(token); // Fetch and store user info
+      } else {
+        setUserInfo(JSON.parse(userGoogle)); // Load user info from AsyncStorage
+      }
+    } catch (error) {
+      console.error("Error authenticating user:", error);
+    }
+  };
 
   // Function to fetch Google user info
-  // const getUserInfo = async (token) => {
-  //   if (!token) return;
-  //   try {
-  //     const response = await fetch(
-  //       "https://www.googleapis.com/userinfo/v2/me",
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     const user = await response.json();
-  //     await AsyncStorage.setItem("@user", JSON.stringify(user)); // Cache user info locally
-  //     setUserInfo(user);
-  //   } catch (error) {
-  //     console.error("Error fetching user info:", error);
-  //   }
-  // };
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const user = await response.json();
+      await AsyncStorage.setItem("@user", JSON.stringify(user)); // Cache user info locally
+      setUserInfo(user);
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
 
-  GoogleSignin.configure({
-    webClientId:
-      "370729507727-r3f6ia0q8ilejvdvm2jhtlbdhn9crjmb.apps.googleusercontent.com", // client ID of type WEB for your server. Required to get the `idToken` on the user object, and for offline access.
-    scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
-    offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-    forceCodeForRefreshToken: false, // [Android] related to `serverAuthCode`, read the docs link below *.
-    iosClientId:
-      "370729507727-ksbpi3glglvvo8dvgk22gjg88681ncs8.apps.googleusercontent.com", // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-  });
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -229,14 +215,10 @@ const Login = () => {
               isLoading={loading || isButtonDisabled}
             />
             <OrSeparator />
-            {/* <CustomButton2
+            <CustomButton2
               handlePress={() => promptAsync()}
               logo={google}
               title={`Sign in with google`}
-            /> */}
-            <GoogleSigninButton
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Dark}
             />
             <View
               style={{
@@ -256,6 +238,7 @@ const Login = () => {
 
               <Link
                 href="/register"
+                // href="/registrationMessage"
                 style={{ color: orange, fontWeight: "bold" }}
               >
                 Create new account
@@ -264,6 +247,18 @@ const Login = () => {
             <CustomModal
               modalTitle={"Login failed"}
               modalText={error}
+              modalExtraText={
+                error === "Email not verified" && (
+                  <Link
+                  onPress={() => setModalVisible2(false)}
+                    
+                    href="/resendMail"
+                    style={{ color: orange, fontWeight: "bold" }}
+                  >
+                    Send verification code again
+                  </Link>
+                )
+              }
               okText={"OK"}
               handleOkPress={() => setModalVisible2(false)}
               onRequestClose={() => setModalVisible2(false)}

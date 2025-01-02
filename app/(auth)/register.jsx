@@ -105,7 +105,7 @@ const Register = () => {
     console.log(formData);
     setLoading(true);
     axios
-      .post(`${api}create_user/`, {
+      .post(`${api}mobile/create_user/`, {
         ...formData, // Pass the form data excluding confirmPassword
         dob: form.dob.toISOString().split("T")[0], // Use form.dob instead of dobWithoutTime
       })
@@ -113,8 +113,10 @@ const Register = () => {
         console.log(response.data);
         console.log(response.status);
         if (response?.status === 200) {
-          router.replace("/registrationMessage");
-          console.log("ddddddddddddddddddd");
+          router.push({
+            pathname: "/registrationMessage",
+            params: { email: formData.email },
+          });
         }
         setLoading(false);
       })

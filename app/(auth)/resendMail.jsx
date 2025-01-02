@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,13 +16,14 @@ import logo from "../../assets/Hotostash PNG/77.png";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { StatusBar } from "expo-status-bar";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { grey1, grey2, grey3, orange } from "../../components/colors";
 import google from "../../assets/google.png";
 import CustomButton2 from "../../components/CustomButton2";
 import OrSeparator from "../../components/OrSeparator";
 import { api } from "../../helpers/helpers";
 import axios from "axios";
+
 import CustomModal from "../../components/CustomModal";
 
 const resendMail = () => {
@@ -34,7 +36,7 @@ const resendMail = () => {
   const handleSubmit = () => {
     setLoading(true);
     axios
-      .post(`${api}resend-verification-email/?email=${form.email}`)
+      .post(`${api}mobile/resend-verification-email/?email=${form.email}`)
       .then((response) => {
         setLoading(false);
         console.log(response);
@@ -43,8 +45,12 @@ const resendMail = () => {
           //   console.log("rrrrrrrrr");
           //   alert("A confirmation link has been sent to your email address.");
           setForm({ email: "" });
-          setModalVisible(true);
+          // setModalVisible(true);
           //   setModalVisible(true)
+          router.push({
+            pathname: "/registrationMessage",
+            params: { email: form.email },
+          });
         }
       })
       .catch((e) => {
@@ -81,13 +87,13 @@ const resendMail = () => {
                   fontWeight: "900",
                 }}
               >
-                Resend verification link
+                Resend verification code
               </Text>
             </View>
 
             <Text style={{ color: "white", marginTop: 10 }}>
               Please provide the email address associated with your newly
-              created account to receive a new confirmation link.
+              created account to receive a new verification code.
             </Text>
             <FormField
               placeholder={"Email"}
@@ -107,7 +113,7 @@ const resendMail = () => {
                   loading ? (
                     <ActivityIndicator size="small" color="white" />
                   ) : (
-                    "Send link"
+                    "Get verification code"
                   )
                 }
                 handlePress={handleSubmit}
@@ -127,10 +133,10 @@ const resendMail = () => {
               <Link href="/login" style={{ color: orange, fontWeight: "bold" }}>
                 Log in
               </Link>
-              <CustomModal
-                modalTitle={"Link sent"}
+              {/* <CustomModal
+                modalTitle={"Code sent to your email"}
                 modalText={
-                  "A confirmation link has been sent to your email address. Please check your inbox or spam folder to complete the verification process."
+                  "A verification code has been sent to your email address. Please check your inbox or spam folder to complete the verification process."
                 }
                 okText={"OK"}
                 onRequestClose={() => {
@@ -140,14 +146,25 @@ const resendMail = () => {
                 loading={loading}
                 modalVisible={modalVisible} // Pass modalVisible as a prop
                 setModalVisible={setModalVisible} // Pass the setter function to update the state
-              />
+                handleOkPress={() => {
+                  router.push({
+                    pathname: "/registrationMessage",
+                    params: { email: form.email },
+                  });
+
+                  setModalVisible(false);
+                }}
+              /> */}
               <CustomModal
                 modalTitle={"Error"}
                 modalText={error}
                 okText={"OK"}
                 onRequestClose={() => {
                   Alert.alert("Modal has been closed.");
-                  setModalVisible(false);
+                  setModalVisible2(false);
+                }}
+                handleOkPress={() => {
+                  setModalVisible2(false);
                 }}
                 loading={loading}
                 modalVisible={modalVisible2} // Pass modalVisible as a prop

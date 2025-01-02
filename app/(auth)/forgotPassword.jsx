@@ -35,7 +35,7 @@ const ForgotPassword = () => {
   const handleSubmit = () => {
     setLoading(true);
     axios
-      .post(`${api}password_reset`, {
+      .post(`${api}mobile/password_reset`, {
         email: form.email,
       })
       .then((response) => {
@@ -88,8 +88,8 @@ const ForgotPassword = () => {
             </View>
 
             <Text style={{ color: "white", marginTop: 10 }}>
-              Please provide the email linked to your account in order to reset
-              your password.
+              Enter your email to receive a confirmation code for resetting your
+              password.
             </Text>
             <FormField
               placeholder={"Email"}
@@ -109,7 +109,7 @@ const ForgotPassword = () => {
                   loading ? (
                     <ActivityIndicator size="small" color="white" />
                   ) : (
-                    "Send reset link"
+                    "Send reset code"
                   )
                 }
                 handlePress={handleSubmit}
@@ -130,8 +130,8 @@ const ForgotPassword = () => {
                 Log in
               </Link>
               <CustomModal
-                modalTitle={"Link sent"}
-                modalText={`A reset link has been sent to ${form.email}. Kindly check your inbox or spam folder.`}
+                modalTitle={"Code sent"}
+                modalText={`A reset code has been sent to ${form.email}. Kindly check your inbox or spam folder.`}
                 okText={"OK"}
                 onRequestClose={() => {
                   Alert.alert("Modal has been closed.");
@@ -145,6 +145,7 @@ const ForgotPassword = () => {
                 modalVisible={modalVisible} // Pass modalVisible as a prop
                 setModalVisible={setModalVisible} // Pass the setter function to update the state
               />
+
               <CustomModal
                 modalTitle={"Error"}
                 modalText={error}
@@ -154,6 +155,7 @@ const ForgotPassword = () => {
                   setModalVisible(false);
                 }}
                 loading={loading}
+                handleOkPress={() => setModalVisible2(false)}
                 modalVisible={modalVisible2} // Pass modalVisible as a prop
                 setModalVisible={setModalVisible2} // Pass the setter function to update the state
               />

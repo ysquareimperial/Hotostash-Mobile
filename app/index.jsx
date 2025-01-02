@@ -13,7 +13,7 @@ export default function App() {
 
   if (user && user?.id) {
     // Redirect to /stashes if a user is logged in
-    return <Redirect href="/stashes" />;
+    return <Redirect href="/stashes/stashes" />;
   }
   
   
@@ -47,7 +47,7 @@ export default function App() {
         </Text>
         <CustomButton
           title="Join Hotostash today!"
-          handlePress={() => router.push("/login")}
+          handlePress={() => router.push("/(auth)/login")}
           containerStyles="w-full mt-7"
         />
       </View>

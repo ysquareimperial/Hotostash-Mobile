@@ -44,7 +44,7 @@ export default function Logout() {
         location: "",
         phone: "",
       }); // Reset user context
-      router.replace("/(auth)/login"); // Navigate to stashes page
+      router.replace("/"); // Navigate to login and replace current route
     } catch (error) {
       console.error("Error during logout:", error);
     } finally {
@@ -53,6 +53,7 @@ export default function Logout() {
     }
   };
 
+  
   return (
     <View>
       <TouchableOpacity onPress={() => setModalVisible(true)}>

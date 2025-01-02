@@ -9,6 +9,8 @@ const FormField = ({
   placeholder,
   handleChangeText,
   otherStyles,
+  keyboardType,
+  maxLength,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +30,8 @@ const FormField = ({
           placeholder={placeholder}
           onChangeText={handleChangeText}
           placeholderTextColor={grey3}
+          maxLength={maxLength}
+          keyboardType={keyboardType}
           secureTextEntry={
             (title === "Password" && !showPassword) ||
             (title === "Confirm Password" && !showPassword)

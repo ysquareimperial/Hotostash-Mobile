@@ -26,14 +26,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomModal from "../../components/CustomModal";
 
 const Profile = () => {
-  const { user } = useUser(); 
+  const { user } = useUser();
   const { saveUser } = useUser(); // Get saveUser from context
   const [error, setError] = useState("");
   const [modalVisible2, setModalVisible2] = useState(false);
   // const formattedDOB = format(user?.dob, "MMMM dd, yyyy");
-  const formattedDOB = user?.dob ? format(new Date(user.dob), "MMMM dd, yyyy") : "Unknown";
+  const formattedDOB = user?.dob
+    ? format(new Date(user.dob), "MMMM dd, yyyy")
+    : "Unknown";
   // const joined = format(user?.created_at, "MMMM, yyyy");
-  const joined = user?.created_at ? format(new Date(user.created_at), "MMMM, yyyy") : "Unknown";
+  const joined = user?.created_at
+    ? format(new Date(user.created_at), "MMMM, yyyy")
+    : "Unknown";
   const [authToken, setAuthToken] = useState(null);
   const sheetRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +57,9 @@ const Profile = () => {
   }, []);
 
   const handleSnapPress = useCallback(
+    
     (index) => {
+      console.log('snaped');
       if (!isOpen) {
         setIsOpen(true); // Show the bottom sheet
       }
@@ -344,18 +350,18 @@ const Profile = () => {
                         Edit profile
                       </Text>
                     </View>
-                    {loading?
-                    <ActivityIndicator size="small" color='white' />
-                  :
-                    <Text
-                      onPress={() => {
-                        handleSubmit();
-                      }}
-                      style={{ color: "white", fontWeight: "bold" }}
+                    {loading ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <Text
+                        onPress={() => {
+                          handleSubmit();
+                        }}
+                        style={{ color: "white", fontWeight: "bold" }}
                       >
-                      Save
-                    </Text>
-                    }
+                        Save
+                      </Text>
+                    )}
                   </View>
                   {/* <FormField2 /> */}
 
@@ -508,6 +514,9 @@ const Profile = () => {
             okText={"OK"}
             onRequestClose={() => {
               Alert.alert("Modal has been closed.");
+              setModalVisible2(false);
+            }}
+            handleOkPress={() => {
               setModalVisible2(false);
             }}
             loading={loading}

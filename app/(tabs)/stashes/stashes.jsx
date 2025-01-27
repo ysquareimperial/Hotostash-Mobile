@@ -150,7 +150,7 @@ const Stashes = () => {
         console.log(err);
         setLoading2(false);
         // setModalVisible2(true);
-        console.log(err)?.response?.data?.detail;
+        console.log(err?.response?.data?.detail);
         setError(err?.response?.data?.detail);
       });
   };
@@ -232,7 +232,7 @@ const Stashes = () => {
     >
       <View
         className="px-4"
-        style={{ backgroundColor: "", flex: 1, marginVertical: 10 }}
+        style={{ backgroundColor: "", flex: 1, marginVertical: 0, marginTop:10 }}
       >
         <View
           style={{

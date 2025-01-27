@@ -27,7 +27,6 @@ export default function Logout() {
 
   const handleLogout = async () => {
     console.log("clicked");
-
     setLoading(true); // Show loading while processing logout
     try {
       await handleRemove(); // Wait for token removal to complete
@@ -44,7 +43,7 @@ export default function Logout() {
         location: "",
         phone: "",
       }); // Reset user context
-      router.replace("/"); // Navigate to login and replace current route
+      router.replace("/login"); // Navigate to login and replace current route
     } catch (error) {
       console.error("Error during logout:", error);
     } finally {
@@ -53,7 +52,6 @@ export default function Logout() {
     }
   };
 
-  
   return (
     <View>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -68,7 +66,7 @@ export default function Logout() {
         >
           <Text
             style={{
-              color: "red",
+              color: "#DC3545",
               fontWeight: "bold",
               textAlign: "center",
             }}

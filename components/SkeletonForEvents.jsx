@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated, Dimensions } from "react-native";
 import { grey2 } from "./colors";
 
-const { height } = Dimensions.get("window");
+// const { height } = Dimensions.get("window");
 
 const SkeletonForEvents = () => {
   const shimmerAnimation = useRef(new Animated.Value(0)).current;
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     flexWrap: "wrap",
-    height: height, // Full height of the device
+    // height: height, // Full height of the device
     backgroundColor: "#000000", // grey2
     // paddingHorizontal: 16,
     paddingTop: 16,

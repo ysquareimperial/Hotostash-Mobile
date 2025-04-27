@@ -18,14 +18,24 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.mobileapp"
+      "bundleIdentifier": "com.anonymous.mobileapp",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Hotostash needs access to your photos to allow image selection and upload.",
+        "NSCameraUsageDescription": "Hotostash needs access to your camera to take and upload photos.",
+        "NSPhotoLibraryAddUsageDescription": "Hotostash needs permission to save images to your gallery."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.anonymous.mobileapp"
+      "package": "com.anonymous.mobileapp",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

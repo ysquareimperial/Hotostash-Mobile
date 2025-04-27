@@ -115,6 +115,12 @@ const TabsLayout = () => {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="viewEvent"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
     </>
   );

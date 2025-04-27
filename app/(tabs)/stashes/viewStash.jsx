@@ -6,6 +6,7 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
+  Keyboard,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
@@ -24,6 +25,8 @@ import defaultProfile from "../../../assets/profile.png";
 import LeaveStash from "./leaveStash";
 import ManageMember from "./manageMember";
 import InviteStashMembers from "./inviteStashMembers";
+import CreateEvent from "./createEvent";
+import CustomBottomSheet from "../../../components/CustomBottomSheet";
 
 export default function ViewStash() {
   const { user } = useUser();
@@ -45,6 +48,13 @@ export default function ViewStash() {
   const [showMembers, setShowMembers] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null); // To track selected user ID
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [stashEvents, setStashEvents] = useState([]);
+
+  //EDIT STASH FORM
+  const [form, setForm] = useState({
+    title: title,
+    description: description,
+  });
 
   //BOTTOM SHEET PROPS
   const [isOpen, setIsOpen] = useState(false);
@@ -95,7 +105,7 @@ export default function ViewStash() {
       }
       sheetRef2.current?.snapToIndex(index);
     },
-    [isOpen]
+    [isOpen2]
   );
 
   const handleManageMember = (userId) => {
@@ -132,13 +142,86 @@ export default function ViewStash() {
       }
       sheetRef3.current?.snapToIndex(index);
     },
-    [isOpen]
+    [isOpen3]
   );
 
   const handleClosePress3 = useCallback(() => {
+    console.log("dddddddddddddd");
+
+    Keyboard.dismiss();
     sheetRef3.current?.close();
     setIsOpen(false); // Hide the bottom sheet
     setLoading3(false);
+    // setForm((prevForm) => ({
+    //   ...prevForm,
+    //   title: "",
+    //   description: "",
+    // }));
+  }, []);
+  //END OF BOTTOM SHEET PROPS
+
+  //BOTTOM SHEET PROPS 3
+  const [isOpen4, setIsOpen4] = useState(false);
+  const snapPoints4 = ["100%"];
+  const sheetRef4 = useRef(null);
+
+  const handleSheetChange4 = useCallback((index) => {
+    console.log("handleSheetChange", index);
+  }, []);
+
+  const handleSnapPress4 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen4) {
+        setIsOpen4(true); // Show the bottom sheet
+      }
+      sheetRef4.current?.snapToIndex(index);
+    },
+    [isOpen4]
+  );
+
+  const handleClosePress4 = useCallback(() => {
+    console.log("dddddddddddddd");
+
+    Keyboard.dismiss();
+    sheetRef4.current?.close();
+    setIsOpen(false); // Hide the bottom sheet
+    setLoading4(false);
+    // setForm((prevForm) => ({
+    //   ...prevForm,
+    //   title: "",
+    //   description: "",
+    // }));
+  }, []);
+  //END OF BOTTOM SHEET PROPS
+
+  //BOTTOM SHEET PROPS 3
+  const [isOpen5, setIsOpen5] = useState(false);
+  const snapPoints5 = ["100%"];
+  const sheetRef5 = useRef(null);
+
+  const handleSheetChange5 = useCallback((index) => {
+    console.log("handleSheetChange", index);
+  }, []);
+
+  const handleSnapPress5 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen5) {
+        setIsOpen5(true); // Show the bottom sheet
+      }
+      sheetRef5.current?.snapToIndex(index);
+    },
+    [isOpen5]
+  );
+
+  const handleClosePress5 = useCallback(() => {
+    console.log("dddddddddddddd");
+
+    Keyboard.dismiss();
+    sheetRef5.current?.close();
+    setIsOpen(false); // Hide the bottom sheet
+    setLoading4(false);
     // setForm((prevForm) => ({
     //   ...prevForm,
     //   title: "",
@@ -178,6 +261,8 @@ export default function ViewStash() {
           },
         });
         setStash(response.data);
+        console.log("from view stashhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+        setStashEvents(response?.data?.events);
         setStashMembers(response?.data?.members);
         console.log(response?.data?.members);
         setLoading(false);
@@ -188,6 +273,10 @@ export default function ViewStash() {
     };
     fetchStash();
   }, [authToken]);
+
+  const handleCreatedEvent = (newItem) => {
+    setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
+  };
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
@@ -203,7 +292,7 @@ export default function ViewStash() {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setStash(response.data);
+      setStashEvents(response?.data?.events);
       setStashMembers(response?.data?.members);
       console.log(response?.data?.members);
       setLoading(false);
@@ -292,7 +381,9 @@ export default function ViewStash() {
     // }
   };
 
-  const inviteStashMembers = () => {};
+  const editStash = () => {
+    console.log("dd");
+  };
 
   // if (loading) {
   //   return (
@@ -333,30 +424,38 @@ export default function ViewStash() {
               style={{ borderRadius: 500, width: 50, height: 50 }}
             />
             <View style={{ flex: 1 }}>
-              <Text
-                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
-              >
-                {title}
-              </Text>
-              <Text
-                style={{
-                  color: "grey",
-                  fontSize: 14,
-                  // width: 200, // Constrained width for truncation
-                }}
-              >
-                {description}
-              </Text>
-              <Text style={{ color: "grey", fontSize: 14, fontWeight: "bold" }}>
-                Created{" "}
-                {created_at ? format(parseISO(created_at), "MMM, yyyy") : "N/A"}
-              </Text>
+              <TouchableOpacity onPress={() => handleSnapPress5(0)}>
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                >
+                  {title}
+                </Text>
+                {description.length === 0 ? (
+                  ""
+                ) : (
+                  <Text
+                    style={{
+                      color: "grey",
+                      fontSize: 14,
+                      // width: 200, // Constrained width for truncation
+                    }}
+                  >
+                    {description}
+                  </Text>
+                )}
+                <Text style={{ color: "grey", fontSize: 14 }}>
+                  Created{" "}
+                  {created_at
+                    ? format(parseISO(created_at), "MMM, yyyy")
+                    : "N/A"}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <View
+          {/* <View
             className=""
             style={{ borderTopColor: grey2, borderWidth: 1 }}
-          ></View>
+          ></View> */}
 
           {/* E V E N T S */}
           <View
@@ -374,7 +473,7 @@ export default function ViewStash() {
               Events
             </Text>
             <TouchableOpacity
-              // onPress={() => handleSnapPress(0)}
+              onPress={() => handleSnapPress4(0)}
               style={{ backgroundColor: orange, padding: 5, borderRadius: 50 }}
             >
               <AntDesign name="plus" size={20} color="white" />
@@ -386,8 +485,15 @@ export default function ViewStash() {
             </View>
           ) : (
             <View style={{ marginTop: 10 }}>
-              {stash?.events?.map((item, index) => (
-                <TouchableOpacity key={index}>
+              {stashEvents?.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() =>
+                    router.push(
+                      `/stashes/viewEvent?id=${item?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}`
+                    )
+                  }
+                >
                   <View
                     style={{
                       flexDirection: "row",
@@ -410,9 +516,9 @@ export default function ViewStash() {
                         ellipsizeMode="tail"
                       >
                         {item?.date
-                          ? format(parseISO(item.created_at), "MMM, yyyy")
-                          : "N/A"}
-                        •{item?.location}
+                          ? format(parseISO(item.date), "MMM dd, yyyy")
+                          : "N/A"}{" "}
+                        • {item?.location}
                       </Text>
                       <Text
                         style={{
@@ -524,7 +630,7 @@ export default function ViewStash() {
                   >
                     <View
                       style={{
-                        backgroundColor: grey2,
+                        backgroundColor: grey1,
                         padding: 10,
                         borderRadius: 50,
                       }}
@@ -592,7 +698,7 @@ export default function ViewStash() {
                       <View style={{ flex: 1 }}>
                         <Text
                           style={{
-                            fontSize: 18,
+                            // fontSize: 18,
                             fontWeight: "bold",
                             color: "white",
                           }}
@@ -700,7 +806,7 @@ export default function ViewStash() {
         handleSnapPress={handleSnapPress}
       />
       <ManageMember
-        stashName={title}
+        // stashName={title}
         sheetRef={sheetRef2}
         snapPoints={snapPoints2}
         handleSheetChange={handleSheetChange2}
@@ -714,16 +820,44 @@ export default function ViewStash() {
         handleSnapPress={handleSnapPress2}
       />
       <InviteStashMembers
-        stashName={title}
         sheetRef={sheetRef3}
         snapPoints={snapPoints3}
         handleSheetChange={handleSheetChange3}
         handleClosePress={handleClosePress3}
-        loading={loading5}
         isOpen={isOpen3}
-        enablePanDownToClose={loading5 ? false : true}
-        handleSubmit={inviteStashMembers}
+        // enablePanDownToClose={loading5 ? false : true}
+        // handleSubmit={inviteStashMembersFunction}
         handleSnapPress={handleSnapPress3}
+        stashId={stash?.id}
+      />
+      <CreateEvent
+        sheetRef={sheetRef4}
+        snapPoints={snapPoints4}
+        handleSheetChange={handleSheetChange4}
+        handleClosePress={handleClosePress4}
+        isOpen={isOpen4}
+        // enablePanDownToClose={loading5 ? false : true}
+        // handleSubmit={inviteStashMembersFunction}
+        handleSnapPress={handleSnapPress4}
+        stashId={stash?.id}
+        sendEventToStashPage={handleCreatedEvent}
+      />
+
+      {/* STASH BOTTOM SHEET */}
+      <CustomBottomSheet
+        bottomSheetTitle={"Edit stash"}
+        sheetRef={sheetRef5}
+        snapPoints={snapPoints5}
+        handleSheetChange={handleSheetChange5}
+        handleClosePress={handleClosePress5}
+        handleSubmit={editStash}
+        form={form}
+        loading={loading5}
+        isOpen={isOpen5}
+        handleChangeTitle={(text) => setForm({ ...form, title: text })}
+        handleChangeDescription={(text) =>
+          setForm({ ...form, description: text })
+        }
       />
     </SafeAreaView>
   );

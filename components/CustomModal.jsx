@@ -17,6 +17,7 @@ const CustomModal = ({
   onRequestClose,
   modalVisible, // Receive modalVisible as a prop
   setModalVisible, // Receive setModalVisible to update state in the parent
+  ...props
 }) => {
   return (
     <View>
@@ -25,6 +26,7 @@ const CustomModal = ({
         transparent={true}
         visible={modalVisible} // Use modalVisible prop here
         onRequestClose={onRequestClose}
+        {...props}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
   },
   modalExtraText: {
     color: "white",
-    marginTop:10,
+    marginTop: 10,
     // textAlign: "center",
   },
   modalTitle: {

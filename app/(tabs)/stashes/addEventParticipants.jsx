@@ -18,7 +18,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../../context/UserContext";
 import CustomModal from "../../../components/CustomModal";
-export default function InviteStashMembers({
+export default function AddEventParticipants({
   sheetRef,
   snapPoints,
   handleSheetChange,
@@ -28,7 +28,7 @@ export default function InviteStashMembers({
   stashId,
 }) {
   const { user } = useUser();
-  const [users, setUsers] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [authToken, setAuthToken] = useState(null);
   const [album, setAlbum] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
@@ -62,50 +62,60 @@ export default function InviteStashMembers({
     fetchToken();
   }, []);
   // Fetch users based on the search query
-  const fetchUsers = (query = "") => {
+  const fetchStashMembers = () => {
     setIsLoading(true);
     // console.log("clickedddddddddddddddddddd");
 
-    if (authToken && query.trim() !== "") {
-      // Only fetch if query is not empty
-      axios
-        .get(`${api}users/search`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-          params: {
-            search: query, // Include the search query as a parameter
-          },
-        })
-        .then((response) => {
-          setIsLoading(false);
-          setUsers(response?.data);
-          // console.log(response);
-        })
-        .catch((err) => {
-          setIsLoading(false);
-          // console.log("error fetching data", err);
-          setError(err.response.data?.detail);
-        });
-    } else {
-      setUsers([]); // Clear the users list if query is empty
-    }
+    // if (authToken && query.trim() !== "") {
+    // Only fetch if query is not empty
+    axios
+      .get(`${api}albums/${26}/members/search`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        // params: {
+        //   search: query, // Include the search query as a parameter
+        // },
+      })
+      .then((response) => {
+        setIsLoading(false);
+        setParticipants(response?.data?.members);
+        console.log(response);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        // console.log("error fetching data", err);
+        setError(err.response.data?.detail);
+      });
+    // } else {
+    //   setParticipants([]); // Clear the users list if query is empty
+    // }
   };
+
+  useEffect(() => {
+    if (authToken) {
+      fetchStashMembers();
+    }
+  }, [authToken]);
 
   // Handle the search input change
   const handleSearchChange = (text) => {
     setSearchQuery(text);
     setSearchTerm(text);
-    fetchUsers(text); // Fetch users based on the search query
   };
 
   // Filter users based on the search query
-  const filteredUsers = users?.filter((user) => {
-    const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
-    const username = user.username.toLowerCase();
-    const query = searchQuery.toLowerCase();
-    return fullName.includes(query) || username.includes(query);
-  });
+  const filteredUsers =
+    searchQuery.trim() === ""
+      ? participants // if no search, show all
+      : participants?.filter((item) => {
+          const fullName = `${item?.user?.firstname ?? ""} ${
+            item?.user?.lastname ?? ""
+          }`.toLowerCase();
+          const username = (item?.user?.username ?? "").toLowerCase();
+          const query = searchQuery.toLowerCase();
+          return fullName.includes(query) || username.includes(query);
+        });
 
   // Handle the selection or deselection of a member
   const handleSelectMember = (member) => {
@@ -189,7 +199,7 @@ export default function InviteStashMembers({
                       handleClosePress();
                       setSelectedMembers([]);
                       setSearchQuery("");
-                      setUsers([]);
+                      setParticipants([]);
                     }}
                     disabled={loading2}
                   >
@@ -215,7 +225,7 @@ export default function InviteStashMembers({
                         // fontSize: 18,
                       }}
                     >
-                      Invite members
+                      Add participants
                     </Text>
                   </View>
                   {loading2 ? (
@@ -234,19 +244,14 @@ export default function InviteStashMembers({
                           // fontSize: 18,
                         }}
                       >
-                        Send
+                        Add
                       </Text>
                     </TouchableOpacity>
                   )}
                 </View>
 
                 <Text style={{ color: "white", marginTop: 20 }}>
-                  We'll email the invitation link to their registered email
-                  address. Ask them to check their{" "}
-                  <Text style={{ fontWeight: "bold", color: orange }}>
-                    inbox or spam
-                  </Text>{" "}
-                  folder.
+                  Add participant from stash members.
                 </Text>
                 <View
                   style={{
@@ -348,17 +353,11 @@ export default function InviteStashMembers({
                       // paddingTop: ,
                     }}
                   >
-                    {searchTerm === "" ? (
-                      <Text
-                        className="text-center"
-                        style={{ fontSize: 10, marginTop: 10, color: "white" }}
-                      >
-                        Try searching for people by their full name or username.
-                      </Text>
-                    ) : filteredUsers?.length > 0 ? (
+                    {filteredUsers?.length > 0 ? (
                       filteredUsers.map((item, index) => {
                         const isSelected = selectedMembers.some(
-                          (selected) => selected.username === item?.username
+                          (selected) =>
+                            selected.username === item?.user?.username
                         );
                         return (
                           <View
@@ -374,12 +373,12 @@ export default function InviteStashMembers({
                               }}
                               onPress={() => {
                                 Keyboard.dismiss(); // Dismiss the keyboard
-                                handleSelectMember(item); // Execute the selection function
+                                handleSelectMember(item?.user); // Execute the selection function
                               }}
                             >
                               <View>
                                 <Image
-                                  source={{ uri: item?.image }}
+                                  source={{ uri: item?.user?.image }}
                                   style={{
                                     borderRadius: 500,
                                     width: 40,
@@ -389,10 +388,10 @@ export default function InviteStashMembers({
                               </View>
                               <View>
                                 <Text style={{ color: "white" }}>
-                                  {item?.firstname} {item?.lastname}
+                                  {item?.user?.firstname} {item?.user?.lastname}
                                 </Text>
                                 <Text style={{ color: "grey" }}>
-                                  {item?.username}
+                                  {item?.user?.username}
                                 </Text>
                               </View>
                               {isSelected && (
@@ -409,7 +408,7 @@ export default function InviteStashMembers({
                         className="text-center"
                         style={{ fontSize: 10, color: "white" }}
                       >
-                        No users found matching your search.
+                        No participants found matching your search.
                       </Text>
                     )}
                   </ScrollView>
@@ -432,7 +431,7 @@ export default function InviteStashMembers({
               handleClosePress();
               setSelectedMembers([]);
               setSearchQuery("");
-              setUsers([]);
+              setParticipants([]);
               //   setIsOpen(false);
 
               setModalVisible(false);

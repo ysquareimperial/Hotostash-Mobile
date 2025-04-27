@@ -15,6 +15,7 @@ export default function CustomBottomSheet({
   handleChangeDescription,
   loading,
   isOpen,
+  bottomSheetTitle
 }) {
   return (
     <>
@@ -46,7 +47,7 @@ export default function CustomBottomSheet({
                       marginTop: 4,
                     }}
                   >
-                    Create stash
+                   {bottomSheetTitle}
                   </Text>
                 </View>
                 {loading ? (

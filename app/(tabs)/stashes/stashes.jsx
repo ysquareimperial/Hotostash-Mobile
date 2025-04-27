@@ -232,7 +232,12 @@ const Stashes = () => {
     >
       <View
         className="px-4"
-        style={{ backgroundColor: "", flex: 1, marginVertical: 0, marginTop:10 }}
+        style={{
+          backgroundColor: "",
+          flex: 1,
+          marginVertical: 0,
+          marginTop: 10,
+        }}
       >
         <View
           style={{
@@ -265,7 +270,9 @@ const Stashes = () => {
           contentContainerStyle={{ paddingBottom: 10 }}
         />
 
+        {/* STASH BOTTOM SHEET */}
         <CustomBottomSheet
+        bottomSheetTitle={'Create stash'}
           sheetRef={sheetRef}
           snapPoints={snapPoints}
           handleSheetChange={handleSheetChange}
@@ -275,7 +282,7 @@ const Stashes = () => {
           loading={loading2}
           isOpen={isOpen}
           handleChangeTitle={(text) => setForm({ ...form, title: text })}
-          handleChangeDescription={(text) =>
+          handleChangeDeiption={(text) =>
             setForm({ ...form, description: text })
           }
         />

@@ -4,7 +4,7 @@ import { grey2 } from "./colors";
 
 // const { height } = Dimensions.get("window");
 
-const SkeletonForEvents = () => {
+const SkeletonForParticipants = () => {
   const shimmerAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const SkeletonForEvents = () => {
     outputRange: [-200, 200], // Adjust for shimmer's movement width
   });
 
-  const placeholders = new Array(2).fill(null); // Create 8 skeleton placeholders
+  const placeholders = new Array(7).fill(null); // Create 8 skeleton placeholders
 
   return (
     <View style={styles.container}>
@@ -41,23 +41,15 @@ const SkeletonForEvents = () => {
 
           {/* Content Skeleton */}
           <View style={styles.content}>
+            <View style={styles.line}>
+              <Animated.View
+                style={[
+                  styles.shimmerEffect,
+                  { transform: [{ translateX: shimmerTranslate }] },
+                ]}
+              />
+            </View>
             <View style={[styles.line, styles.shortLine]}>
-              <Animated.View
-                style={[
-                  styles.shimmerEffect,
-                  { transform: [{ translateX: shimmerTranslate }] },
-                ]}
-              />
-            </View>
-            <View style={styles.line}>
-              <Animated.View
-                style={[
-                  styles.shimmerEffect,
-                  { transform: [{ translateX: shimmerTranslate }] },
-                ]}
-              />
-            </View>
-            <View style={styles.line}>
               <Animated.View
                 style={[
                   styles.shimmerEffect,
@@ -79,7 +71,7 @@ const styles = StyleSheet.create({
     // height: height, // Full height of the device
     backgroundColor: "#000000", // grey2
     // paddingHorizontal: 16,
-    paddingTop: 10,
+    // paddingTop: 10,
   },
   placeholder: {
     flexDirection: "row",
@@ -105,9 +97,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     overflow: "hidden",
     position: "relative",
+    width: "60%",
   },
   shortLine: {
-    width: "60%",
+    width: "40%",
   },
   shimmerEffect: {
     ...StyleSheet.absoluteFillObject,
@@ -116,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SkeletonForEvents;
+export default SkeletonForParticipants;

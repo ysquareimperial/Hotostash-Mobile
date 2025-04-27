@@ -6,7 +6,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native-gesture-handler";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-export default function ManageMember({
+export default function ManageParticipant({
   sheetRef,
   snapPoints,
   handleSheetChange,
@@ -94,7 +94,64 @@ export default function ManageMember({
                             // marginTop: 4,
                           }}
                         >
-                          Make stash admin
+                          Make event organizer
+                        </Text>
+                      </View>
+                      {loading1 ? (
+                        <ActivityIndicator size={30} color="white" />
+                      ) : (
+                        <View
+                          // onPress={() => handleSnapPress(0)}
+                          style={{
+                            backgroundColor: grey1,
+                            padding: 5,
+                            borderRadius: 50,
+                          }}
+                        >
+                          {/* <AntDesign name="delete" size={20} color={"white"} /> */}
+                          <MaterialIcons
+                            name="admin-panel-settings"
+                            size={20}
+                            color={"white"}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleSubmit()}
+                disabled={loading1}
+              >
+                <View
+                  style={{
+                    backgroundColor: grey1,
+                    marginTop: 10,
+                    padding: 10,
+                    borderRadius: 10,
+                  }}
+                >
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        //   marginTop: 10,
+                      }}
+                    >
+                      <View>
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            // marginTop: 4,
+                          }}
+                        >
+                          Make photo uploader
                         </Text>
                       </View>
                       {loading1 ? (
@@ -152,7 +209,7 @@ export default function ManageMember({
                             // marginTop: 4,
                           }}
                         >
-                          Remove from stash
+                          Remove
                         </Text>
                       </View>
                       {loading2 ? (

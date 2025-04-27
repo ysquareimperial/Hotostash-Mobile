@@ -19,6 +19,13 @@ const StackLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="viewEvent"
+        options={{
+          title: "viewEvent",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

@@ -5,6 +5,7 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
+  Keyboard,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,7 +20,7 @@ import { useUser } from "../../../context/UserContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import AddEventParticipants from "./addEventParticipants";
 
-const EventParticipants = ({ id }) => {
+const EventParticipants = ({ eventId, stashId }) => {
   const { user } = useUser();
   const [authToken, setAuthToken] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null); // To track selected user ID
@@ -28,6 +29,7 @@ const EventParticipants = ({ id }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [tappedParticipant, setTappedParticipant] = useState(null);
 
   //BOTTOM SHEET PROPS 2
   const [isOpen2, setIsOpen2] = useState(false);
@@ -91,8 +93,8 @@ const EventParticipants = ({ id }) => {
 
     Keyboard.dismiss();
     sheetRef3.current?.close();
-    setIsOpen(false); // Hide the bottom sheet
-    setLoading3(false);
+    // setIsOpen(false); // Hide the bottom sheet
+    // setLoading3(false);
     // setForm((prevForm) => ({
     //   ...prevForm,
     //   title: "",
@@ -101,7 +103,7 @@ const EventParticipants = ({ id }) => {
   }, []);
   //END OF BOTTOM SHEET PROPS
 
-  // Fetching token
+  // FETCHING TOKEN
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -116,17 +118,19 @@ const EventParticipants = ({ id }) => {
         console.error("Error retrieving token:", error);
       }
     };
+    console.log(eventId);
+    console.log(stashId);
 
     fetchToken();
   }, []);
 
-  //f e t c h i n g  p a r t i c i p a n t s
+  //FETCHING EVENT PARTICIPANTS
   const fetchEventParticipants = async () => {
     if (!authToken) return;
     setLoading(true);
-    const sentt = `${api}events/${id}/participants`;
+    const sentt = `${api}events/${eventId}/participants`;
     try {
-      const response = await axios.get(`${api}events/${165}/participants`, {
+      const response = await axios.get(`${api}events/${eventId}/participants`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -134,6 +138,9 @@ const EventParticipants = ({ id }) => {
 
       console.log("from view eventtttttttttttttttttt");
       setEventParticipants(response?.data);
+      console.log(
+        "participant ouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuut"
+      );
       console.log(response?.data);
       setLoading(false);
       console.log(sentt);
@@ -155,6 +162,27 @@ const EventParticipants = ({ id }) => {
     setRefreshing(true);
     fetchEventParticipants().finally(() => setRefreshing(false));
   };
+
+  const removeParticipant = async () => {
+    if (!authToken) return;
+    setLoading(true);
+    try {
+      const response = await axios.delete(
+        `${api}events/${eventId}/participants/${selectedMemberToRemoveId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      console.log(response?.data);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
   return (
     <View
       className="px-4"
@@ -305,9 +333,10 @@ const EventParticipants = ({ id }) => {
                             name="ellipsis-vertical"
                             size={20}
                             color="grey"
-                            onPress={() =>
-                              handleManageParticipant(item?.user_id)
-                            }
+                            onPress={() => {
+                              handleManageParticipant(item?.user_id);
+                              setTappedParticipant(item?.user_id);
+                            }}
                           />
                         ) : null
                       ) : (
@@ -319,9 +348,10 @@ const EventParticipants = ({ id }) => {
                             name="ellipsis-vertical"
                             size={20}
                             color="grey"
-                            onPress={() =>
-                              handleManageParticipant(item.user_id)
-                            }
+                            onPress={() => {
+                              handleManageParticipant(item.user_id);
+                              setTappedParticipant(item?.user_id);
+                            }}
                           />
                         )
                       )}
@@ -354,10 +384,16 @@ const EventParticipants = ({ id }) => {
         handleSheetChange={handleSheetChange3}
         handleClosePress={handleClosePress3}
         isOpen={isOpen3}
-        // enablePanDownToClose={loading5 ? false : true}
         // handleSubmit={inviteStashMembersFunction}
         handleSnapPress={handleSnapPress3}
-        // stashId={stash?.id}
+        stashId={stashId}
+        eventId={eventId}
+        updateParticipants={(newParticipants) => {
+          setEventParticipants((prev) => ({
+            ...prev,
+            participants: [...(prev?.participants || []), ...newParticipants],
+          }));
+        }}
       />
     </View>
   );

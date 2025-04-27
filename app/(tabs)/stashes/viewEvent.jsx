@@ -23,7 +23,8 @@ import EventPhotos from "../../../components/EventPhotos";
 export default function ViewEvent() {
   // Fetching token
   const [authToken, setAuthToken] = useState(null);
-  const { id } = useLocalSearchParams();
+  const { eventId } = useLocalSearchParams();
+  const { stashId } = useLocalSearchParams();
   const { name } = useLocalSearchParams();
   const { image } = useLocalSearchParams();
   const { description } = useLocalSearchParams();
@@ -31,7 +32,7 @@ export default function ViewEvent() {
   const { location } = useLocalSearchParams();
   const { date } = useLocalSearchParams();
   useEffect(() => {
-    console.log("Event ID in ViewEvent:", id); // Add this to debug
+    console.log("Event ID in ViewEvent:", eventId); // Add this to debug
     const fetchToken = async () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
@@ -52,9 +53,8 @@ export default function ViewEvent() {
   return (
     <SafeAreaView
       edges={["left", "right"]}
-      style={{ backgroundColor: "#000000", flex:1 }}
+      style={{ backgroundColor: "#000000", flex: 1 }}
       className="h-full"
-      
     >
       {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
       <View
@@ -116,8 +116,8 @@ export default function ViewEvent() {
           </View>
         </View>
       </View>
-      <EventTabs eventId={id} />
-      
+      <EventTabs eventId={eventId} stashId={stashId} />
+
       {/* <EventPhotos eventId={id}/> */}
       {/* </ScrollView> */}
     </SafeAreaView>

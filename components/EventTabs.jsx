@@ -4,7 +4,7 @@ import { grey2, orange } from "./colors";
 import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
 
-export default function EventTabs({ eventId }) {
+export default function EventTabs({ eventId, stashId }) {
   const [activeItem, setActiveItem] = useState("photos");
 
   const handleTabItemClick = (itemName) => {
@@ -54,7 +54,7 @@ export default function EventTabs({ eventId }) {
         )}
         {activeItem === "participants" && (
           <View>
-            <EventParticipants eventId={eventId} />
+            <EventParticipants eventId={eventId} stashId={stashId} />
           </View>
         )}
         {activeItem === "contribution" && (

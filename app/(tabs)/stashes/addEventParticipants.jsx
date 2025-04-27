@@ -26,6 +26,8 @@ export default function AddEventParticipants({
   isOpen,
   // enablePanDownToClose,
   stashId,
+  eventId,
+  updateParticipants,
 }) {
   const { user } = useUser();
   const [participants, setParticipants] = useState([]);
@@ -61,7 +63,8 @@ export default function AddEventParticipants({
 
     fetchToken();
   }, []);
-  // Fetch users based on the search query
+
+  //FETCH STASH MEMBERS
   const fetchStashMembers = () => {
     setIsLoading(true);
     // console.log("clickedddddddddddddddddddd");
@@ -69,7 +72,7 @@ export default function AddEventParticipants({
     // if (authToken && query.trim() !== "") {
     // Only fetch if query is not empty
     axios
-      .get(`${api}albums/${26}/members/search`, {
+      .get(`${api}albums/${stashId}/members/search`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -120,16 +123,15 @@ export default function AddEventParticipants({
   // Handle the selection or deselection of a member
   const handleSelectMember = (member) => {
     // console.log("presedddd");
-
     const isSelected = selectedMembers.some(
-      (selected) => selected.username === member.username
+      (selected) => selected.user.username === member.user.username
     );
 
     if (isSelected) {
       // Deselect the member
       setSelectedMembers(
         selectedMembers.filter(
-          (selected) => selected.username !== member.username
+          (selected) => selected.user.username !== member.user.username
         )
       );
     } else {
@@ -140,20 +142,18 @@ export default function AddEventParticipants({
 
   // Convert the array of integers to a comma-separated string (no brackets)
   const membersDataToSubmit = selectedMembers.map((user) => ({
-    album_id: stashId,
-    user_id: user.id,
+    event_id: eventId,
+    user_id: user?.user_id,
   }));
 
   // ADDING MEMBERS FXN
-  const inviteStashMembersFunction = () => {
-    // console.log("damnnnnnnnn");
-    // console.log(membersDataToSubmit);
-
+  const addParticipants = () => {
+    console.log(selectedMembers);
     setLoading2(true);
     axios
       .post(
-        `${api}albums/${stashId}/invite`,
-        { members: membersDataToSubmit },
+        `${api}events/${eventId}/participants`,
+        { participants: membersDataToSubmit },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -162,13 +162,14 @@ export default function AddEventParticipants({
       )
       .then((response) => {
         setLoading2(false);
-        if (response?.status === 200) {
-          setModalVisible(true);
-        }
+        console.log('API Response:', response?.data);
+        updateParticipants(response?.data?.participants); // << ONLY pass the participants array
+        handleClosePress();
       })
       .catch((err) => {
         console.log(err);
         setLoading2(false);
+        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         // setModalVisible2(true);
         // console.log(err?.response?.data?.detail);
         // setError(err?.response?.data?.detail);
@@ -199,7 +200,6 @@ export default function AddEventParticipants({
                       handleClosePress();
                       setSelectedMembers([]);
                       setSearchQuery("");
-                      setParticipants([]);
                     }}
                     disabled={loading2}
                   >
@@ -232,7 +232,7 @@ export default function AddEventParticipants({
                     <ActivityIndicator size="small" color="white" />
                   ) : (
                     <TouchableOpacity
-                      onPress={inviteStashMembersFunction}
+                      onPress={addParticipants}
                       disabled={selectedMembers.length === 0} // Disable the button if length is 0
                       // Optional: Reduce opacity when disabled
                     >
@@ -300,12 +300,11 @@ export default function AddEventParticipants({
                     {selectedMembers.map((member, index) => (
                       <TouchableOpacity
                         key={index}
-                        // style={{ marginBottom: 10 }}
                         onPress={() => handleSelectMember(member)}
                       >
                         <View style={{ alignItems: "center" }}>
                           <Image
-                            source={{ uri: member?.image }}
+                            source={{ uri: member?.user?.image }}
                             style={{
                               borderRadius: 500,
                               width: 40,
@@ -316,9 +315,9 @@ export default function AddEventParticipants({
                             className="m-0"
                             style={{ fontSize: 10, color: "white" }}
                           >
-                            {member?.firstname.length > 5
-                              ? `${member.firstname.slice(0, 6)}...` // Truncate and add ellipsis
-                              : member.firstname}
+                            {member?.user?.firstname?.length > 5
+                              ? `${member.user.firstname.slice(0, 6)}...`
+                              : member.user.firstname}
                           </Text>
                         </View>
                         <View
@@ -348,6 +347,7 @@ export default function AddEventParticipants({
                 ) : (
                   <ScrollView
                     style={{ backgroundColor: "" }}
+                    keyboardDismissMode="on-drag"
                     contentContainerStyle={{
                       paddingBottom: 200,
                       // paddingTop: ,
@@ -372,8 +372,8 @@ export default function AddEventParticipants({
                                 alignItems: "center",
                               }}
                               onPress={() => {
-                                Keyboard.dismiss(); // Dismiss the keyboard
-                                handleSelectMember(item?.user); // Execute the selection function
+                                Keyboard.dismiss();
+                                handleSelectMember(item);
                               }}
                             >
                               <View>
@@ -428,7 +428,7 @@ export default function AddEventParticipants({
               setModalVisible(false);
             }}
             handleOkPress={() => {
-              handleClosePress();
+              // handleClosePress();
               setSelectedMembers([]);
               setSearchQuery("");
               setParticipants([]);

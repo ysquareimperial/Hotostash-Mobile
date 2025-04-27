@@ -490,7 +490,7 @@ export default function ViewStash() {
                   key={index}
                   onPress={() =>
                     router.push(
-                      `/stashes/viewEvent?id=${item?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}`
+                      `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}`
                     )
                   }
                 >

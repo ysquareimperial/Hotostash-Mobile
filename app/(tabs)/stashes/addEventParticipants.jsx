@@ -162,17 +162,15 @@ export default function AddEventParticipants({
       )
       .then((response) => {
         setLoading2(false);
-        console.log('API Response:', response?.data);
+        console.log("API Response:", response?.data);
         updateParticipants(response?.data?.participants); // << ONLY pass the participants array
         handleClosePress();
+        setSelectedMembers([]);
+        setSearchQuery("");
       })
       .catch((err) => {
         console.log(err);
         setLoading2(false);
-        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        // setModalVisible2(true);
-        // console.log(err?.response?.data?.detail);
-        // setError(err?.response?.data?.detail);
       });
     // }
   };

@@ -21,7 +21,6 @@ export default function ManageParticipant({
   loading3,
   error,
   isOpen,
-  enablePanDownToClose,
 }) {
   return (
     <>

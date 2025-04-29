@@ -248,9 +248,6 @@ export default function AddEventParticipants({
                   )}
                 </View>
 
-                <Text style={{ color: "white", marginTop: 20 }}>
-                  Add participant from stash members.
-                </Text>
                 <View
                   style={{
                     flexDirection: "row",

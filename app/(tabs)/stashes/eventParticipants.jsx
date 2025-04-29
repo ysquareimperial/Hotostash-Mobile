@@ -22,6 +22,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import AddEventParticipants from "./addEventParticipants";
 import CustomModal from "../../../components/CustomModal";
+import { useRouter } from "expo-router";
 
 const EventParticipants = ({ eventId, stashId }) => {
   const { user } = useUser();
@@ -267,6 +268,13 @@ const EventParticipants = ({ eventId, stashId }) => {
     }
   };
 
+  const router = useRouter();
+
+  const handleLeave = async () => {
+    await AsyncStorage.setItem("goBackFlag", "true");
+    router.back();
+  };
+
   //LEAVE EVENT
   const leaveEvent = () => {
     setLoading4(true);
@@ -279,18 +287,8 @@ const EventParticipants = ({ eventId, stashId }) => {
       .then((response) => {
         console.log(response);
         console.log("from deleteeeee");
-
         setLoading4(false);
-        // if (response?.status === 200) {
-        //   if (!event?.album_id) {
-        // Redirect to '/stashes' if album_id is null, empty, or undefined
-        //   navigate("/stashes");
-        // } else {
-        // Redirect to the specific album view if album_id is valid
-        // navigate(`/view-album/?id=${event.album_id}`);
-        //   }
-        // }
-        // console.log(response);
+        handleLeave();
       })
       .catch((err) => {
         setLoading4(false);
@@ -350,6 +348,7 @@ const EventParticipants = ({ eventId, stashId }) => {
             ) : (
               ""
             )}
+
             {eventParticipants?.participants?.map((item, index) => (
               <View
                 style={{

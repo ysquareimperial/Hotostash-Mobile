@@ -9,6 +9,7 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useLocalSearchParams, router } from "expo-router";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,6 +35,7 @@ export default function ViewStash() {
   const { title } = useLocalSearchParams();
   const { image } = useLocalSearchParams();
   const { description } = useLocalSearchParams();
+  const { refresh } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [loading3, setLoading3] = useState(false);
@@ -249,30 +251,49 @@ export default function ViewStash() {
     fetchToken();
   }, []);
 
-  //f e t c h i n g  s t a s h
+  //FETCH STASH
+  const fetchStash = async () => {
+    try {
+      const response = await axios.get(`${api}albums/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setStash(response.data);
+      console.log("from view stashhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+      setStashEvents(response?.data?.events);
+      setStashMembers(response?.data?.members);
+      console.log(response?.data?.members);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!authToken) return;
     setLoading(true);
-    const fetchStash = async () => {
-      try {
-        const response = await axios.get(`${api}albums/${id}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setStash(response.data);
-        console.log("from view stashhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-        setStashEvents(response?.data?.events);
-        setStashMembers(response?.data?.members);
-        console.log(response?.data?.members);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
     fetchStash();
   }, [authToken]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkFlag = async () => {
+        const flag = await AsyncStorage.getItem("goBackFlag");
+        console.log(flag);
+        console.log("from flagggggggggggggggggggggg");
+
+        if (flag === "true") {
+          console.log("User came back from Screen B");
+          fetchStash();
+          await AsyncStorage.removeItem("goBackFlag");
+        }
+      };
+
+      checkFlag();
+    }, [])
+  );
 
   const handleCreatedEvent = (newItem) => {
     setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
@@ -430,7 +451,7 @@ export default function ViewStash() {
                 >
                   {title}
                 </Text>
-                {description.length === 0 ? (
+                {description?.length === 0 ? (
                   ""
                 ) : (
                   <Text

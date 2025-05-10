@@ -1,4 +1,10 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3 } from "./colors";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -15,12 +21,16 @@ export default function CustomBottomSheet({
   handleChangeDescription,
   loading,
   isOpen,
-  bottomSheetTitle
+  bottomSheetTitle,
 }) {
   return (
     <>
       {isOpen && (
         <BottomSheet
+          handleIndicatorStyle={{
+            backgroundColor: "white",
+          }}
+          backgroundStyle={{ backgroundColor: grey2 }}
           ref={sheetRef}
           snapPoints={snapPoints}
           enablePanDownToClose={!loading ? true : false}
@@ -31,7 +41,10 @@ export default function CustomBottomSheet({
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 {/* Left-aligned text */}
                 <Text
-                  onPress={handleClosePress}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    handleClosePress();
+                  }}
                   style={{ color: "white", fontWeight: "bold" }}
                 >
                   Cancel
@@ -47,7 +60,7 @@ export default function CustomBottomSheet({
                       marginTop: 4,
                     }}
                   >
-                   {bottomSheetTitle}
+                    {bottomSheetTitle}
                   </Text>
                 </View>
                 {loading ? (
@@ -91,7 +104,7 @@ export default function CustomBottomSheet({
                       borderRadius: 5,
                       color: "white",
                     }}
-                    maxLength={50}
+                    maxLength={45}
                     value={form.title}
                     onChangeText={handleChangeTitle}
                   />
@@ -119,7 +132,7 @@ export default function CustomBottomSheet({
                     }}
                     multiline
                     placeholder="(Optional)"
-                    maxLength={200}
+                    maxLength={40}
                     value={form.description}
                     onChangeText={handleChangeDescription}
                   />

@@ -23,6 +23,10 @@ export default function LeaveStash({
           snapPoints={snapPoints}
           enablePanDownToClose={!loading ? true : false}
           onChange={handleSheetChange}
+          handleIndicatorStyle={{
+            backgroundColor: "white",
+          }}
+          backgroundStyle={{ backgroundColor: grey2 }}
         >
           <View style={{ flex: 1, backgroundColor: grey2 }}>
             <BottomSheetView className="px-4">

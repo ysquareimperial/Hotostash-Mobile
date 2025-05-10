@@ -23,6 +23,7 @@ import EventPhotos from "../../../components/EventPhotos";
 export default function ViewEvent() {
   // Fetching token
   const [authToken, setAuthToken] = useState(null);
+  const [existingLink, setExistingLink] = useState(null);
   const { eventId } = useLocalSearchParams();
   const { stashId } = useLocalSearchParams();
   const { name } = useLocalSearchParams();
@@ -31,8 +32,9 @@ export default function ViewEvent() {
   const { time } = useLocalSearchParams();
   const { location } = useLocalSearchParams();
   const { date } = useLocalSearchParams();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    console.log("Event ID in ViewEvent:", eventId); // Add this to debug
     const fetchToken = async () => {
       try {
         const token = await AsyncStorage.getItem("authToken");
@@ -49,6 +51,28 @@ export default function ViewEvent() {
 
     fetchToken();
   }, []);
+
+  //Fetch Event
+  const fetchEvent = async () => {
+    try {
+      const response = await axios.get(`${api}events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setExistingLink(response?.data?.public_photo_link);
+      console.log("from view eventtttttttttttttttttttttttt");
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!authToken) return;
+    setLoading(true);
+    fetchEvent();
+  }, [authToken]);
 
   return (
     <SafeAreaView
@@ -116,7 +140,11 @@ export default function ViewEvent() {
           </View>
         </View>
       </View>
-      <EventTabs eventId={eventId} stashId={stashId} />
+      <EventTabs
+        eventId={eventId}
+        stashId={stashId}
+        existingLink={existingLink}
+      />
 
       {/* <EventPhotos eventId={id}/> */}
       {/* </ScrollView> */}

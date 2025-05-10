@@ -1,5 +1,13 @@
-import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../../../context/UserContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
@@ -50,25 +58,42 @@ const Stashes = () => {
   }, []);
 
   // Fetching stashes
+  const fetchStashes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${api}albums/`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setStashes(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (!authToken) return;
-    setLoading(true);
-    const fetchStashes = async () => {
-      try {
-        const response = await axios.get(`${api}albums/`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        setStashes(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
     fetchStashes();
   }, [authToken]);
+
+    //Refresh if user edited a stash
+    useFocusEffect(
+      useCallback(() => {
+        const checkFlag = async () => {
+          const flag = await AsyncStorage.getItem("stashEdited");
+          console.log(flag);
+          if (flag === "true") {
+            console.log("User came back from editing");
+            fetchStashes();
+            await AsyncStorage.removeItem("stashEdited");
+          }
+        };
+        checkFlag();
+      }, [])
+    );
+  
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
@@ -95,8 +120,15 @@ const Stashes = () => {
   //B o t t o m s h e e t
   const snapPoints = ["100%"];
   // callbacks
+  // const handleSheetChange = useCallback((index) => {
+  //   console.log("handleSheetChange", index);
+  // }, []);
   const handleSheetChange = useCallback((index) => {
     console.log("handleSheetChange", index);
+    if (index === -1) {
+      // Sheet has been closed (either by pan-down or programmatically)
+      Keyboard.dismiss();
+    }
   }, []);
 
   const handleSnapPress = useCallback(
@@ -121,7 +153,8 @@ const Stashes = () => {
     }));
   }, []);
 
-  const handleSubmit = () => {
+  //Create stash
+  const createStash = () => {
     setLoading2(true);
     axios
       .post(`${api}albums/`, form, {
@@ -224,6 +257,7 @@ const Stashes = () => {
   //   );
   // }
 
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -272,17 +306,17 @@ const Stashes = () => {
 
         {/* STASH BOTTOM SHEET */}
         <CustomBottomSheet
-        bottomSheetTitle={'Create stash'}
+          bottomSheetTitle={"Create stash"}
           sheetRef={sheetRef}
           snapPoints={snapPoints}
           handleSheetChange={handleSheetChange}
           handleClosePress={handleClosePress}
-          handleSubmit={handleSubmit}
+          handleSubmit={createStash}
           form={form}
           loading={loading2}
           isOpen={isOpen}
           handleChangeTitle={(text) => setForm({ ...form, title: text })}
-          handleChangeDeiption={(text) =>
+          handleChangeDescription={(text) =>
             setForm({ ...form, description: text })
           }
         />

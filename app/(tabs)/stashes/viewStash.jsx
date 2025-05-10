@@ -31,17 +31,27 @@ import CustomBottomSheet from "../../../components/CustomBottomSheet";
 
 export default function ViewStash() {
   const { user } = useUser();
-  const { id } = useLocalSearchParams();
-  const { title } = useLocalSearchParams();
-  const { image } = useLocalSearchParams();
-  const { description } = useLocalSearchParams();
+  // const { id } = useLocalSearchParams();
+  // const { title } = useLocalSearchParams();
+  // const { image } = useLocalSearchParams();
+  // const { description } = useLocalSearchParams();
+  // const { created_at } = useLocalSearchParams();
+
+  const params = useLocalSearchParams();
+  const [stashParams, setStashParams] = useState({
+    id: params.id,
+    title: params.title,
+    image: params.image,
+    description: params.description,
+    created_at: params.created_at,
+  });
+
   const { refresh } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [loading3, setLoading3] = useState(false);
   const [loading4, setLoading4] = useState(false);
   const [loading5, setLoading5] = useState(false);
-  const { created_at } = useLocalSearchParams();
   const [stash, setStash] = useState({});
   const [stashMembers, setStashMembers] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -54,8 +64,10 @@ export default function ViewStash() {
 
   //EDIT STASH FORM
   const [form, setForm] = useState({
-    title: title,
-    description: description,
+    title: stashParams.title,
+    description: stashParams.description,
+    image:
+      "https://res.cloudinary.com/dkwy56ghj/image/upload/v1725735308/xm8qfutvpnkhmqltthrd.png",
   });
 
   //BOTTOM SHEET PROPS
@@ -204,6 +216,10 @@ export default function ViewStash() {
 
   const handleSheetChange5 = useCallback((index) => {
     console.log("handleSheetChange", index);
+    if (index === -1) {
+      // Sheet has been closed (either by pan-down or programmatically)
+      Keyboard.dismiss();
+    }
   }, []);
 
   const handleSnapPress5 = useCallback(
@@ -277,14 +293,13 @@ export default function ViewStash() {
     fetchStash();
   }, [authToken]);
 
+  //Refresh if user left an event
   useFocusEffect(
     useCallback(() => {
       const checkFlag = async () => {
         const flag = await AsyncStorage.getItem("goBackFlag");
         console.log(flag);
-        console.log("from flagggggggggggggggggggggg");
-
-        if (flag === "true") {
+         if (flag === "true") {
           console.log("User came back from Screen B");
           fetchStash();
           await AsyncStorage.removeItem("goBackFlag");
@@ -294,6 +309,7 @@ export default function ViewStash() {
       checkFlag();
     }, [])
   );
+
 
   const handleCreatedEvent = (newItem) => {
     setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
@@ -325,9 +341,8 @@ export default function ViewStash() {
     }
   }, [authToken]);
 
-  //LEAVING STASH
+  //Leave stash
   const leaveStash = () => {
-    // console.log("delete album clicked");
     setLoading2(true);
     axios
       .delete(`${api}albums/${id}/leave`, {
@@ -343,15 +358,13 @@ export default function ViewStash() {
         console.log(response);
       })
       .catch((err) => {
-        console.log("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-        console.log(err);
         setLoading2(false);
-        // setModalVisible2(true);
         console.log(err)?.response?.data?.detail;
         setError(err?.response?.data?.detail);
       });
   };
 
+  //Make stash admin
   const makeStashAdmin = (user_id) => {
     setLoading3(true);
     axios
@@ -378,8 +391,8 @@ export default function ViewStash() {
       });
   };
 
+  //Remove stash member
   const removeStashMember = (user_id) => {
-    // if (accessToken) {
     setLoading4(true);
     axios
       .delete(`${api}albums/${stash?.id}/remove_member/${user_id}`, {
@@ -399,11 +412,36 @@ export default function ViewStash() {
         setLoading4(false);
         setError(err?.response?.data?.detail);
       });
-    // }
+  };
+
+  const stashEdited = async () => {
+    await AsyncStorage.setItem("stashEdited", "true");
   };
 
   const editStash = () => {
-    console.log("dd");
+    console.log(form);
+    setLoading5(true);
+    axios
+      .put(`${api}albums/${stashParams?.id}`, form, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+      .then((response) => {
+        setLoading5(false);
+        if (response?.status === 200) {
+          handleClosePress5();
+          setStashParams(response.data); // update state with the edited data
+          stashEdited();
+        }
+        console.log(response?.data);
+        console.log(response?.status);
+      })
+      .catch((e) => {
+        setLoading5(false);
+        // handleModal();
+        console.log(e.detail);
+      });
   };
 
   // if (loading) {
@@ -441,7 +479,7 @@ export default function ViewStash() {
             }}
           >
             <Image
-              source={{ uri: image }}
+              source={{ uri: stashParams.image }}
               style={{ borderRadius: 500, width: 50, height: 50 }}
             />
             <View style={{ flex: 1 }}>
@@ -449,9 +487,9 @@ export default function ViewStash() {
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                 >
-                  {title}
+                  {stashParams.title}
                 </Text>
-                {description?.length === 0 ? (
+                {stashParams.description?.length === 0 ? (
                   ""
                 ) : (
                   <Text
@@ -461,13 +499,13 @@ export default function ViewStash() {
                       // width: 200, // Constrained width for truncation
                     }}
                   >
-                    {description}
+                    {stashParams.description}
                   </Text>
                 )}
                 <Text style={{ color: "grey", fontSize: 14 }}>
                   Created{" "}
-                  {created_at
-                    ? format(parseISO(created_at), "MMM, yyyy")
+                  {stashParams.created_at
+                    ? format(parseISO(stashParams.created_at), "MMM, yyyy")
                     : "N/A"}
                 </Text>
               </TouchableOpacity>
@@ -816,7 +854,7 @@ export default function ViewStash() {
         </View>
       </ScrollView>
       <LeaveStash
-        stashName={title}
+        stashName={stashParams.title}
         sheetRef={sheetRef}
         snapPoints={snapPoints}
         handleSheetChange={handleSheetChange}
@@ -864,7 +902,7 @@ export default function ViewStash() {
         sendEventToStashPage={handleCreatedEvent}
       />
 
-      {/* STASH BOTTOM SHEET */}
+      {/* Edit stash bottomsheet */}
       <CustomBottomSheet
         bottomSheetTitle={"Edit stash"}
         sheetRef={sheetRef5}

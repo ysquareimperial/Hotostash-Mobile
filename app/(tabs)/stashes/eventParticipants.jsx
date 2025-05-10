@@ -23,8 +23,10 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import AddEventParticipants from "./addEventParticipants";
 import CustomModal from "../../../components/CustomModal";
 import { useRouter } from "expo-router";
+import CustomButton2 from "../../../components/CustomButton2";
+import GenerateEventLink from "../../../components/GenerateEventLink";
 
-const EventParticipants = ({ eventId, stashId }) => {
+const EventParticipants = ({ eventId, stashId, existingLink }) => {
   const { user } = useUser();
   const [authToken, setAuthToken] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null); // To track selected user ID
@@ -36,6 +38,7 @@ const EventParticipants = ({ eventId, stashId }) => {
   const [loading4, setLoading4] = useState(false);
   const [loading3, setLoading3] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
   const [error, setError] = useState("");
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [tappedParticipantId, setTappedParticipantId] = useState(null);
@@ -333,7 +336,7 @@ const EventParticipants = ({ eventId, stashId }) => {
                     <AntDesign name="adduser" size={25} color="white" />
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalVisible2(true)}>
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -580,6 +583,33 @@ const EventParticipants = ({ eventId, stashId }) => {
         modalVisible={modalVisible} // Pass modalVisible as a prop
         setModalVisible={setModalVisible} // Pass the setter function to update the state
       />
+
+      <GenerateEventLink
+        modalTitle={"Invite to event via link"}
+        modalText={"Anyone with this link will be able to join this event"}
+        eventParticipants={eventParticipants}
+        user={user}
+        existingLink={existingLink}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible2(false);
+        }}
+        // loading={loading4}
+        // handleOkPress={leaveEvent}
+        // handleOkPress={() => {
+        //   handleClosePress();
+        //   setSelectedMembers([]);
+        //   setSearchQuery("");
+        //   setUsers([]);
+
+        //   setModalVisible2(false);
+        // }}
+        eventId={eventId}
+        handleCancelPress={() => setModalVisible2(false)}
+        cancelText={"Close"}
+        modalVisible={modalVisible2} // Pass modalVisible as a prop
+        setModalVisible2={setModalVisible2} // Pass the setter function to update the state
+      ></GenerateEventLink>
     </View>
   );
 };

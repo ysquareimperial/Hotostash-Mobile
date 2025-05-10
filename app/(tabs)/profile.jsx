@@ -57,9 +57,8 @@ const Profile = () => {
   }, []);
 
   const handleSnapPress = useCallback(
-    
     (index) => {
-      console.log('snaped');
+      console.log("snaped");
       if (!isOpen) {
         setIsOpen(true); // Show the bottom sheet
       }
@@ -325,6 +324,10 @@ const Profile = () => {
               snapPoints={snapPoints}
               enablePanDownToClose={true}
               onChange={handleSheetChange}
+              handleIndicatorStyle={{
+                backgroundColor: "white",
+              }}
+              backgroundStyle={{ backgroundColor: grey2 }}
             >
               <View style={{ flex: 1, backgroundColor: grey2 }}>
                 <BottomSheetView className="px-4">

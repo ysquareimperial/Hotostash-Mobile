@@ -17,6 +17,7 @@ const CustomModal = ({
   onRequestClose,
   modalVisible, // Receive modalVisible as a prop
   setModalVisible, // Receive setModalVisible to update state in the parent
+  children,
   ...props
 }) => {
   return (
@@ -33,6 +34,7 @@ const CustomModal = ({
             <Text style={styles.modalTitle}>{modalTitle}</Text>
             <Text style={styles.modalText}>{modalText}</Text>
             <Text style={styles.modalExtraText}>{modalExtraText}</Text>
+            {children}
             <View
               style={{
                 flexDirection: "row",

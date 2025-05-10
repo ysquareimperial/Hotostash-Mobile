@@ -174,6 +174,10 @@ export default function CreateEvent({
           snapPoints={snapPoints}
           enablePanDownToClose={loading2 ? false : true}
           onChange={handleSheetChange}
+          handleIndicatorStyle={{
+            backgroundColor: "white",
+          }}
+          backgroundStyle={{ backgroundColor: grey2 }}
         >
           <ScrollView
             style={{ flex: 1 }}

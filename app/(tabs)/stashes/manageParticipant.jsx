@@ -30,6 +30,10 @@ export default function ManageParticipant({
           snapPoints={snapPoints}
           enablePanDownToClose={!(loading1 || loading2 || loading3)}
           onChange={handleSheetChange}
+          handleIndicatorStyle={{
+            backgroundColor: "white",
+          }}
+          backgroundStyle={{ backgroundColor: grey2 }}
         >
           <View style={{ flex: 1, backgroundColor: grey2 }}>
             <BottomSheetView className="px-4">

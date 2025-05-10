@@ -22,6 +22,10 @@ export default function BottomDrawer({
       snapPoints={snapPoints}
       enablePanDownToClose={enablePanDownToClose}
       onChange={handleSheetChange}
+      handleIndicatorStyle={{
+        backgroundColor: "white",
+      }}
+      backgroundStyle={{ backgroundColor: grey2 }}
     >
       <View style={{ flex: 1, backgroundColor: grey2 }}>
         <BottomSheetView className="px-4">
@@ -42,7 +46,7 @@ export default function BottomDrawer({
                   fontWeight: "bold",
                   textAlign: "center",
                   marginTop: 4,
-                  fontSize:18
+                  fontSize: 18,
                 }}
               >
                 {bottomSheetTitle}
@@ -53,7 +57,7 @@ export default function BottomDrawer({
             ) : (
               <Text
                 onPress={handleSubmit}
-                style={{ color: "white", fontWeight: "bold", fontSize:18 }}
+                style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
               >
                 {saveText}
               </Text>

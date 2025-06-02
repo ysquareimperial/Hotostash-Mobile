@@ -3,14 +3,16 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { grey2, orange } from "./colors";
 import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
+import Contribution from "../app/contribution/contribution";
 
-export default function EventTabs({ eventId, stashId, existingLink }) {
+export default function EventTabs({ eventId, stashId, existingLink, event }) {
   const [activeItem, setActiveItem] = useState("photos");
 
   const handleTabItemClick = (itemName) => {
     setActiveItem(itemName);
   };
   console.log("Event ID in EventTabs:", eventId); // Add this to debug
+  console.log("Stash ID in EventTabs:", stashId); // Add this to debug
 
   return (
     <View>
@@ -58,13 +60,12 @@ export default function EventTabs({ eventId, stashId, existingLink }) {
               eventId={eventId}
               stashId={stashId}
               existingLink={existingLink}
-            />  
+            />
           </View>
         )}
         {activeItem === "contribution" && (
           <View>
-            <Text style={{ color: "white" }}>Contribution Details</Text>
-            {/* Add a payment or contribution details component */}
+            <Contribution eventId={eventId} stashId={stashId} event={event}/>
           </View>
         )}
         {activeItem === "ivcard" && (

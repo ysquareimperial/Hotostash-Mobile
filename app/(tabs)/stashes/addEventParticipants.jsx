@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../../../helpers/helpers";
 import axios from "axios";
@@ -37,7 +40,6 @@ export default function AddEventParticipants({
   const [remMsg, setRemMsg] = useState({ albumName: "", memberName: "" });
   const [selectedUserToRemoveId, setSelectedUserToRemoveId] = useState(null);
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading2, setLoading2] = useState(false);
@@ -183,6 +185,14 @@ export default function AddEventParticipants({
           snapPoints={snapPoints}
           enablePanDownToClose={loading2 ? false : true}
           onChange={handleSheetChange}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading2 ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}
@@ -416,28 +426,6 @@ export default function AddEventParticipants({
               </BottomSheetView>
             </View>
           </TouchableWithoutFeedback>
-          <CustomModal
-            modalTitle={"Invitation sent"}
-            modalText={
-              "Users invited successfully. Invitation links have been sent to their registered emails."
-            }
-            okText={"OK"}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              setModalVisible(false);
-            }}
-            handleOkPress={() => {
-              // handleClosePress();
-              setSelectedMembers([]);
-              setSearchQuery("");
-              setParticipants([]);
-              //   setIsOpen(false);
-
-              setModalVisible(false);
-            }}
-            modalVisible={modalVisible} // Pass modalVisible as a prop
-            setModalVisible={setModalVisible} // Pass the setter function to update the state
-          />
         </BottomSheet>
       )}
     </>

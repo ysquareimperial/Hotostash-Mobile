@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import logo from "../assets/Hotostash PNG/77.png";
+import logo from "../assets/Hotostash_PNG/77.png";
 import { grey2 } from "./colors";
 import { StatusBar } from "expo-status-bar";
 import { Link, router } from "expo-router";

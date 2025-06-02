@@ -18,7 +18,7 @@ import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
 import { Link, router } from "expo-router";
 import CustomNextButton from "../../components/CustomNextButton";
-import logo from "../../assets/Hotostash PNG/77.png";
+import logo from "../../assets/Hotostash_PNG/77.png";
 import CustomPrevButton from "../../components/CustomPrevButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { api } from "../../helpers/helpers";

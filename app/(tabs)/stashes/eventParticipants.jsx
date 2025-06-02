@@ -274,13 +274,16 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
   const router = useRouter();
 
   const handleLeave = async () => {
-    await AsyncStorage.setItem("goBackFlag", "true");
+    console.log("from left eventttttttttttttt");
+    await AsyncStorage.setItem("leftEvent", "true");
     router.back();
   };
 
   //LEAVE EVENT
   const leaveEvent = () => {
     setLoading4(true);
+    console.log("Leaving event", eventId, authToken);
+
     axios
       .delete(`${api}events/${eventId}/leave`, {
         headers: {
@@ -295,7 +298,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
       })
       .catch((err) => {
         setLoading4(false);
-        console.log(err);
+        console.log("DELETE failed:", err.response?.data || err.message || err);
       });
   };
 

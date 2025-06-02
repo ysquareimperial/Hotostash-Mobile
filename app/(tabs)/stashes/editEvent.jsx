@@ -12,10 +12,7 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
-import BottomSheet, {
-  BottomSheetView,
-  BottomSheetBackdrop,
-} from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../../../helpers/helpers";
 import axios from "axios";
@@ -25,7 +22,7 @@ import CustomModal from "../../../components/CustomModal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ToggleSwitch from "../../../components/ToggleSwitch";
 
-export default function CreateEvent({
+export default function EditEvent({
   sheetRef,
   snapPoints,
   handleSheetChange,
@@ -41,6 +38,7 @@ export default function CreateEvent({
   const [album, setAlbum] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const [members, setMembers] = useState([]);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -180,14 +178,6 @@ export default function CreateEvent({
             backgroundColor: "white",
           }}
           backgroundStyle={{ backgroundColor: grey2 }}
-          backdropComponent={(props) => (
-            <BottomSheetBackdrop
-              {...props}
-              appearsOnIndex={0}
-              disappearsOnIndex={-1}
-              pressBehavior={loading2 ? "none" : "close"} // closes sheet when background is pressed
-            />
-          )}
         >
           <ScrollView
             style={{ flex: 1 }}
@@ -232,7 +222,7 @@ export default function CreateEvent({
                           // fontSize: 18,
                         }}
                       >
-                        New event
+                        Edit event
                       </Text>
                     </View>
                     {loading2 ? (
@@ -256,7 +246,7 @@ export default function CreateEvent({
                             // fontSize: 18,
                           }}
                         >
-                          Create
+                          Save
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -379,14 +369,6 @@ export default function CreateEvent({
                         themeVariant="dark"
                       />
                     </View>
-                    {/* <Text>
-                    Selected Time:{" "}
-                    {form.time.toLocaleTimeString("en-US", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </Text> */}
                     <View
                       style={{
                         flexDirection: "row",
@@ -412,53 +394,7 @@ export default function CreateEvent({
                         }}
                       />
                     </View>
-
-                    <View
-                      style={{
-                        // flexDirection: "row",
-                        borderBottomWidth: 1,
-                        borderColor: grey1,
-                        paddingTop: 14,
-                        paddingBottom: 14,
-                        // alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ fontWeight: "bold", color: "white" }}>
-                        Enable contributions
-                      </Text>
-                      <Text style={{ marginTop: 5, color: grey3 }}>
-                        Enabling contributions allows event participants to
-                        contribute money to your event.
-                      </Text>
-
-                      <View style={{ marginTop: 10 }}>
-                        <ToggleSwitch />
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        // flexDirection: "row",
-                        borderBottomWidth: 1,
-                        borderColor: grey1,
-                        paddingTop: 14,
-                        paddingBottom: 14,
-                        // alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ fontWeight: "bold", color: "white" }}>
-                        Add all the stash members to this event
-                      </Text>
-                      <Text style={{ marginTop: 5, color: grey3 }}>
-                        Enabling this will automatically add all stash members
-                        to this event.
-                      </Text>
-
-                      <View style={{ marginTop: 10 }}>
-                        <ToggleSwitch />
-                      </View>
-                    </View>
                   </View>
-
                   <Text style={{ color: "#DC3545", marginTop: 10 }}>
                     {error}
                   </Text>

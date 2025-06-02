@@ -1,7 +1,10 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React from "react";
 import { grey1, grey2 } from "../../../components/colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 export default function LeaveStash({
@@ -23,6 +26,14 @@ export default function LeaveStash({
           snapPoints={snapPoints}
           enablePanDownToClose={!loading ? true : false}
           onChange={handleSheetChange}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}
@@ -49,7 +60,7 @@ export default function LeaveStash({
                     Leave "{stashName}"?
                   </Text>
                 </View>
-                <TouchableOpacity onPress={handleClosePress}>
+                <TouchableOpacity onPress={handleClosePress} disabled={loading}>
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -71,34 +82,33 @@ export default function LeaveStash({
                 Leaving this stash means you won't be able to access any events
                 or pictures in the stash.
               </Text>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: grey1,
-                  marginTop: 10,
-                  padding: 10,
-                  borderRadius: 10,
-                }}
-              >
-                <View>
-                  <Text
-                    style={{
-                      color: "#DC3545",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      // marginTop: 4,
-                    }}
-                  >
-                    Leave stash
-                  </Text>
-                </View>
-                {loading ? (
-                  <ActivityIndicator size={30} color="#DC3545" />
-                ) : (
-                  <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+              <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    backgroundColor: grey1,
+                    marginTop: 10,
+                    padding: 10,
+                    borderRadius: 10,
+                  }}
+                >
+                  <View>
+                    <Text
+                      style={{
+                        color: "#DC3545",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        // marginTop: 4,
+                      }}
+                    >
+                      Leave stash
+                    </Text>
+                  </View>
+                  {loading ? (
+                    <ActivityIndicator size={30} color="#DC3545" />
+                  ) : (
                     <View
                       style={{
                         backgroundColor: grey1,
@@ -108,9 +118,9 @@ export default function LeaveStash({
                     >
                       <AntDesign name="logout" size={20} color={"#DC3545"} />
                     </View>
-                  </TouchableOpacity>
-                )}
-              </View>
+                  )}
+                </View>
+              </TouchableOpacity>
               <Text style={{ color: "#DC3545", marginTop: 10 }}>{error}</Text>
             </BottomSheetView>
           </View>

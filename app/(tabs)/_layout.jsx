@@ -109,7 +109,7 @@ const TabsLayout = () => {
           }}
         />
 
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="viewStash"
           options={{
             href: null,
@@ -121,6 +121,12 @@ const TabsLayout = () => {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="withdrawalStatus"
+          options={{
+            href: null,
+          }}
+        /> */}
       </Tabs>
     </>
   );

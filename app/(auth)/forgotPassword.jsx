@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import logo from "../../assets/Hotostash PNG/77.png";
+import logo from "../../assets/Hotostash_PNG/77.png";
 import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import { StatusBar } from "expo-status-bar";

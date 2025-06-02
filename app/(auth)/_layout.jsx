@@ -14,10 +14,7 @@ const AuthLayout = () => {
           name="registrationMessage"
           options={{ headerShown: false }}
         />
-          <Stack.Screen
-          name="forgotPassword"
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="forgotPassword" options={{ headerShown: false }} />
         {/* <Stack.Screen name="settings" options={{ headerShown: false }} /> */}
       </Stack>
       <StatusBar backgroundColor="#000000" style="light" />

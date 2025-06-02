@@ -33,7 +33,11 @@ export default function BottomDrawer({
             {/* Left-aligned text */}
             <Text
               onPress={handleClosePress}
-              style={{ color: "white", fontWeight: "bold", fontSize: 18 }}
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                // fontSize: 18
+              }}
             >
               {cancelText}
             </Text>
@@ -46,7 +50,7 @@ export default function BottomDrawer({
                   fontWeight: "bold",
                   textAlign: "center",
                   marginTop: 4,
-                  fontSize: 18,
+                  // fontSize: 18,
                 }}
               >
                 {bottomSheetTitle}

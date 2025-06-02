@@ -7,7 +7,10 @@ import {
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3 } from "./colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import { TextInput } from "react-native-gesture-handler";
 
 export default function CustomBottomSheet({
@@ -35,6 +38,14 @@ export default function CustomBottomSheet({
           snapPoints={snapPoints}
           enablePanDownToClose={!loading ? true : false}
           onChange={handleSheetChange}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
         >
           <View style={{ flex: 1, backgroundColor: grey2 }}>
             <BottomSheetView className="px-4">

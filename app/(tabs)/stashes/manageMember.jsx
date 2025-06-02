@@ -1,7 +1,10 @@
 import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
 import React from "react";
 import { grey1, grey2, grey3 } from "../../../components/colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { TextInput } from "react-native-gesture-handler";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -28,6 +31,14 @@ export default function ManageMember({
           snapPoints={snapPoints}
           enablePanDownToClose={enablePanDownToClose}
           onChange={handleSheetChange}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading1 || loading2 ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}

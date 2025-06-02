@@ -78,35 +78,43 @@ const Stashes = () => {
     fetchStashes();
   }, [authToken]);
 
-    //Refresh if user edited a stash
-    useFocusEffect(
-      useCallback(() => {
-        const checkFlag = async () => {
-          const flag = await AsyncStorage.getItem("stashEdited");
-          console.log(flag);
-          if (flag === "true") {
-            console.log("User came back from editing");
-            fetchStashes();
-            await AsyncStorage.removeItem("stashEdited");
-          }
-        };
-        checkFlag();
-      }, [])
-    );
-  
+  //Refresh if user edited a stash
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const checkFlag = async () => {
+        const flag = await AsyncStorage.getItem("stashEdited");
+        console.log("Flag value:", flag);
+        if (flag === "true" && isActive) {
+          await fetchStashes();
+          await AsyncStorage.removeItem("stashEdited");
+        }
+      };
+
+      checkFlag();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
-    if (!authToken) {
-      console.error("Auth token is missing.");
-      setRefreshing(false);
-      return;
-    }
     setRefreshing(true);
     try {
+      const token = authToken || (await AsyncStorage.getItem("authToken"));
+
+      if (!token) {
+        console.error("Auth token is missing.");
+        setRefreshing(false);
+        return;
+      }
+
       const response = await axios.get(`${api}albums/`, {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       setStashes(response.data);
@@ -117,8 +125,30 @@ const Stashes = () => {
     }
   }, [authToken]);
 
+  //Refresh if user left stash
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const checkFlag = async () => {
+        const flag = await AsyncStorage.getItem("leftStash");
+        console.log("Flag value:", flag);
+        if (flag === "true" && isActive) {
+          await onRefresh();
+          await AsyncStorage.removeItem("leftStash");
+        }
+      };
+
+      checkFlag();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   //B o t t o m s h e e t
-  const snapPoints = ["100%"];
+  const snapPoints = ["80%"];
   // callbacks
   // const handleSheetChange = useCallback((index) => {
   //   console.log("handleSheetChange", index);
@@ -256,7 +286,6 @@ const Stashes = () => {
   //     </SafeAreaView>
   //   );
   // }
-
 
   return (
     <SafeAreaView

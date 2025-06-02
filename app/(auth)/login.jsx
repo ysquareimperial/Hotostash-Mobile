@@ -17,7 +17,7 @@ import FormField from "../../components/FormField";
 import CustomButton from "../../components/CustomButton";
 import CustomModal from "../../components/CustomModal";
 import { Link, router } from "expo-router";
-import logo from "../../assets/Hotostash PNG/77.png";
+import logo from "../../assets/Hotostash_PNG/77.png";
 import google from "../../assets/google.png";
 import { orange } from "../../components/colors";
 import OrSeparator from "../../components/OrSeparator";

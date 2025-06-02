@@ -66,8 +66,7 @@ export default function ViewStash() {
   const [form, setForm] = useState({
     title: stashParams.title,
     description: stashParams.description,
-    image:
-      "https://res.cloudinary.com/dkwy56ghj/image/upload/v1725735308/xm8qfutvpnkhmqltthrd.png",
+    image: stashParams.image,
   });
 
   //BOTTOM SHEET PROPS
@@ -141,7 +140,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 3
   const [isOpen3, setIsOpen3] = useState(false);
-  const snapPoints3 = ["100%"];
+  const snapPoints3 = ["80%"];
   const sheetRef3 = useRef(null);
 
   const handleSheetChange3 = useCallback((index) => {
@@ -176,7 +175,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 3
   const [isOpen4, setIsOpen4] = useState(false);
-  const snapPoints4 = ["100%"];
+  const snapPoints4 = ["80%"];
   const sheetRef4 = useRef(null);
 
   const handleSheetChange4 = useCallback((index) => {
@@ -209,7 +208,7 @@ export default function ViewStash() {
   }, []);
   //END OF BOTTOM SHEET PROPS
 
-  //BOTTOM SHEET PROPS 3
+  //BOTTOM SHEET PROPS 5
   const [isOpen5, setIsOpen5] = useState(false);
   const snapPoints5 = ["100%"];
   const sheetRef5 = useRef(null);
@@ -270,7 +269,7 @@ export default function ViewStash() {
   //FETCH STASH
   const fetchStash = async () => {
     try {
-      const response = await axios.get(`${api}albums/${id}`, {
+      const response = await axios.get(`${api}albums/${stashParams.id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -294,22 +293,43 @@ export default function ViewStash() {
   }, [authToken]);
 
   //Refresh if user left an event
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const checkFlag = async () => {
+  //       const flag = await AsyncStorage.getItem("goBackFlag");
+  //       console.log(flag);
+  //       if (flag === "true") {
+  //         console.log("User came back from Screen B");
+  //         fetchStash();
+  //         await AsyncStorage.removeItem("goBackFlag");
+  //       }
+  //     };
+
+  //     checkFlag();
+  //   }, [])
+  // );
+
   useFocusEffect(
     useCallback(() => {
+      let isActive = true;
+
       const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("goBackFlag");
-        console.log(flag);
-         if (flag === "true") {
-          console.log("User came back from Screen B");
-          fetchStash();
-          await AsyncStorage.removeItem("goBackFlag");
+        const flag = await AsyncStorage.getItem("leftEvent");
+        console.log("Flag value:", flag);
+        if (flag === "true" && isActive) {
+          console.log("User came back from leaving event");
+          await onRefresh();
+          await AsyncStorage.removeItem("leftEvent");
         }
       };
 
       checkFlag();
+
+      return () => {
+        isActive = false;
+      };
     }, [])
   );
-
 
   const handleCreatedEvent = (newItem) => {
     setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
@@ -317,20 +337,23 @@ export default function ViewStash() {
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
-    if (!authToken) {
-      console.error("Auth token is missing.");
-      setRefreshing(false);
-      return;
-    }
     setRefreshing(true);
     try {
-      const response = await axios.get(`${api}albums/${id}`, {
+      const token = authToken || (await AsyncStorage.getItem("authToken"));
+
+      if (!token) {
+        console.error("Auth token is missing.");
+        setRefreshing(false);
+        return;
+      }
+      const response = await axios.get(`${api}albums/${stashParams.id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
       setStashEvents(response?.data?.events);
       setStashMembers(response?.data?.members);
+      // fetchStash()
       console.log(response?.data?.members);
       setLoading(false);
     } catch (err) {
@@ -341,11 +364,19 @@ export default function ViewStash() {
     }
   }, [authToken]);
 
+  const handleLeave = async () => {
+    await AsyncStorage.setItem("leftStash", "true");
+    console.log("from leaaaaveeee stashhhhhhh");
+    setTimeout(() => {
+      router.back();
+    }, 100); // Small delay to ensure flag is stored
+  };
+
   //Leave stash
   const leaveStash = () => {
     setLoading2(true);
     axios
-      .delete(`${api}albums/${id}/leave`, {
+      .delete(`${api}albums/${stashParams.id}/leave`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -353,7 +384,7 @@ export default function ViewStash() {
       .then((response) => {
         setLoading2(false);
         if (response?.status === 200) {
-          router.back();
+          handleLeave();
         }
         console.log(response);
       })
@@ -416,10 +447,11 @@ export default function ViewStash() {
 
   const stashEdited = async () => {
     await AsyncStorage.setItem("stashEdited", "true");
+    console.log("editedddd");
   };
 
   const editStash = () => {
-    console.log(form);
+    // console.log(form);
     setLoading5(true);
     axios
       .put(`${api}albums/${stashParams?.id}`, form, {
@@ -483,7 +515,16 @@ export default function ViewStash() {
               style={{ borderRadius: 500, width: 50, height: 50 }}
             />
             <View style={{ flex: 1 }}>
-              <TouchableOpacity onPress={() => handleSnapPress5(0)}>
+              <TouchableOpacity
+                onPress={() => handleSnapPress5(0)}
+                disabled={
+                  !stash?.members?.some(
+                    (member) =>
+                      member.user.username === user?.username &&
+                      member.role === "admin"
+                  )
+                }
+              >
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
                 >
@@ -549,7 +590,7 @@ export default function ViewStash() {
                   key={index}
                   onPress={() =>
                     router.push(
-                      `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}`
+                      `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
                     )
                   }
                 >
@@ -604,8 +645,14 @@ export default function ViewStash() {
               ))}
 
               {/* I F  T H E R E  I S  N O  E V E N T S */}
-              {stash?.events?.length === 0 ? (
-                <View style={{ marginTop: 20, alignItems: "center" }}>
+              {stashEvents?.length === 0 ? (
+                <View
+                  style={{
+                    marginTop: 20,
+                    alignItems: "center",
+                    marginBottom: 20,
+                  }}
+                >
                   <AntDesign name="calendar" size={30} color={grey3} />
                   {stash?.members?.some(
                     (member) =>

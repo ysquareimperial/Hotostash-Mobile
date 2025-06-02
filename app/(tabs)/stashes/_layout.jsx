@@ -26,6 +26,20 @@ const StackLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="withdrawalRequests"
+        options={{
+          title: "withdrawalRequests",
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="RequestStatus"
+        options={{
+          title: "RequestStatus",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

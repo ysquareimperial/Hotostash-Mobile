@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import logo from "../assets/Hotostash PNG/77.png";
+import logo from "../assets/Hotostash_PNG/77.png";
 import sc from "../assets/sc.png";
 import CustomButton from "../components/CustomButton";
 import { Redirect, router } from "expo-router";

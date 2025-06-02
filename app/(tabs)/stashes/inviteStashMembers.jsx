@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../../../helpers/helpers";
 import axios from "axios";
@@ -174,6 +177,14 @@ export default function InviteStashMembers({
           snapPoints={snapPoints}
           enablePanDownToClose={loading2 ? false : true}
           onChange={handleSheetChange}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading2 ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}

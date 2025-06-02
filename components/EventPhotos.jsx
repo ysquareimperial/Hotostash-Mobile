@@ -321,7 +321,7 @@ const EventPhotos = ({ eventId }) => {
                 <Text
                   style={{
                     fontSize: 12,
-                    color: "white",
+                    color: "grey",
                     textAlign: "center",
                     marginLeft: 20,
                     marginRight: 20,

@@ -214,6 +214,7 @@ const GenerateEventLink = ({
                   <CustomButton3
                     title={cancelText}
                     handlePress={handleCancelPress}
+                    isLoading={loading}
                   />
                 )}
 

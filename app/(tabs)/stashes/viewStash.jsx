@@ -331,6 +331,29 @@ export default function ViewStash() {
     }, [])
   );
 
+  //Refresh if event is edited
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const checkFlag = async () => {
+        const flag = await AsyncStorage.getItem("eventEdited");
+        console.log("Flag valueeee:", flag);
+        if (flag === "true" && isActive) {
+          console.log("User came back from leaving event");
+          await onRefresh();
+          await AsyncStorage.removeItem("eventEdited");
+        }
+      };
+
+      checkFlag();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   const handleCreatedEvent = (newItem) => {
     setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
   };

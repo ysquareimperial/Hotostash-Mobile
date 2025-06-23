@@ -46,6 +46,7 @@ const CustomModal = ({
                 <CustomButton3
                   title={cancelText}
                   handlePress={handleCancelPress}
+                  isLoading={loading}
                 />
               )}
               <CustomButton

@@ -34,6 +34,7 @@ export default function ViewEvent() {
   const [existingLink, setExistingLink] = useState(null);
   const { eventId } = useLocalSearchParams();
   const { stashId } = useLocalSearchParams();
+
   const [eventParams, setEventParams] = useState({
     name: params.name,
     image: params.image,
@@ -43,13 +44,15 @@ export default function ViewEvent() {
     location: params.location,
   });
 
-  const [form, setForm] = useState({
-    name: eventParams.name,
-    description: eventParams.description,
-    date: eventParams.date, // Convert string to Date
-    time: eventParams.time,
-    location: eventParams.location,
-  });
+  const parseTimeToDate = (timeString) => {
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+    const date = new Date(); // today’s date
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    date.setSeconds(seconds || 0);
+    date.setMilliseconds(0);
+    return date;
+  };
 
   //Contribution status
   // useEffect(() => {
@@ -68,12 +71,12 @@ export default function ViewEvent() {
       console.log("paramsssssss:", status);
     }
   }, [params]);
-  
+
   useEffect(() => {
     if (contributionStatus === false) {
       // Save only if explicitly false
       console.log("paramsssssss:", contributionStatus);
-      
+
       AsyncStorage.setItem(
         "contributionStatus",
         JSON.stringify(contributionStatus)
@@ -85,7 +88,7 @@ export default function ViewEvent() {
 
   //Bottom sheet
   const [isOpen, setIsOpen] = useState(false);
-  const snapPoints = ["100%"];
+  const snapPoints = ["80%"];
   const sheetRef = useRef(null);
 
   const handleSheetChange = useCallback((index) => {
@@ -120,23 +123,6 @@ export default function ViewEvent() {
     // }));
   }, []);
   //End of Bottom sheet props
-
-  //Refresh if user left an event
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const checkFlag = async () => {
-  //       const flag = await AsyncStorage.getItem("goBackFlag");
-  //       console.log(flag);
-  //       if (flag === "true") {
-  //         console.log("User came back from Screen B");
-  //         fetchStash();
-  //         await AsyncStorage.removeItem("goBackFlag");
-  //       }
-  //     };
-
-  //     checkFlag();
-  //   }, [])
-  // );
 
   //Fetch token
   useEffect(() => {
@@ -181,18 +167,32 @@ export default function ViewEvent() {
     fetchEvent();
   }, [authToken]);
 
+  const handleEditedEvent = (updatedEvent) => {
+    if (!updatedEvent) return;
+
+    setEventParams((prev) => ({
+      ...prev,
+      name: updatedEvent.name ?? prev.name,
+      image: updatedEvent.image ?? prev.image,
+      description: updatedEvent.description ?? prev.description,
+      time: updatedEvent.time ?? prev.time,
+      date: updatedEvent.date ?? prev.date,
+      location: updatedEvent.location ?? prev.location,
+    }));
+  };
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
       style={{ backgroundColor: "#000000", flex: 1 }}
       className="h-full"
     >
-      {/* <ScrollView contentContainerStyle={{ flexGrow: 1 }}> */}
+      {/* <ScrollView> */}
       <View
         className="px-4"
         style={{
           backgroundColor: "",
-          flex: "",
+          // flex: 1,
           marginVertical: 0,
           marginTop: 10,
         }}
@@ -268,27 +268,34 @@ export default function ViewEvent() {
           </View>
         </View>
       </View>
-      <EventTabs
-        event={event}
-        eventId={eventId}
-        stashId={stashId}
-        existingLink={existingLink}
-      />
-      {/* <EventPhotos eventId={id}/> */}
-      {/* </ScrollView> */}
+      <View style={{ flex: 1 }}>
+        <EventTabs
+          event={event}
+          eventId={eventId}
+          stashId={stashId}
+          existingLink={existingLink}
+        />
+      </View>
 
       <EditEvent
+        name={eventParams.name}
+        description={eventParams.description}
+        date={new Date(eventParams.date)}
+        time={parseTimeToDate(eventParams.time)}
+        location={eventParams.location}
         sheetRef={sheetRef}
         snapPoints={snapPoints}
         handleSheetChange={handleSheetChange}
         handleClosePress={handleClosePress}
         isOpen={isOpen}
+        eventId={eventId}
         // enablePanDownToClose={loading5 ? false : true}
         // handleSubmit={inviteStashMembersFunction}
         handleSnapPress={handleSnapPress}
         // stashId={stash?.id}
-        // sendEventToStashPage={handleCreatedEvent}
+        sendResToEventPage={handleEditedEvent}
       />
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }

@@ -15,7 +15,7 @@ export default function EventTabs({ eventId, stashId, existingLink, event }) {
   console.log("Stash ID in EventTabs:", stashId); // Add this to debug
 
   return (
-    <View>
+   <View style={{ flex: 1 }}> 
       {/* Tab Navigation */}
       <View
         className="px-4"
@@ -65,7 +65,7 @@ export default function EventTabs({ eventId, stashId, existingLink, event }) {
         )}
         {activeItem === "contribution" && (
           <View>
-            <Contribution eventId={eventId} stashId={stashId} event={event}/>
+            <Contribution eventId={eventId} stashId={stashId} event={event} />
           </View>
         )}
         {activeItem === "ivcard" && (

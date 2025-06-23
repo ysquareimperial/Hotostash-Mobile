@@ -1,71 +1,151 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+// import MasonryList from "react-native-masonry-list";
+import ImageViewing from "react-native-image-viewing";
+import { Image as RNImage } from "react-native";
 import {
   View,
   ActivityIndicator,
-  FlatList,
-  Image,
-  Dimensions,
   Text,
   RefreshControl,
+  Image,
   TouchableOpacity,
-  ScrollView,
-  Button,
-  SafeAreaView,
+  StyleSheet,
 } from "react-native";
 import { api } from "../helpers/helpers";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Octicons from "@expo/vector-icons/Octicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { grey1, grey2, grey3 } from "./colors";
-import SelectPhotosSheet from "../app/(tabs)/stashes/selectPhotosSheet";
-import { StyleSheet, Alert } from "react-native";
-import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
-
-const MAX_SELECTION = 10;
+import { grey1, grey2, grey3, red } from "./colors";
+import { Ionicons } from "@expo/vector-icons";
+import { PhotoOptions } from "./PhotoOptions";
+import SkeletonForPhotos from "./SkeletonForPhotos";
+import MasonryWithSelection from "./MasonryWithSelection";
+import MasonryList from "@react-native-seoul/masonry-list";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import axios from "axios";
+import CustomModal from "./CustomModal";
 
 const EventPhotos = ({ eventId }) => {
-  const [images, setImages] = useState([]);
   const [fetchedImages, setFetchedImages] = useState([]);
-  const [pickedImages, setPickedImages] = useState([]);
   const [authToken, setAuthToken] = useState(null);
+  const [firstLoad, setFirstLoad] = useState(true);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // New state
+  const [refreshing, setRefreshing] = useState(false);
+  const [isViewerVisible, setViewerVisible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const imagesForViewer = fetchedImages.map((item) => ({ uri: item.url }));
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const [imagesToUpload, setImagesToUpload] = useState(null);
+  //Deleting photos----------------------------------------------------------
+  const [loading2, setLoading2] = useState(false);
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
+  const [deleteAllButton, setDeleteAllButton] = useState(false);
 
-  //BOTTOM SHEET PROPS
-  const [isOpen, setIsOpen] = useState(false);
-  const snapPoints = ["100%"];
-  const sheetRef = useRef(null);
+  const togglePhotoSelection = (imageId) => {
+    let updatedSelectedPhotos;
 
-  const handleSheetChange = useCallback((index) => {
-    setPickedImages([]);
+    if (selectedPhotos.includes(imageId)) {
+      updatedSelectedPhotos = selectedPhotos.filter((id) => id !== imageId);
+    } else {
+      updatedSelectedPhotos = [...selectedPhotos, imageId];
+    }
 
-    console.log("handleSheetChange", index);
-  }, []);
+    setSelectedPhotos(updatedSelectedPhotos);
+    setSelectionMode(updatedSelectedPhotos.length > 0);
+    console.log("selected");
+  };
 
-  const handleSnapPress = useCallback(
-    (index) => {
-      console.log("clicked");
-      console.log("snapped");
-      if (!isOpen) {
-        setIsOpen(true); // Show the bottom sheet
+  const handleSelectAll = () => {
+    if (selectedPhotos.length === fetchedImages.length) {
+      setSelectedPhotos([]);
+      setSelectionMode(false);
+    } else {
+      setSelectedPhotos(fetchedImages.map((img) => img.id));
+      setSelectionMode(true);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleDeleteSelected = async () => {
+    // Perform delete logic (API call, update state, etc.)
+    // Example:
+    // await deleteImages(selectedPhotos);
+
+    setSelectedPhotos([]);
+    setSelectionMode(false);
+    // Refetch or update fetchedImages after deletion
+  };
+  //Deleting photos----------------------------------------------------------
+
+  const handleImagePress = (index) => {
+    setCurrentIndex(index);
+    setTimeout(() => {
+      setViewerVisible(true);
+    }, 0);
+  };
+
+  //Download Image
+  const handleDownload = async (url) => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        alert("Permission to access media library is required!");
+        return;
       }
-      sheetRef.current?.snapToIndex(index);
-    },
-    [isOpen]
-  );
 
-  const handleClosePress = useCallback(() => {
-    sheetRef.current?.close();
-    setIsOpen(false); // Hide the bottom sheet
-    setLoading2(false);
-  }, []);
-  //END OF BOTTOM SHEET PROPS
+      const fileName = url.split("/").pop();
+      const fileUri = FileSystem.documentDirectory + fileName;
+
+      const downloadResumable = FileSystem.createDownloadResumable(
+        url,
+        fileUri
+      );
+      const { uri } = await downloadResumable.downloadAsync();
+
+      await MediaLibrary.saveToLibraryAsync(uri);
+
+      alert("Photo saved to your gallery!");
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      alert("Failed to download image.");
+    }
+  };
+
+  //Share Image
+  const handleShare = async (url) => {
+    try {
+      const fileName = url.split("/").pop();
+      const fileUri = FileSystem.documentDirectory + fileName;
+
+      // Download the image
+      const downloadResumable = FileSystem.createDownloadResumable(
+        url,
+        fileUri
+      );
+      const { uri } = await downloadResumable.downloadAsync();
+
+      // Check if sharing is available on the device
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (!isAvailable) {
+        alert("Sharing is not available on this device");
+        return;
+      }
+
+      // Share the downloaded file
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.error("Error sharing image:", error);
+      alert("Failed to share image.");
+    }
+  };
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -84,12 +164,7 @@ const EventPhotos = ({ eventId }) => {
     fetchToken();
   }, []);
 
-  useEffect(() => {
-    if (authToken) {
-      fetchImages(true); // Fetch fresh images when authToken is available
-    }
-  }, [authToken]);
-
+  //Fetch images
   const fetchImages = async (isRefreshing = false) => {
     if (loading || (!hasMore && !isRefreshing)) return;
 
@@ -99,6 +174,10 @@ const EventPhotos = ({ eventId }) => {
     }
 
     setLoading(true);
+    if (firstLoad) {
+      setLoadingPhotos(true); // Show skeleton only on first load
+    }
+
     try {
       const offset = isRefreshing ? 0 : (page - 1) * 10;
       const response = await fetch(
@@ -116,8 +195,40 @@ const EventPhotos = ({ eventId }) => {
 
       const data = await response.json();
 
-      if (data.length > 0) {
-        setFetchedImages(isRefreshing ? data : [...fetchedImages, ...data]);
+      // 👉 Add actual image dimensions to each image object
+      const imagesWithDimensions = await Promise.all(
+        data.map(async (img) => {
+          try {
+            const dimensions = await new Promise((resolve, reject) => {
+              RNImage.getSize(
+                img.url,
+                (width, height) => resolve({ width, height }),
+                reject
+              );
+            });
+
+            return {
+              ...img,
+              width: dimensions.width,
+              height: dimensions.height,
+            };
+          } catch (e) {
+            console.warn(`Failed to get size for image: ${img.url}`);
+            return {
+              ...img,
+              width: 1, // fallback square
+              height: 1,
+            };
+          }
+        })
+      );
+
+      if (imagesWithDimensions.length > 0) {
+        setFetchedImages((prev) =>
+          isRefreshing
+            ? imagesWithDimensions
+            : [...prev, ...imagesWithDimensions]
+        );
         setPage((prevPage) => prevPage + 1);
       } else {
         setHasMore(false);
@@ -126,269 +237,381 @@ const EventPhotos = ({ eventId }) => {
       console.error("Error fetching images:", error);
     } finally {
       setLoading(false);
+      setLoadingPhotos(false);
+      if (firstLoad) setFirstLoad(false);
       if (isRefreshing) setRefreshing(false);
     }
   };
 
+  useEffect(() => {
+    if (authToken) {
+      console.log("event id from event photos", eventId);
+
+      fetchImages(true); // Fetch fresh images when authToken is available
+    }
+  }, [authToken]);
+
+  //Delete photos
+  const deletePhotos = () => {
+    const idsToDelete = Array.from(selectedPhotos);
+    console.log("Photos to delete:", idsToDelete);
+    setLoading2(true);
+    axios
+      .delete(`${api}photos/photos`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+        data: idsToDelete,
+      })
+      .then((response) => {
+        console.log(response);
+        if (response?.status === 200) {
+          setSelectedPhotos([]);
+          setSelectionMode(false);
+
+          setFetchedImages((prevImages) =>
+            prevImages.filter((image) => !idsToDelete.includes(image.id))
+          );
+
+          setModalVisible(false);
+        }
+        setLoading2(false);
+      })
+      .catch((err) => {
+        setLoading2(false);
+        console.log("error deleting photo", err);
+      });
+  };
+
+  //Delete all photos
+  const deleteAllPhotos = () => {
+    setLoading2(true);
+    axios
+      .delete(`${api}photos/${eventId}/photos`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        if (response?.status === 200) {
+          setSelectedPhotos([]);
+          setSelectionMode(false);
+          setFetchedImages([]);
+          setModalVisible(false);
+        }
+        setLoading2(false);
+      })
+      .catch((err) => {
+        setLoading2(false);
+        console.log("error deleting photo", err);
+      });
+  };
+
+  //Refresh Images
   const handleRefresh = () => {
     setRefreshing(true);
     fetchImages(true);
   };
 
-  // Pick images from gallery
-  const pickPhotos = async () => {
-    const { granted } = await MediaLibrary.requestPermissionsAsync();
-    if (!granted) {
-      Alert.alert("Permission required to access media library");
-      return;
-    }
-
-    const result = await MediaLibrary.getAssetsAsync({
-      mediaType: "photo",
-      first: 50, // Load more if needed
-      sortBy: MediaLibrary.SortBy.creationTime,
-    });
-
-    const selected = result.assets.slice(0, 10 - pickedImages.length); // Limit to 10
-
-    const resolved = await Promise.all(
-      selected.map(async (asset) => {
-        const info = await MediaLibrary.getAssetInfoAsync(asset.id);
-        return {
-          uri: info.localUri || info.uri, // usable uri
-          filename: asset.filename,
-          id: asset.id,
-        };
-      })
-    );
-
-    setPickedImages((prev) => [...prev, ...resolved]);
-  };
-
-  // Upload to API
-  const uploadImages = async () => {
-    if (pickedImages.length === 0) {
-      Alert.alert("No images selected");
-      return;
-    }
-
-    const formData = new FormData();
-
-    pickedImages.forEach((img, index) => {
-      formData.append("images", {
-        uri: img.uri,
-        name: img.filename || `image${index}.jpg`,
-        type: "image/jpeg",
-      });
-    });
-
-    try {
-      const response = await fetch("https://your-api-endpoint.com/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      });
-
-      const resJson = await response.json();
-      console.log("Upload successful:", resJson);
-      Alert.alert("Upload Successful");
-    } catch (err) {
-      console.error("Upload failed:", err);
-      Alert.alert("Upload Failed");
-    }
-  };
-
   return (
-    <View>
-      <View
-        className="px-4"
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 10,
-          marginBottom: 5,
-        }}
-      >
-        <TouchableOpacity
+    <View className="">
+      {!selectionMode ? (
+        <View
+          className="px-4"
           style={{
-            backgroundColor: grey1,
-            paddingHorizontal: 5,
-            paddingVertical: 5,
             flexDirection: "row",
-            alignItems: "center",
-            gap: 5,
-            borderRadius: 50,
-            color: "white",
-          }}
-          onPress={() => handleSnapPress(0)}
-          // onPress={pickPhotos}
-        >
-          <View
-            style={{
-              backgroundColor: grey2,
-              borderRadius: 50,
-              paddingHorizontal: 5,
-              paddingVertical: 5,
-              width: 25,
-              height: 25,
-              alignItems: "center",
-            }}
-          >
-            <Octicons name="upload" size={16} style={{ color: "white" }} />
-          </View>
-          <Text style={{ color: "white", fontSize: 10, marginRight: 5 }}>
-            Stash event photos
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            backgroundColor: grey1,
-            paddingHorizontal: 5,
-            paddingVertical: 5,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 5,
-            borderRadius: 50,
-            color: "white",
+            justifyContent: "space-between",
+            marginTop: 10,
+            marginBottom: 5,
           }}
         >
-          <View
+          {/* <MasonryWithSelection /> */}
+          <TouchableOpacity
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={{
-              backgroundColor: grey2,
-              borderRadius: 50,
+              backgroundColor: grey1,
               paddingHorizontal: 5,
               paddingVertical: 5,
-              width: 25,
-              height: 25,
+              flexDirection: "row",
               alignItems: "center",
+              gap: 5,
+              borderRadius: 50,
+              color: "white",
+            }}
+            // onPress={() => handleSnapPress(0)}
+            // onPress={pickPhotos}
+          >
+            <View
+              style={{
+                backgroundColor: grey2,
+                borderRadius: 50,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+                width: 25,
+                height: 25,
+                alignItems: "center",
+              }}
+            >
+              <Octicons name="upload" size={16} style={{ color: "white" }} />
+            </View>
+            <Text style={{ color: "white", fontSize: 10, marginRight: 5 }}>
+              Stash event photos
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{
+              backgroundColor: grey1,
+              paddingHorizontal: 5,
+              paddingVertical: 5,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+              borderRadius: 50,
+              color: "white",
             }}
           >
-            <MaterialCommunityIcons name="share" size={16} color="white" />
-          </View>
-          <Text style={{ color: "white", fontSize: 10, marginRight: 5 }}>
-            Share
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        // className="px-4"
-        style={{
-          height: "100%",
-        }}
-        data={fetchedImages}
-        keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
-        nestedScrollEnabled
-        renderItem={({ item }) => (
-          <Image
-            source={{ uri: item.url }}
-            style={{
-              width: Dimensions.get("window").width / 2 - 10,
-              height: 200,
-              margin: 5,
-              borderRadius: 10,
-            }}
-            onError={(e) =>
-              console.error("Failed to load image:", e.nativeEvent.error)
-            }
-          />
-        )}
-        onEndReached={() => fetchImages(false)}
-        onEndReachedThreshold={0.5}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        ListFooterComponent={
-          loading ? (
-            <ActivityIndicator
-              size="small"
-              color="white"
-              style={{ marginTop: 10, marginBottom: 10 }}
-            />
-          ) : null
-        }
-        ListEmptyComponent={
-          <>
-            {!loading && (
-              <View
-                style={{
-                  marginTop: 20,
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: "grey",
-                    textAlign: "center",
-                    marginLeft: 20,
-                    marginRight: 20,
+            <View
+              style={{
+                backgroundColor: grey2,
+                borderRadius: 50,
+                paddingHorizontal: 5,
+                paddingVertical: 5,
+                width: 25,
+                height: 25,
+                alignItems: "center",
+              }}
+            >
+              <MaterialCommunityIcons name="share" size={16} color="white" />
+            </View>
+            <Text style={{ color: "white", fontSize: 10, marginRight: 5 }}>
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View className="">
+          {selectionMode && (
+            <View style={styles.actionBar}>
+              <View>
+                <TouchableOpacity
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  onPress={() => {
+                    handleSelectAll();
+                    setDeleteAllButton(!deleteAllButton);
                   }}
                 >
-                  No photos have been stashed for this event. Only organizers or
-                  uploader can stash photos.
-                </Text>
+                  <Text style={styles.actionText}>
+                    {selectedPhotos.length === fetchedImages.length
+                      ? "Deselect All"
+                      : "Select All"}
+                  </Text>
+                </TouchableOpacity>
               </View>
-            )}
-          </>
-        }
-        contentContainerStyle={{ paddingBottom: 0, flexGrow: 1 }}
+              <View>
+                <TouchableOpacity
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <AntDesign name="delete" size={22} color="white" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+      {loadingPhotos ? (
+        <View style={{ paddingLeft: "8", paddingRight: "8" }}>
+          <SkeletonForPhotos />
+        </View>
+      ) : (
+        <View
+          style={{
+            height: "100%",
+            // flex:1,
+            paddingLeft: "12",
+            paddingRight: "12",
+          }}
+        >
+          <MasonryList
+            data={fetchedImages}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            contentContainerStyle={{
+              backgroundColor: "black",
+              // padding: 2,
+              paddingBottom: 250,
+            }}
+            // style={{marginBottom:200}}
+            showsVerticalScrollIndicator={false}
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            onEndReachedThreshold={0.5}
+            onEndReached={() => fetchImages(false)}
+            ListFooterComponent={
+              loading ? (
+                <ActivityIndicator
+                  size="small"
+                  color="white"
+                  style={{ marginTop: 10 }}
+                />
+              ) : null
+            }
+            ListEmptyComponent={
+              !loading &&
+              fetchedImages.length === 0 && (
+                <View style={{ marginTop: 20, alignItems: "center" }}>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: "grey",
+                      textAlign: "center",
+                      marginHorizontal: 20,
+                    }}
+                  >
+                    No photos have been stashed for this event. Only organizers
+                    or uploader can stash photos.
+                  </Text>
+                </View>
+              )
+            }
+            renderItem={({ item, index }) => {
+              const imageId = item.id;
+              const isSelected = selectedPhotos.includes(imageId);
+
+              return (
+                <TouchableOpacity
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  activeOpacity={0.9}
+                  onPress={() => handleImagePress(index)}
+                  onLongPress={() => togglePhotoSelection(imageId)}
+                  style={{ margin: 2, borderRadius: 10, overflow: "hidden" }}
+                >
+                  <View>
+                    <Image
+                      source={{ uri: item.url }}
+                      style={{
+                        width: "100%", // 🔥 this is crucial
+                        aspectRatio: item.width / item.height || 1,
+                        borderRadius: 10,
+                      }}
+                      resizeMethod="cover"
+                    />
+                    {selectionMode && (
+                      <View style={styles.checkboxWrapper}>
+                        <TouchableOpacity
+                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                          style={[
+                            styles.checkbox,
+                            isSelected && styles.checkboxSelected,
+                          ]}
+                          onPress={() => togglePhotoSelection(imageId)}
+                        >
+                          {isSelected && (
+                            <Ionicons
+                              name="checkmark"
+                              size={16}
+                              color="white"
+                            />
+                          )}
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+      )}
+      {/* Image Viewer */}
+      <ImageViewing
+        images={imagesForViewer}
+        imageIndex={currentIndex}
+        visible={isViewerVisible}
+        onRequestClose={() => setViewerVisible(false)}
+        FooterComponent={({ imageIndex }) => (
+          <PhotoOptions
+            handleDownload={() =>
+              handleDownload(imagesForViewer[imageIndex].uri)
+            }
+            handleShare={() => handleShare(imagesForViewer[imageIndex].uri)}
+          />
+        )}
       />
 
-      {/* <Button
-        title="Upload Images"
-        onPress={uploadImages}
-        disabled={images.length === 0}
-      /> */}
-
-      <SelectPhotosSheet
-        sheetRef={sheetRef}
-        snapPoints={snapPoints}
-        handleSheetChange={handleSheetChange}
-        handleClosePress={handleClosePress}
-        loading={loading2}
-        isOpen={isOpen}
-        children={
-          <>
-            <View style={styles.container}>
-              <Button title="Select Photos" onPress={pickPhotos} />
-              <ScrollView horizontal style={styles.scroll}>
-                {pickedImages.map((img, index) => (
-                  <Image
-                    key={index}
-                    source={{ uri: img.uri }}
-                    style={styles.image}
-                  />
-                ))}
-              </ScrollView>
-              <Button title="Send to API" onPress={uploadImages} />
-            </View>
-          </>
+      <CustomModal
+        modalTitle={"Delete photos"}
+        modalText={
+          deleteAllButton
+            ? `Are you sure? All photos will be deleted from this event.`
+            : `Are you sure? ${selectedPhotos.length} selected photo(s) will be deleted.`
         }
-        // selectPhotos={pickPhotos}
-        handleSnapPress={handleSnapPress}
+        okText={
+          loading2 ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : deleteAllButton ? (
+            `Delete all photos`
+          ) : (
+            `Delete ${selectedPhotos.length} photo(s)`
+          )
+        }
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(false);
+        }}
+        loading={loading2}
+        handleOkPress={deleteAllButton ? deleteAllPhotos : deletePhotos}
+        handleCancelPress={() => setModalVisible(false)}
+        cancelText={"Cancel"}
+        modalVisible={modalVisible} // Pass modalVisible as a prop
+        setModalVisible={setModalVisible} // Pass the setter function to update the state
       />
     </View>
   );
 };
 
 export default EventPhotos;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
+  checkboxWrapper: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 999,
   },
-  scroll: {
-    marginVertical: 20,
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "rgba(255,255,255,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  image: {
-    width: 100,
-    height: 100,
-    marginRight: 10,
-    borderRadius: 8,
+  checkboxSelected: {
+    backgroundColor: grey1,
+    borderWidth: 0,
+  },
+  checkboxInnerCircle: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "white",
+  },
+  actionBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 10,
+    paddingLeft: 16,
+    paddingRight: 16,
+    backgroundColor: "rgba(0,0,0,0.85)",
+  },
+  actionText: {
+    color: "white",
   },
 });

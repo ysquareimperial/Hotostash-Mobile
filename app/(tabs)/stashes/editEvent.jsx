@@ -13,14 +13,11 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { api } from "../../../helpers/helpers";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../../context/UserContext";
-import CustomModal from "../../../components/CustomModal";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import ToggleSwitch from "../../../components/ToggleSwitch";
 
 export default function EditEvent({
   sheetRef,
@@ -29,17 +26,17 @@ export default function EditEvent({
   handleClosePress,
   isOpen,
   // enablePanDownToClose,
-  stashId,
-  sendEventToStashPage,
+  eventId,
+  sendResToEventPage,
+  name,
+  date,
+  time,
+  location,
+  description,
 }) {
   const { user } = useUser();
-  const [users, setUsers] = useState([]);
   const [authToken, setAuthToken] = useState(null);
   const [album, setAlbum] = useState({});
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMembers, setSelectedMembers] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [members, setMembers] = useState([]);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading2, setLoading2] = useState(false);
@@ -57,15 +54,13 @@ export default function EditEvent({
   };
 
   const [form, setForm] = useState({
-    name: "",
-    image:
-      "https://res.cloudinary.com/dkwy56ghj/image/upload/v1725735308/xm8qfutvpnkhmqltthrd.png",
-    description: "",
-    date: new Date(), // Convert string to Date
-    time: new Date(),
-    location: "",
-    contribution_status: false,
+    name: name,
+    description: description,
+    date: date || new Date(),
+    time: time || new Date(),
+    location: location,
   });
+
   // Fetching token
   useEffect(() => {
     const fetchToken = async () => {
@@ -85,46 +80,27 @@ export default function EditEvent({
     fetchToken();
   }, []);
 
-  //Fetch stash members
-  const fetchStashMembers = () => {
-    axios
-      .get(`${api}albums/${26}/members/search`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      .then((response) => {
-        setMembers(response?.data?.members);
-        console.log(members);
-        console.log("memberssssssssssssssss");
-      })
-      .catch((err) => {
-        console.log("error fetching data", err);
-      });
+  //Event edited
+  const handleEditEvent = async () => {
+    await AsyncStorage.setItem("eventEdited", "true");
+    console.log("event edited");
   };
-  useEffect(() => {
-    fetchStashMembers();
-  }, []);
-  // Fetch users based on the search query
 
-  // ADDING MEMBERS FXN
-  const postCreateEvent = () => {
+  const _editEvent = () => {
     setLoading2(true);
     const formattedTime = formatTime(form.time); // Convert to "HH:MM"
     const formattedDate = formatDate(form.date); // Convert date to "YYYY-MM-DD"
 
     console.log(form);
     axios
-      .post(
-        `${api}events/?album_id=${stashId}`,
+      .put(
+        `${api}events/${eventId}`,
         {
           name: form.name,
-          image: form.image,
           date: formattedDate,
           description: form.description,
           location: form.location,
           time: formattedTime,
-          contribution_status: form?.contribution_status,
         },
         {
           headers: { Authorization: `Bearer ${authToken}` },
@@ -132,31 +108,10 @@ export default function EditEvent({
       )
       .then((response) => {
         setLoading2(false);
-        console.log(response?.data);
+        console.log("resssss", response?.data);
         handleClosePress();
-        setForm((prevForm) => ({
-          ...prevForm, // Keep the existing image
-          name: "",
-          description: "",
-          date: new Date(),
-          time: new Date(),
-          location: "",
-          contribution_status: false,
-        }));
-
-        // const extractedEventData = {
-        //   id: response.data.id, // Pick only the ID
-        //   name: response.data.name, // Pick only the Name
-        //   image: response.data.image, // Pick only the Email
-        //   description: response.data.description, // Pick only the Email
-        //   location: response.data.location, // Pick only the Email
-        //   date: response.data.date, // Pick only the Email
-        // };
-
-        sendEventToStashPage(response?.data);
-        // if (response.status === 201) {
-
-        // }
+        sendResToEventPage(response?.data);
+        handleEditEvent();
       })
       .catch((e) => {
         setLoading2(false);
@@ -229,7 +184,7 @@ export default function EditEvent({
                       <ActivityIndicator size="small" color="white" />
                     ) : (
                       <TouchableOpacity
-                        onPress={postCreateEvent}
+                        onPress={_editEvent}
                         disabled={
                           form.name.length === 0 || form.location.length === 0
                         } // Disable the button if length is 0

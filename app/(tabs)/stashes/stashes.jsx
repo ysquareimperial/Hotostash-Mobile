@@ -148,7 +148,7 @@ const Stashes = () => {
   );
 
   //B o t t o m s h e e t
-  const snapPoints = ["80%"];
+  const snapPoints = ["100%"];
   // callbacks
   // const handleSheetChange = useCallback((index) => {
   //   console.log("handleSheetChange", index);

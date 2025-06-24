@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Share,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { grey2 } from "./colors";
@@ -19,8 +20,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Clipboard from "expo-clipboard";
 import axios from "axios";
 import { api } from "../helpers/helpers";
-
-const GenerateEventLink = ({
+import Ionicons from "@expo/vector-icons/Ionicons";
+const GeneratePublicLink = ({
   modalText,
   modalExtraText,
   modalTitle,
@@ -32,17 +33,18 @@ const GenerateEventLink = ({
   modalVisible, // Receive modalVisible as a prop
   setModalVisible, // Receive setModalVisible to update state in the parent
   children,
-  eventParticipants,
+  participants,
   user,
   existingLink,
   eventId,
+
   ...props
 }) => {
   const [link, setLink] = useState(null);
   const [copied, setCopied] = useState(false); // State to manage copy icon change
   const [loading, setLoading] = useState(false);
   const [authToken, setAuthToken] = useState(null);
-
+  //   const linkToShare = "https://hotostash.com/";
   // FETCHING TOKEN
   useEffect(() => {
     const fetchToken = async () => {
@@ -63,7 +65,7 @@ const GenerateEventLink = ({
   }, []);
 
   const handleCopy = async () => {
-    const textToCopy = link?.invite_link || existingLink;
+    const textToCopy = link?.public_link || existingLink;
 
     await Clipboard.setStringAsync(textToCopy);
     setCopied(true);
@@ -79,7 +81,7 @@ const GenerateEventLink = ({
     setLoading(true);
     axios
       .post(
-        `${api}events/${eventId}/generate-invite`,
+        `${api}photos/${eventId}/generate-public-link`,
         {},
         {
           headers: {
@@ -101,7 +103,7 @@ const GenerateEventLink = ({
   const showAlert = () => {
     Alert.alert(
       "Reset link",
-      "If you reset the link, no one will be able to use it to join this event. Are you sure you want to reset?",
+      "Resetting the link will prevent anyone from using it to view these photos. Are you sure you want to reset?",
       [
         {
           text: "Cancel",
@@ -120,6 +122,19 @@ const GenerateEventLink = ({
     );
   };
 
+  const shareViaSystem = async () => {
+    try {
+      const urlToShare = link?.public_link ? link.public_link : existingLink;
+
+      await Share.share({
+        message: `Check this out: ${urlToShare}`,
+        url: urlToShare,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   return (
     <View>
       <Modal
@@ -135,8 +150,8 @@ const GenerateEventLink = ({
             <Text style={styles.modalText}>{modalText}</Text>
             <Text style={styles.modalExtraText}>{modalExtraText}</Text>
             <View style={{ fontSize: 12, width: "100%", overflow: "hidden" }}>
-              {link?.invite_link ? (
-                <Text style={{ color: "grey" }}>{link?.invite_link}</Text>
+              {link?.public_link ? (
+                <Text style={{ color: "grey" }}>{link?.public_link}</Text>
               ) : (
                 <Text style={{ color: "grey" }}>{existingLink}</Text>
               )}
@@ -144,7 +159,7 @@ const GenerateEventLink = ({
 
             {children}
             <View className="">
-              {eventParticipants?.participants?.some(
+              {participants?.some(
                 (participants) =>
                   participants.user.username === user?.username &&
                   participants.role !== "admin"
@@ -154,7 +169,7 @@ const GenerateEventLink = ({
                 </Text>
               ) : null}
             </View>
-            {existingLink || link?.invite_link ? (
+            {existingLink || link?.public_link ? (
               <View
                 style={{
                   flexDirection: "row",
@@ -180,12 +195,12 @@ const GenerateEventLink = ({
                 <View
                   style={{
                     flexDirection: "row",
-                    gap: 20,
+                    columnGap: 7,
                     // marginTop: 30,
                     justifyContent: "flex-end",
                   }}
                 >
-                  {eventParticipants?.participants?.some(
+                  {participants?.some(
                     (participants) =>
                       participants.user.username === user?.username &&
                       participants.role === "admin"
@@ -198,7 +213,7 @@ const GenerateEventLink = ({
                           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                           onPress={showAlert}
                         >
-                          <AntDesign name="reload1" size={25} color="white" />
+                          <AntDesign name="reload1" size={24} color="white" />
                         </TouchableOpacity>
                       )}
                     </>
@@ -207,7 +222,13 @@ const GenerateEventLink = ({
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     onPress={handleCopy}
                   >
-                    <AntDesign name="copy1" size={25} color="white" />
+                    <AntDesign name="copy1" size={24} color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    onPress={shareViaSystem}
+                  >
+                    <Ionicons name="share-outline" size={24} color="white" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -227,7 +248,7 @@ const GenerateEventLink = ({
                   />
                 )}
 
-                {eventParticipants?.participants?.some(
+                {participants?.some(
                   (participants) =>
                     participants.user.username === user?.username &&
                     participants.role === "admin"
@@ -253,7 +274,7 @@ const GenerateEventLink = ({
   );
 };
 
-export default GenerateEventLink;
+export default GeneratePublicLink;
 
 const styles = StyleSheet.create({
   centeredView: {

@@ -5,7 +5,15 @@ import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
 import Contribution from "../app/contribution/contribution";
 
-export default function EventTabs({ eventId, stashId, existingLink, event }) {
+export default function EventTabs({
+  eventId,
+  stashId,
+  existingLink,
+  event,
+  eventParticipants,
+  openDownloadSheet,
+  existingPublicLink,
+}) {
   const [activeItem, setActiveItem] = useState("photos");
 
   const handleTabItemClick = (itemName) => {
@@ -15,7 +23,7 @@ export default function EventTabs({ eventId, stashId, existingLink, event }) {
   console.log("Stash ID in EventTabs:", stashId); // Add this to debug
 
   return (
-   <View style={{ flex: 1 }}> 
+    <View style={{ flex: 1 }}>
       {/* Tab Navigation */}
       <View
         className="px-4"
@@ -51,7 +59,12 @@ export default function EventTabs({ eventId, stashId, existingLink, event }) {
       <View>
         {activeItem === "photos" && (
           // <View style={{ flex: 1 }}>
-          <EventPhotos eventId={eventId} />
+          <EventPhotos
+            eventId={eventId}
+            eventParticipants={eventParticipants}
+            existingLink={existingPublicLink}
+            openDownloadSheet={openDownloadSheet}
+          />
           // </View>
         )}
         {activeItem === "participants" && (

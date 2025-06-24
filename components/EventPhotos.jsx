@@ -27,8 +27,12 @@ import MasonryList from "@react-native-seoul/masonry-list";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import axios from "axios";
 import CustomModal from "./CustomModal";
+import GeneratePublicLink from "./GeneratePublicLink";
+import { useUser } from "../context/UserContext";
+import ShareComponent from "./ShareComponent";
 
-const EventPhotos = ({ eventId }) => {
+const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadSheet }) => {
+  const { user } = useUser();
   const [fetchedImages, setFetchedImages] = useState([]);
   const [authToken, setAuthToken] = useState(null);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -41,6 +45,7 @@ const EventPhotos = ({ eventId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const imagesForViewer = fetchedImages.map((item) => ({ uri: item.url }));
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(false);
 
   //Deleting photos----------------------------------------------------------
   const [loading2, setLoading2] = useState(false);
@@ -359,36 +364,74 @@ const EventPhotos = ({ eventId }) => {
               Stash event photos
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={{
-              backgroundColor: grey1,
-              paddingHorizontal: 5,
-              paddingVertical: 5,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              borderRadius: 50,
-              color: "white",
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: grey2,
-                borderRadius: 50,
-                paddingHorizontal: 5,
-                paddingVertical: 5,
-                width: 25,
-                height: 25,
-                alignItems: "center",
-              }}
-            >
-              <MaterialCommunityIcons name="share" size={16} color="white" />
+          {fetchedImages.length !== 0 && (
+            <View style={{ flexDirection: "row", columnGap: 5 }}>
+              <TouchableOpacity
+              onPress={openDownloadSheet}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={{
+                  backgroundColor: grey1,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 5,
+                  borderRadius: 50,
+                  color: "white",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: grey2,
+                    borderRadius: 50,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                    width: 25,
+                    height: 25,
+                    alignItems: "center",
+                  }}
+                >
+                  <Octicons
+                    name="download"
+                    size={16}
+                    style={{ color: "white" }}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setModalVisible2(true)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                style={{
+                  backgroundColor: grey1,
+                  paddingHorizontal: 5,
+                  paddingVertical: 5,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 5,
+                  borderRadius: 50,
+                  color: "white",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: grey2,
+                    borderRadius: 50,
+                    paddingHorizontal: 5,
+                    paddingVertical: 5,
+                    width: 25,
+                    height: 25,
+                    alignItems: "center",
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="share"
+                    size={16}
+                    color="white"
+                  />
+                </View>
+              </TouchableOpacity>
             </View>
-            <Text style={{ color: "white", fontSize: 10, marginRight: 5 }}>
-              Share
-            </Text>
-          </TouchableOpacity>
+          )}
         </View>
       ) : (
         <View className="">
@@ -568,6 +611,23 @@ const EventPhotos = ({ eventId }) => {
         modalVisible={modalVisible} // Pass modalVisible as a prop
         setModalVisible={setModalVisible} // Pass the setter function to update the state
       />
+
+      <GeneratePublicLink
+        modalTitle={"Share photos with a public link"}
+        modalText={"Anyone with this link will be able to view these photos"}
+        participants={eventParticipants}
+        user={user}
+        existingLink={existingLink}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible2(false);
+        }}
+        eventId={eventId}
+        handleCancelPress={() => setModalVisible2(false)}
+        cancelText={"Close"}
+        modalVisible={modalVisible2} // Pass modalVisible as a prop
+        setModalVisible2={setModalVisible2} // Pass the setter function to update the state
+      ></GeneratePublicLink>
     </View>
   );
 };

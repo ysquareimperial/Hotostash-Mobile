@@ -9,7 +9,7 @@ import {
   Keyboard,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Link } from "expo-router";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format, parseISO } from "date-fns";
@@ -22,6 +22,8 @@ import EventPhotos from "../../../components/EventPhotos";
 import EditEvent from "./editEvent";
 import { useUser } from "../../../context/UserContext";
 import { useFocusEffect } from "@react-navigation/core";
+import CustomBottomSheet from "../../../components/CustomBottomSheet";
+import DownloadAllPhotosBottomSheet from "../../../components/DownloadAllPhotosBottomSheet";
 
 export default function ViewEvent() {
   const { user } = useUser();
@@ -54,16 +56,6 @@ export default function ViewEvent() {
     return date;
   };
 
-  //Contribution status
-  // useEffect(() => {
-  //   if (params?.contributionStatus !== undefined) {
-  //     const status =
-  //       params.contributionStatus === true ||
-  //       params.contributionStatus === "true";
-  //     setContributionStatus(status);
-  //     console.log("paramsssssss:", status);
-  //   }
-  // }, [params]);
   useEffect(() => {
     if (event?.contribution_status === false) {
       const status = event?.contribution_status;
@@ -121,6 +113,37 @@ export default function ViewEvent() {
     //   title: "",
     //   description: "",
     // }));
+  }, []);
+  //End of Bottom sheet props
+
+  //Bottom sheet
+  const [isOpen2, setIsOpen2] = useState(false);
+  const snapPoints2 = ["100%"];
+  const sheetRef2 = useRef(null);
+
+  const handleSheetChange2 = useCallback((index) => {
+    console.log("handleSheetChange", index);
+    if (index === -1) {
+      // Sheet has been closed (either by pan-down or programmatically)
+      Keyboard.dismiss();
+    }
+  }, []);
+
+  const handleSnapPress2 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen2) {
+        setIsOpen2(true); // Show the bottom sheet
+      }
+      sheetRef2.current?.snapToIndex(index);
+    },
+    [isOpen2]
+  );
+
+  const handleClosePress2 = useCallback(() => {
+    console.log("dddddddddddddd");
+    Keyboard.dismiss();
+    sheetRef.current?.close();
   }, []);
   //End of Bottom sheet props
 
@@ -274,6 +297,9 @@ export default function ViewEvent() {
           eventId={eventId}
           stashId={stashId}
           existingLink={existingLink}
+          existingPublicLink={event?.public_photo_link}
+          eventParticipants={event?.participants}
+          openDownloadSheet={() => handleSnapPress2(0)}
         />
       </View>
 
@@ -296,6 +322,15 @@ export default function ViewEvent() {
         sendResToEventPage={handleEditedEvent}
       />
       {/* </ScrollView> */}
+
+      <DownloadAllPhotosBottomSheet
+        bottomSheetTitle={"Download photos"}
+        sheetRef={sheetRef2}
+        snapPoints={snapPoints2}
+        handleSheetChange={handleSheetChange2}
+        handleClosePress={handleClosePress2}
+        isOpen={isOpen2}
+      />
     </SafeAreaView>
   );
 }

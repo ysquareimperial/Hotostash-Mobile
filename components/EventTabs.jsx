@@ -12,6 +12,7 @@ export default function EventTabs({
   event,
   eventParticipants,
   openDownloadSheet,
+  openStashPhotosSheet,
   existingPublicLink,
 }) {
   const [activeItem, setActiveItem] = useState("photos");
@@ -64,6 +65,7 @@ export default function EventTabs({
             eventParticipants={eventParticipants}
             existingLink={existingPublicLink}
             openDownloadSheet={openDownloadSheet}
+            openStashPhotosSheet={openStashPhotosSheet}
           />
           // </View>
         )}

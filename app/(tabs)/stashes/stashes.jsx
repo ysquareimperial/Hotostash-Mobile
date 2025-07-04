@@ -20,6 +20,8 @@ import CustomBottomSheet from "../../../components/CustomBottomSheet";
 import SkeletonPlaceholder from "../../../components/SkeletonPlaceholder";
 
 import { router, Link } from "expo-router";
+import MultiImageSelector from "../../../components/MultiImageSelector";
+import UploadPhotos from "../../../components/UploadPhotos";
 
 const Stashes = () => {
   const [form, setForm] = useState({
@@ -309,6 +311,7 @@ const Stashes = () => {
             justifyContent: "space-between",
           }}
         >
+        
           <Text
             className="text-white"
             style={{ fontSize: 30, fontWeight: "900", marginBottom: 10 }}

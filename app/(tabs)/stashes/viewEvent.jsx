@@ -24,6 +24,8 @@ import { useUser } from "../../../context/UserContext";
 import { useFocusEffect } from "@react-navigation/core";
 import CustomBottomSheet from "../../../components/CustomBottomSheet";
 import DownloadAllPhotosBottomSheet from "../../../components/DownloadAllPhotosBottomSheet";
+import EventPhotoBottomSheet from "../../../components/EventPhotoBottomSheet";
+import StashPhotosBottomSheet from "../../../components/StashPhotosBottomSheet";
 
 export default function ViewEvent() {
   const { user } = useUser();
@@ -45,6 +47,14 @@ export default function ViewEvent() {
     date: params.date,
     location: params.location,
   });
+
+  //Updating stash image
+  const handleImageUpdate = (newImageUrl) => {
+    setEventParams((prev) => ({
+      ...prev,
+      image: newImageUrl,
+    }));
+  };
 
   const parseTimeToDate = (timeString) => {
     const [hours, minutes, seconds] = timeString.split(":").map(Number);
@@ -118,13 +128,12 @@ export default function ViewEvent() {
 
   //Bottom sheet
   const [isOpen2, setIsOpen2] = useState(false);
-  const snapPoints2 = ["100%"];
+  const snapPoints2 = ["90%"];
   const sheetRef2 = useRef(null);
 
   const handleSheetChange2 = useCallback((index) => {
     console.log("handleSheetChange", index);
     if (index === -1) {
-      // Sheet has been closed (either by pan-down or programmatically)
       Keyboard.dismiss();
     }
   }, []);
@@ -141,6 +150,53 @@ export default function ViewEvent() {
   );
 
   const handleClosePress2 = useCallback(() => {
+    console.log("dddddddddddddd");
+    Keyboard.dismiss();
+    sheetRef.current?.close();
+  }, []);
+  //End of Bottom sheet props
+
+  //Bottom sheet
+  const [isOpen3, setIsOpen3] = useState(false);
+  const snapPoints3 = ["90%"];
+  const sheetRef3 = useRef(null);
+
+  const handleSnapPress3 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen3) {
+        setIsOpen3(true); // Show the bottom sheet
+      }
+      sheetRef3.current?.snapToIndex(index);
+    },
+    [isOpen3]
+  );
+  //End of Bottom sheet props
+
+  //Bottom sheet
+  const [isOpen4, setIsOpen4] = useState(false);
+  const snapPoints4 = ["90%"];
+  const sheetRef4 = useRef(null);
+
+  const handleSheetChange4 = useCallback((index) => {
+    console.log("handleSheetChange", index);
+    if (index === -1) {
+      Keyboard.dismiss();
+    }
+  }, []);
+
+  const handleSnapPress4 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen4) {
+        setIsOpen4(true); // Show the bottom sheet
+      }
+      sheetRef4.current?.snapToIndex(index);
+    },
+    [isOpen4]
+  );
+
+  const handleClosePress4 = useCallback(() => {
     console.log("dddddddddddddd");
     Keyboard.dismiss();
     sheetRef.current?.close();
@@ -228,10 +284,12 @@ export default function ViewEvent() {
             backgroundColor: "",
           }}
         >
-          <Image
-            source={{ uri: eventParams.image }}
-            style={{ borderRadius: 500, width: 50, height: 50 }}
-          />
+          <TouchableOpacity onPress={() => handleSnapPress3(0)}>
+            <Image
+              source={{ uri: eventParams.image }}
+              style={{ borderRadius: 500, width: 50, height: 50 }}
+            />
+          </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <TouchableOpacity
               onPress={() => handleSnapPress(0)}
@@ -300,6 +358,7 @@ export default function ViewEvent() {
           existingPublicLink={event?.public_photo_link}
           eventParticipants={event?.participants}
           openDownloadSheet={() => handleSnapPress2(0)}
+          openStashPhotosSheet={() => handleSnapPress4(0)}
         />
       </View>
 
@@ -324,12 +383,32 @@ export default function ViewEvent() {
       {/* </ScrollView> */}
 
       <DownloadAllPhotosBottomSheet
-        bottomSheetTitle={"Download photos"}
         sheetRef={sheetRef2}
         snapPoints={snapPoints2}
         handleSheetChange={handleSheetChange2}
         handleClosePress={handleClosePress2}
         isOpen={isOpen2}
+        eventId={eventId}
+        eventName={eventParams.name}
+      />
+      <StashPhotosBottomSheet
+        bottomSheetTitle={"Stash event photos"}
+        sheetRef={sheetRef4}
+        snapPoints={snapPoints4}
+        handleSheetChange={handleSheetChange4}
+        handleClosePress={handleClosePress4}
+        isOpen={isOpen4}
+        eventId={eventId}
+        eventName={eventParams.name}
+      />
+      <EventPhotoBottomSheet
+        bottomSheetTitle={"Update event photo"}
+        sheetRef={sheetRef3}
+        snapPoints={snapPoints3}
+        isOpen={isOpen3}
+        eventId={eventId}
+        existingImage={eventParams?.image}
+        onImageUpload={handleImageUpdate}
       />
     </SafeAreaView>
   );

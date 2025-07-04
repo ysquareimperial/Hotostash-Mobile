@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    color: "white",
+    color: "grey",
     // textAlign: "center",
   },
   modalExtraText: {

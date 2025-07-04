@@ -24,12 +24,44 @@ import { api } from "../../helpers/helpers";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomModal from "../../components/CustomModal";
+// import ProfilePictureUpload from "../../components/ProfileImageUploader";
+import ProfilePictureBottomSheet from "../../components/ProfilePictureBottomSheet";
 
 const Profile = () => {
   const { user } = useUser();
   const { saveUser } = useUser(); // Get saveUser from context
   const [error, setError] = useState("");
   const [modalVisible2, setModalVisible2] = useState(false);
+
+  //Bottom sheet
+  const [isOpen2, setIsOpen2] = useState(false);
+  const snapPoints2 = ["90%"];
+  const sheetRef2 = useRef(null);
+
+  // const handleSheetChange2 = useCallback((index) => {
+  //   console.log("handleSheetChange", index);
+  //   // if (index === -1) {
+  //   //   Keyboard.dismiss();
+  //   // }
+  // }, []);
+
+  const handleSnapPress2 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen2) {
+        setIsOpen2(true); // Show the bottom sheet
+      }
+      sheetRef2.current?.snapToIndex(index);
+    },
+    [isOpen2]
+  );
+
+  // const handleClosePress2 = useCallback(() => {
+  //   console.log("dddddddddddddd");
+  //   sheetRef.current?.close();
+  // }, []);
+  //End of Bottom sheet props
+
   // const formattedDOB = format(user?.dob, "MMMM dd, yyyy");
   const formattedDOB = user?.dob
     ? format(new Date(user.dob), "MMMM dd, yyyy")
@@ -161,14 +193,17 @@ const Profile = () => {
           className="w-full min-h-[85vh] px-4 my-6"
           style={{ backgroundColor: "" }}
         >
+          {/* <ProfilePictureUpload /> */}
           {/* <Text style={{color:'white'}}>{authToken}</Text> */}
           <View>
-            <Image
-              source={{ uri: user?.image }}
-              // className="w-[84px] h-[84px]"
-              style={{ borderRadius: 500, width: 80, height: 80 }}
-              // resizeMode="contain"
-            />
+            <TouchableOpacity onPress={() => handleSnapPress2(0)}>
+              <Image
+                source={{ uri: user?.image }}
+                // className="w-[84px] h-[84px]"
+                style={{ borderRadius: 500, width: 80, height: 80 }}
+                // resizeMode="contain"
+              />
+            </TouchableOpacity>
 
             <View
               style={{
@@ -527,6 +562,17 @@ const Profile = () => {
             setModalVisible={setModalVisible2} // Pass the setter function to update the state
           />
         </View>
+        <ProfilePictureBottomSheet
+          bottomSheetTitle={"Update profile photo"}
+          sheetRef={sheetRef2}
+          snapPoints={snapPoints2}
+          // handleSheetChange={handleSheetChange2}
+          // handleClosePress={handleClosePress2}
+          isOpen={isOpen2}
+          existingImage={user?.image}
+          // eventId={eventId}
+          // eventName={eventParams.name}
+        />
         {/* </ScrollView> */}
       </SafeAreaView>
       {/* <BottomDrawer /> */}

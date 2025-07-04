@@ -17,9 +17,8 @@ import * as Sharing from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Octicons from "@expo/vector-icons/Octicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { grey1, grey2, grey3, red } from "./colors";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { PhotoOptions } from "./PhotoOptions";
 import SkeletonForPhotos from "./SkeletonForPhotos";
 import MasonryWithSelection from "./MasonryWithSelection";
@@ -31,7 +30,13 @@ import GeneratePublicLink from "./GeneratePublicLink";
 import { useUser } from "../context/UserContext";
 import ShareComponent from "./ShareComponent";
 
-const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadSheet }) => {
+const EventPhotos = ({
+  eventId,
+  eventParticipants,
+  existingLink,
+  openDownloadSheet,
+  openStashPhotosSheet,
+}) => {
   const { user } = useUser();
   const [fetchedImages, setFetchedImages] = useState([]);
   const [authToken, setAuthToken] = useState(null);
@@ -90,11 +95,14 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
   };
   //Deleting photos----------------------------------------------------------
 
-  const handleImagePress = (index) => {
-    setCurrentIndex(index);
-    setTimeout(() => {
-      setViewerVisible(true);
-    }, 0);
+  const handleImagePress = (id) => {
+    const correctIndex = fetchedImages.findIndex((img) => img.id === id);
+    if (correctIndex !== -1) {
+      setCurrentIndex(correctIndex);
+      setTimeout(() => {
+        setViewerVisible(true);
+      }, 0);
+    }
   };
 
   //Download Image
@@ -170,21 +178,100 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
   }, []);
 
   //Fetch images
+  // const fetchImages = async (isRefreshing = false) => {
+  //   if (loading || (!hasMore && !isRefreshing)) return;
+
+  //   if (isRefreshing) {
+  //     setPage(1);
+  //     setHasMore(true);
+  //   }
+
+  //   setLoading(true);
+  //   if (firstLoad) {
+  //     setLoadingPhotos(true); // Show skeleton only on first load
+  //   }
+
+  //   try {
+  //     const offset = isRefreshing ? 0 : (page - 1) * 10;
+  //     const response = await fetch(
+  //       `${api}photos/${eventId}/photos?limit=10&offset=${offset}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${authToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+
+  //     // 👉 Add actual image dimensions to each image object
+  //     const imagesWithDimensions = await Promise.all(
+  //       data.map(async (img) => {
+  //         try {
+  //           const dimensions = await new Promise((resolve, reject) => {
+  //             RNImage.getSize(
+  //               img.url,
+  //               (width, height) => resolve({ width, height }),
+  //               reject
+  //             );
+  //           });
+
+  //           return {
+  //             ...img,
+  //             width: dimensions.width,
+  //             height: dimensions.height,
+  //           };
+  //         } catch (e) {
+  //           console.warn(`Failed to get size for image: ${img.url}`);
+  //           return {
+  //             ...img,
+  //             width: 1, // fallback square
+  //             height: 1,
+  //           };
+  //         }
+  //       })
+  //     );
+
+  //     if (imagesWithDimensions.length > 0) {
+  //       setFetchedImages((prev) =>
+  //         isRefreshing
+  //           ? imagesWithDimensions
+  //           : [...prev, ...imagesWithDimensions]
+  //       );
+  //       setPage((prevPage) => prevPage + 1);
+  //     } else {
+  //       setHasMore(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching images:", error);
+  //   } finally {
+  //     setLoading(false);
+  //     setLoadingPhotos(false);
+  //     if (firstLoad) setFirstLoad(false);
+  //     if (isRefreshing) setRefreshing(false);
+  //   }
+  // };
+
   const fetchImages = async (isRefreshing = false) => {
     if (loading || (!hasMore && !isRefreshing)) return;
 
+    const nextPage = isRefreshing ? 1 : page;
+    const offset = isRefreshing ? 0 : (page - 1) * 10;
+
     if (isRefreshing) {
-      setPage(1);
       setHasMore(true);
     }
 
     setLoading(true);
     if (firstLoad) {
-      setLoadingPhotos(true); // Show skeleton only on first load
+      setLoadingPhotos(true);
     }
 
     try {
-      const offset = isRefreshing ? 0 : (page - 1) * 10;
       const response = await fetch(
         `${api}photos/${eventId}/photos?limit=10&offset=${offset}`,
         {
@@ -200,7 +287,6 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
 
       const data = await response.json();
 
-      // 👉 Add actual image dimensions to each image object
       const imagesWithDimensions = await Promise.all(
         data.map(async (img) => {
           try {
@@ -221,7 +307,7 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
             console.warn(`Failed to get size for image: ${img.url}`);
             return {
               ...img,
-              width: 1, // fallback square
+              width: 1,
               height: 1,
             };
           }
@@ -234,7 +320,8 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
             ? imagesWithDimensions
             : [...prev, ...imagesWithDimensions]
         );
-        setPage((prevPage) => prevPage + 1);
+
+        setPage((prev) => (isRefreshing ? 2 : prev + 1));
       } else {
         setHasMore(false);
       }
@@ -344,8 +431,7 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
               borderRadius: 50,
               color: "white",
             }}
-            // onPress={() => handleSnapPress(0)}
-            // onPress={pickPhotos}
+            onPress={openStashPhotosSheet}
           >
             <View
               style={{
@@ -367,7 +453,7 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
           {fetchedImages.length !== 0 && (
             <View style={{ flexDirection: "row", columnGap: 5 }}>
               <TouchableOpacity
-              onPress={openDownloadSheet}
+                onPress={openDownloadSheet}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 style={{
                   backgroundColor: grey1,
@@ -527,7 +613,7 @@ const EventPhotos = ({ eventId, eventParticipants, existingLink, openDownloadShe
                 <TouchableOpacity
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   activeOpacity={0.9}
-                  onPress={() => handleImagePress(index)}
+                  onPress={() => handleImagePress(item.id)}
                   onLongPress={() => togglePhotoSelection(imageId)}
                   style={{ margin: 2, borderRadius: 10, overflow: "hidden" }}
                 >

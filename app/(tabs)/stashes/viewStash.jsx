@@ -28,6 +28,8 @@ import ManageMember from "./manageMember";
 import InviteStashMembers from "./inviteStashMembers";
 import CreateEvent from "./createEvent";
 import CustomBottomSheet from "../../../components/CustomBottomSheet";
+import ProfilePictureBottomSheet from "../../../components/ProfilePictureBottomSheet";
+import StashPhotoBottomSheet from "../../../components/StashPhotoBottomSheet";
 
 export default function ViewStash() {
   const { user } = useUser();
@@ -45,6 +47,14 @@ export default function ViewStash() {
     description: params.description,
     created_at: params.created_at,
   });
+
+  //Updating stash image
+  const handleImageUpdate = (newImageUrl) => {
+    setStashParams((prev) => ({
+      ...prev,
+      image: newImageUrl,
+    }));
+  };
 
   const { refresh } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
@@ -505,6 +515,23 @@ export default function ViewStash() {
   //   );
   // }
 
+  //Bottom sheet
+  const [isOpen6, setIsOpen6] = useState(false);
+  const snapPoints6 = ["90%"];
+  const sheetRef6 = useRef(null);
+
+  const handleSnapPress6 = useCallback(
+    (index) => {
+      console.log("snapped");
+      if (!isOpen6) {
+        setIsOpen6(true); // Show the bottom sheet
+      }
+      sheetRef6.current?.snapToIndex(index);
+    },
+    [isOpen6]
+  );
+  //End of Bottom sheet props
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -533,10 +560,12 @@ export default function ViewStash() {
               backgroundColor: "",
             }}
           >
-            <Image
-              source={{ uri: stashParams.image }}
-              style={{ borderRadius: 500, width: 50, height: 50 }}
-            />
+            <TouchableOpacity onPress={() => handleSnapPress6(0)}>
+              <Image
+                source={{ uri: stashParams.image }}
+                style={{ borderRadius: 500, width: 50, height: 50 }}
+              />
+            </TouchableOpacity>
             <View style={{ flex: 1 }}>
               <TouchableOpacity
                 onPress={() => handleSnapPress5(0)}
@@ -987,6 +1016,16 @@ export default function ViewStash() {
         handleChangeDescription={(text) =>
           setForm({ ...form, description: text })
         }
+      />
+
+      <StashPhotoBottomSheet
+        bottomSheetTitle={"Update stash photo"}
+        sheetRef={sheetRef6}
+        snapPoints={snapPoints6}
+        isOpen={isOpen6}
+        stashId={stashParams.id}
+        existingImage={stashParams?.image}
+        onImageUpload={handleImageUpdate}
       />
     </SafeAreaView>
   );

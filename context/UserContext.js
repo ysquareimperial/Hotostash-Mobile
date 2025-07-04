@@ -27,7 +27,6 @@ export const UserProvider = ({ children }) => {
         const storedUser = await AsyncStorage.getItem("user");
         if (storedUser) {
           setUser(JSON.parse(storedUser)); // Load user from AsyncStorage
-          
         }
       } catch (error) {
         console.error("Error loading user data:", error);

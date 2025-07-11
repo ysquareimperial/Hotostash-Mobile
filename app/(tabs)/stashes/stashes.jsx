@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   Keyboard,
+  Button,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -311,7 +312,6 @@ const Stashes = () => {
             justifyContent: "space-between",
           }}
         >
-        
           <Text
             className="text-white"
             style={{ fontSize: 30, fontWeight: "900", marginBottom: 10 }}
@@ -325,7 +325,9 @@ const Stashes = () => {
             <AntDesign name="plus" size={20} color="white" />
           </TouchableOpacity>
         </View>
-
+        {/* <Link href="/modal" push asChild>
+          <Button title="open modal" />
+        </Link> */}
         <FlatList
           data={stashes} // Data to render
           keyExtractor={(item) => item.id.toString()} // Unique key for each item

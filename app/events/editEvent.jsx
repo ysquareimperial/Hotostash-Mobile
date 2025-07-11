@@ -11,12 +11,15 @@ import {
   Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { grey1, grey2, grey3, orange } from "../../../components/colors";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { api } from "../../../helpers/helpers";
+import { grey1, grey2, grey3, orange } from "../../components/colors";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { api } from "../../helpers/helpers";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useUser } from "../../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function EditEvent({
@@ -133,6 +136,14 @@ export default function EditEvent({
             backgroundColor: "white",
           }}
           backgroundStyle={{ backgroundColor: grey2 }}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              pressBehavior={loading2 ? "none" : "close"} // closes sheet when background is pressed
+            />
+          )}
         >
           <ScrollView
             style={{ flex: 1 }}

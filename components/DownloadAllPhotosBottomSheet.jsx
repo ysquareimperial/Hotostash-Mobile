@@ -318,7 +318,7 @@ export default function DownloadAllPhotosBottomSheet({
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}
-          backgroundStyle={{ backgroundColor: "black" }}
+          backgroundStyle={{ backgroundColor: grey2 }}
           ref={sheetRef}
           snapPoints={snapPoints}
           enablePanDownToClose={!loading ? true : false}
@@ -332,7 +332,7 @@ export default function DownloadAllPhotosBottomSheet({
             />
           )}
         >
-          <View style={{ flex: 1, backgroundColor: "black" }}>
+          <View style={{ flex: 1, backgroundColor: grey2 }}>
             <BottomSheetView className="px-4">
               {!loading && !downloaded && (
                 <View>

@@ -7,10 +7,11 @@ import {
   ScrollView,
   RefreshControl,
   Keyboard,
+  Button,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams, router, Link } from "expo-router";
 import { grey1, grey2, grey3, orange } from "../../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format, parseISO } from "date-fns";
@@ -150,7 +151,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 3
   const [isOpen3, setIsOpen3] = useState(false);
-  const snapPoints3 = ["80%"];
+  const snapPoints3 = ["90%"];
   const sheetRef3 = useRef(null);
 
   const handleSheetChange3 = useCallback((index) => {
@@ -185,7 +186,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 3
   const [isOpen4, setIsOpen4] = useState(false);
-  const snapPoints4 = ["80%"];
+  const snapPoints4 = ["90%"];
   const sheetRef4 = useRef(null);
 
   const handleSheetChange4 = useCallback((index) => {
@@ -220,7 +221,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 5
   const [isOpen5, setIsOpen5] = useState(false);
-  const snapPoints5 = ["100%"];
+  const snapPoints5 = ["90%"];
   const sheetRef5 = useRef(null);
 
   const handleSheetChange5 = useCallback((index) => {
@@ -631,6 +632,9 @@ export default function ViewStash() {
               <AntDesign name="plus" size={20} color="white" />
             </TouchableOpacity>
           </View>
+          {/* <Link href="/events/viewEvent" push asChild>
+            <Button title="open modal" />
+          </Link> */}
           {loading ? (
             <View>
               <SkeletonForEvents />
@@ -638,62 +642,68 @@ export default function ViewStash() {
           ) : (
             <View style={{ marginTop: 10 }}>
               {stashEvents?.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() =>
-                    router.push(
-                      `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
-                    )
-                  }
+                <Link
+                  href={`/events/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`}
+                  push
+                  asChild
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 10,
-                      marginBottom: 10,
-                      backgroundColor: grey2,
-                      borderRadius: 10,
-                      padding: 10,
-                      alignItems: "center",
-                    }}
+                  <TouchableOpacity
+                    key={index}
+                    // onPress={() =>
+                    //   router.push(
+                    //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
+                    //   )
+                    // }
                   >
-                    <Image
-                      source={{ uri: item?.image }}
-                      style={{ borderRadius: 500, width: 50, height: 50 }}
-                    />
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{ color: "grey", fontSize: 14 }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {item?.date
-                          ? format(parseISO(item.date), "MMM dd, yyyy")
-                          : "N/A"}{" "}
-                        • {item?.location}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          color: "white",
-                          marginTop: 10,
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {item.name}
-                      </Text>
-                      <Text
-                        style={{ color: "grey", fontSize: 14 }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {item?.description}
-                      </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 10,
+                        marginBottom: 10,
+                        backgroundColor: grey2,
+                        borderRadius: 10,
+                        padding: 10,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Image
+                        source={{ uri: item?.image }}
+                        style={{ borderRadius: 500, width: 50, height: 50 }}
+                      />
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={{ color: "grey", fontSize: 14 }}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {item?.date
+                            ? format(parseISO(item.date), "MMM dd, yyyy")
+                            : "N/A"}{" "}
+                          • {item?.location}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            fontWeight: "bold",
+                            color: "white",
+                            marginTop: 10,
+                          }}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {item.name}
+                        </Text>
+                        <Text
+                          style={{ color: "grey", fontSize: 14 }}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {item?.description}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </Link>
               ))}
 
               {/* I F  T H E R E  I S  N O  E V E N T S */}

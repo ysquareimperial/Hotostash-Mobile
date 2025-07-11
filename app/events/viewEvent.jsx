@@ -10,22 +10,22 @@ import {
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalSearchParams, router, Link } from "expo-router";
-import { grey1, grey2, grey3, orange } from "../../../components/colors";
+import { grey1, grey2, grey3, orange } from "../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format, parseISO } from "date-fns";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { api } from "../../../helpers/helpers";
+import { api } from "../../helpers/helpers";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import EventTabs from "../../../components/EventTabs";
-import EventPhotos from "../../../components/EventPhotos";
+import EventTabs from "../../components/EventTabs";
+import EventPhotos from "../../components/EventPhotos";
 import EditEvent from "./editEvent";
-import { useUser } from "../../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { useFocusEffect } from "@react-navigation/core";
-import CustomBottomSheet from "../../../components/CustomBottomSheet";
-import DownloadAllPhotosBottomSheet from "../../../components/DownloadAllPhotosBottomSheet";
-import EventPhotoBottomSheet from "../../../components/EventPhotoBottomSheet";
-import StashPhotosBottomSheet from "../../../components/StashPhotosBottomSheet";
+import CustomBottomSheet from "../../components/CustomBottomSheet";
+import DownloadAllPhotosBottomSheet from "../../components/DownloadAllPhotosBottomSheet";
+import EventPhotoBottomSheet from "../../components/EventPhotoBottomSheet";
+import StashPhotosBottomSheet from "../../components/StashPhotosBottomSheet";
 
 export default function ViewEvent() {
   const { user } = useUser();
@@ -90,7 +90,7 @@ export default function ViewEvent() {
 
   //Bottom sheet
   const [isOpen, setIsOpen] = useState(false);
-  const snapPoints = ["80%"];
+  const snapPoints = ["90%"];
   const sheetRef = useRef(null);
 
   const handleSheetChange = useCallback((index) => {

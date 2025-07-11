@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { grey2, orange } from "./colors";
+import { grey1, grey2, orange } from "./colors";
 import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
 import Contribution from "../app/contribution/contribution";
@@ -55,6 +55,31 @@ export default function EventTabs({
           </View>
         ))}
       </View>
+      <View
+        className="px-4"
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          backgroundColor: "",
+          paddingTop: 8,
+          paddingBottom: 8,
+          borderBottomWidth: 1,
+          borderBottomColor: grey2,
+        }}
+      >
+        <View>
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            Stashing photos...
+          </Text>
+        </View>
+        <View>
+          <Text style={{ color: orange, fontWeight: "bold" }}>Cancel</Text>
+        </View>
+      </View>
+      <View
+        className=""
+        style={{ borderColor: grey1, borderWidth: 1, width:'50%' }}
+      ></View>
 
       {/* Tab Content */}
       <View>

@@ -8,7 +8,7 @@ import { Link, router } from "expo-router";
 
 const Header = () => {
   return (
-    <View style={styles.header} className='px-4'>
+    <View style={styles.header} className="px-4">
       {/* App Logo */}
       <Image
         source={logo} // Replace with your logo path

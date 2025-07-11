@@ -5,6 +5,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { StatusBar } from "expo-status-bar";
 import Header from "../../components/header";
 import { grey1, grey2, grey3 } from "../../components/colors";
+import BlurTabBar from "../../components/BlurTabBar";
 
 const TabIcon = ({ focused, icon, name, color }) => {
   return (
@@ -38,7 +39,7 @@ const TabsLayout = () => {
           tabBarActiveTintColor: "#ff5600",
           tabBarInactiveTintColor: "white",
           tabBarStyle: {
-            backgroundColor: "black",
+            backgroundColor: '#121212',
             borderTopWidth: 1,
             borderTopColor: grey2,
             // paddingBottom: 10,
@@ -47,6 +48,23 @@ const TabsLayout = () => {
           },
         }}
       >
+      {/* <Tabs
+        tabBar={(props) => <BlurTabBar {...props} />}
+        screenOptions={{
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#ff5600",
+          tabBarInactiveTintColor: "white",
+          tabBarStyle: {
+            backgroundColor: "transparent", // Important for blur
+            borderTopWidth: 1,
+            borderTopColor: grey2,
+            paddingTop: 10,
+            height: 84,
+            position: "absolute",
+            elevation: 0, // for Android
+          },
+        }}
+      > */}
         <Tabs.Screen
           name="stashes"
           options={{

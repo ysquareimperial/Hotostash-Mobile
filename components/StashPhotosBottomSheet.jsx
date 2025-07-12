@@ -44,9 +44,12 @@ export default function StashPhotosBottomSheet({
   bottomSheetTitle,
   eventId,
   eventName,
+  overallProgress,
+  setOverallProgress 
 }) {
   const [authToken, setAuthToken] = useState(null);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
+  // const [overallProgress, setOverallProgress] = useState(0);
   const MAX_SIZE_MB = 10;
   const [loading, setLoading] = useState(false);
   const [stashing, setStashing] = useState(false);
@@ -323,6 +326,7 @@ export default function StashPhotosBottomSheet({
   const handleSubmit = async () => {
     console.log("🔁 handleSubmit called");
     setCompressingProgress(0);
+    setOverallProgress(0);
     setStashing(true);
     compressionCancelled.current = false;
 
@@ -330,55 +334,6 @@ export default function StashPhotosBottomSheet({
     const signal = abortControllerRef.current.signal;
 
     try {
-      // let completed = 0;
-      // const total = selectedPhotos.length;
-      // console.log("📦 Starting image compression...");
-      // const compressedResults = await Promise.all(
-      //   selectedPhotos.map(async (photo) => {
-      //     if (compressionCancelled.current)
-      //       throw new Error("Compression cancelled");
-      //     try {
-      //       const compressed = await compressPhotoRecursively(photo.uri);
-      //       completed += 1;
-      //       setCompressingProgress(Math.round((completed / total) * 100));
-      //       return { ...compressed, originalFileName: photo.fileName };
-      //     } catch (err) {
-      //       completed += 1;
-      //       setCompressingProgress(Math.round((completed / total) * 100));
-      //       console.error(`❌ Compression failed for ${photo.fileName}:`, err);
-      //       return { ...photo, originalFileName: photo.fileName };
-      //     }
-      //   })
-      // );
-
-      // let completed = 0;
-      // const total = selectedPhotos.length;
-      // // const compressedResults = [];
-
-      // for (let i = 0; i < selectedPhotos.length; i++) {
-      //   if (compressionCancelled.current)
-      //     throw new Error("Compression cancelled");
-
-      //   const photo = selectedPhotos[i];
-
-      //   try {
-      //     const compressed = await compressPhotoRecursively(photo.uri);
-      //     compressedResults.push({
-      //       ...compressed,
-      //       originalFileName: photo.fileName,
-      //     });
-      //   } catch (err) {
-      //     console.error(`❌ Compression failed for ${photo.fileName}:`, err);
-      //     compressedResults.push({
-      //       ...photo,
-      //       originalFileName: photo.fileName,
-      //     }); // fallback
-      //   }
-
-      //   completed += 1;
-      //   setCompressingProgress(Math.round((completed / total) * 100)); // ✅ Will now update smoothly
-      // }
-
       let completed = 0;
       const total = selectedPhotos.length;
       const progressInterval = setInterval(() => {
@@ -392,6 +347,14 @@ export default function StashPhotosBottomSheet({
 
       if (compressionCancelled.current) throw new Error("Process cancelled");
 
+      // ✅ Setup overall progress
+      const totalSteps = 1 + selectedPhotos.length * 2 + 1;
+      let completedSteps = 0;
+      const incrementProgress = () => {
+        completedSteps++;
+        const percent = Math.round((completedSteps / totalSteps) * 100);
+        setOverallProgress(percent);
+      };
       // 🔗 Fetch presigned URLs
       console.log("🔗 Fetching presigned upload URLs...");
       const queryString = selectedPhotos
@@ -406,6 +369,7 @@ export default function StashPhotosBottomSheet({
       );
 
       console.log("✅ Presigned URLs fetched:", data.upload_urls);
+      incrementProgress(); // ✅ Step 1 done
 
       const uploadedInfo = [];
 
@@ -445,6 +409,7 @@ export default function StashPhotosBottomSheet({
             "image/jpeg",
             signal
           );
+          incrementProgress(); // ✅ Compressed upload done
 
           uploadedInfo.push({
             filename: presigned.filename,
@@ -470,6 +435,7 @@ export default function StashPhotosBottomSheet({
           }
         );
         console.log("✅ Upload confirmation complete");
+        incrementProgress(); // ✅ Confirm step done
 
         Alert.alert(
           "Upload complete",
@@ -493,6 +459,8 @@ export default function StashPhotosBottomSheet({
       }
     } finally {
       setStashing(false);
+      setOverallProgress(100); // ✅ Ensure it's 100% on finish
+
       console.log("🏁 handleSubmit process finished");
     }
   };
@@ -632,6 +600,29 @@ export default function StashPhotosBottomSheet({
                             </TouchableOpacity>
                           </View>
                         ))}
+                        {overallProgress > 0 && (
+                          <View style={{ marginVertical: 10 }}>
+                            <Text style={{ color: "white", marginBottom: 5 }}>
+                              Uploading: {overallProgress}%
+                            </Text>
+                            <View
+                              style={{
+                                height: 10,
+                                backgroundColor: "#ccc",
+                                borderRadius: 5,
+                                overflow: "hidden",
+                              }}
+                            >
+                              <View
+                                style={{
+                                  height: "100%",
+                                  width: `${overallProgress}%`,
+                                  backgroundColor: "#00ff00", // Green progress
+                                }}
+                              />
+                            </View>
+                          </View>
+                        )}
                       </View>
                     )}
                   </View>

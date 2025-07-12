@@ -38,7 +38,7 @@ export default function ViewEvent() {
   const [existingLink, setExistingLink] = useState(null);
   const { eventId } = useLocalSearchParams();
   const { stashId } = useLocalSearchParams();
-
+  const [overallProgress, setOverallProgress] = useState(0);
   const [eventParams, setEventParams] = useState({
     name: params.name,
     image: params.image,
@@ -313,6 +313,7 @@ export default function ViewEvent() {
                   style={{
                     color: "grey",
                     fontSize: 14,
+                    marginTop: 5,
                   }}
                 >
                   {eventParams.description}
@@ -323,7 +324,7 @@ export default function ViewEvent() {
                   color: "grey",
                   fontSize: 12,
                   // fontWeight: "bold",
-                  // marginTop: 5,
+                  marginTop: 5,
                 }}
               >
                 {eventParams.date
@@ -359,6 +360,7 @@ export default function ViewEvent() {
           eventParticipants={event?.participants}
           openDownloadSheet={() => handleSnapPress2(0)}
           openStashPhotosSheet={() => handleSnapPress4(0)}
+          overallProgress={overallProgress} // ✅ pass to EventTabs
         />
       </View>
 
@@ -400,6 +402,8 @@ export default function ViewEvent() {
         isOpen={isOpen4}
         eventId={eventId}
         eventName={eventParams.name}
+        overallProgress={overallProgress}
+        setOverallProgress={setOverallProgress} // ✅ pass setter to BottomSheet
       />
       <EventPhotoBottomSheet
         bottomSheetTitle={"Update event photo"}

@@ -14,6 +14,7 @@ export default function EventTabs({
   openDownloadSheet,
   openStashPhotosSheet,
   existingPublicLink,
+  overallProgress,
 }) {
   const [activeItem, setActiveItem] = useState("photos");
 
@@ -55,31 +56,66 @@ export default function EventTabs({
           </View>
         ))}
       </View>
-      <View
-        className="px-4"
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          backgroundColor: "",
-          paddingTop: 8,
-          paddingBottom: 8,
-          borderBottomWidth: 1,
-          borderBottomColor: grey2,
-        }}
-      >
+
+      {/* Stashing progress */}
+      {/* progress bar */}
+      {overallProgress > 0 && overallProgress < 100 && (
         <View>
-          <Text style={{ color: "white", fontWeight: "bold" }}>
-            Stashing photos...
+          <View
+            className="px-4"
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              backgroundColor: "",
+              paddingTop: 8,
+              paddingBottom: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: grey2,
+            }}
+          >
+            <View>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Stashing photos...
+              </Text>
+            </View>
+            <View>
+              <Text style={{ color: orange, fontWeight: "bold" }}>Cancel</Text>
+            </View>
+          </View>
+          <View
+            className=""
+            style={{
+              borderColor: grey1,
+              borderWidth: 1,
+              width: `${overallProgress}%`,
+            }}
+          ></View>
+        </View>
+      )}
+
+      {/* {overallProgress > 0 && (
+        <View style={{ marginVertical: 10 }}>
+          <Text style={{ color: "white", marginBottom: 5 }}>
+            Uploading: {overallProgress}%
           </Text>
+          <View
+            style={{
+              height: 10,
+              backgroundColor: "#ccc",
+              borderRadius: 5,
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{
+                height: "100%",
+                width: `${overallProgress}%`,
+                backgroundColor: "#00ff00",
+              }}
+            />
+          </View>
         </View>
-        <View>
-          <Text style={{ color: orange, fontWeight: "bold" }}>Cancel</Text>
-        </View>
-      </View>
-      <View
-        className=""
-        style={{ borderColor: grey1, borderWidth: 1, width:'50%' }}
-      ></View>
+      )} */}
 
       {/* Tab Content */}
       <View>

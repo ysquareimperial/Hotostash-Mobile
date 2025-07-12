@@ -590,6 +590,7 @@ export default function ViewStash() {
                     style={{
                       color: "grey",
                       fontSize: 14,
+                      marginTop:5
                       // width: 200, // Constrained width for truncation
                     }}
                   >

@@ -176,6 +176,7 @@ export default function CreateEvent({
           snapPoints={snapPoints}
           enablePanDownToClose={loading2 ? false : true}
           onChange={handleSheetChange}
+          keyboardBehavior="interactive"
           handleIndicatorStyle={{
             backgroundColor: "white",
           }}

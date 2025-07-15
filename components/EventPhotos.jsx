@@ -29,6 +29,8 @@ import CustomModal from "./CustomModal";
 import GeneratePublicLink from "./GeneratePublicLink";
 import { useUser } from "../context/UserContext";
 import ShareComponent from "./ShareComponent";
+import { usePhotoRefresh } from "./PhotoRefreshContext";
+
 
 const EventPhotos = ({
   eventId,
@@ -51,6 +53,8 @@ const EventPhotos = ({
   const imagesForViewer = fetchedImages.map((item) => ({ uri: item.url }));
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
+    const { refreshCount } = usePhotoRefresh();
+
 
   //Deleting photos----------------------------------------------------------
   const [loading2, setLoading2] = useState(false);
@@ -341,7 +345,7 @@ const EventPhotos = ({
 
       fetchImages(true); // Fetch fresh images when authToken is available
     }
-  }, [authToken]);
+  }, [authToken, refreshCount]);
 
   //Delete photos
   const deletePhotos = () => {
@@ -415,7 +419,7 @@ const EventPhotos = ({
             flexDirection: "row",
             justifyContent: "space-between",
             marginTop: 10,
-            marginBottom: 5,
+            marginBottom: 8,
           }}
         >
           {/* <MasonryWithSelection /> */}

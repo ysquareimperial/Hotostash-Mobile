@@ -23,7 +23,7 @@ const FormField = ({
             backgroundColor: grey1,
             padding: 14,
             border: "none",
-            borderRadius: 5,
+            borderRadius: 10,
             color: "white",
           }}
           value={value}

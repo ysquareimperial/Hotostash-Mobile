@@ -36,7 +36,7 @@ const CustomButton = ({
 const styles = StyleSheet.create({
   button: {
     backgroundColor: "#ff5600", // Replace with your secondary color
-    borderRadius: 5,
+    borderRadius: 15,
     // minHeight: 62,
     padding: 10,
     justifyContent: "center",

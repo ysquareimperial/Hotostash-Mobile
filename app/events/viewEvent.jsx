@@ -26,6 +26,7 @@ import CustomBottomSheet from "../../components/CustomBottomSheet";
 import DownloadAllPhotosBottomSheet from "../../components/DownloadAllPhotosBottomSheet";
 import EventPhotoBottomSheet from "../../components/EventPhotoBottomSheet";
 import StashPhotosBottomSheet from "../../components/StashPhotosBottomSheet";
+import { PhotoRefreshProvider } from "../../components/PhotoRefreshContext";
 
 export default function ViewEvent() {
   const { user } = useUser();
@@ -350,19 +351,34 @@ export default function ViewEvent() {
           </View>
         </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <EventTabs
-          event={event}
+      <PhotoRefreshProvider>
+        <View style={{ flex: 1 }}>
+          <EventTabs
+            event={event}
+            eventId={eventId}
+            stashId={stashId}
+            existingLink={existingLink}
+            existingPublicLink={event?.public_photo_link}
+            eventParticipants={event?.participants}
+            openDownloadSheet={() => handleSnapPress2(0)}
+            openStashPhotosSheet={() => handleSnapPress4(0)}
+            overallProgress={overallProgress} // ✅ pass to EventTabs
+          />
+        </View>
+
+        <StashPhotosBottomSheet
+          bottomSheetTitle={"Stash event photos"}
+          sheetRef={sheetRef4}
+          snapPoints={snapPoints4}
+          handleSheetChange={handleSheetChange4}
+          // handleClosePress={handleClosePress4}
+          isOpen={isOpen4}
           eventId={eventId}
-          stashId={stashId}
-          existingLink={existingLink}
-          existingPublicLink={event?.public_photo_link}
-          eventParticipants={event?.participants}
-          openDownloadSheet={() => handleSnapPress2(0)}
-          openStashPhotosSheet={() => handleSnapPress4(0)}
-          overallProgress={overallProgress} // ✅ pass to EventTabs
+          eventName={eventParams.name}
+          overallProgress={overallProgress}
+          setOverallProgress={setOverallProgress} // ✅ pass setter to BottomSheet
         />
-      </View>
+      </PhotoRefreshProvider>
 
       <EditEvent
         name={eventParams.name}
@@ -392,18 +408,6 @@ export default function ViewEvent() {
         isOpen={isOpen2}
         eventId={eventId}
         eventName={eventParams.name}
-      />
-      <StashPhotosBottomSheet
-        bottomSheetTitle={"Stash event photos"}
-        sheetRef={sheetRef4}
-        snapPoints={snapPoints4}
-        handleSheetChange={handleSheetChange4}
-        handleClosePress={handleClosePress4}
-        isOpen={isOpen4}
-        eventId={eventId}
-        eventName={eventParams.name}
-        overallProgress={overallProgress}
-        setOverallProgress={setOverallProgress} // ✅ pass setter to BottomSheet
       />
       <EventPhotoBottomSheet
         bottomSheetTitle={"Update event photo"}

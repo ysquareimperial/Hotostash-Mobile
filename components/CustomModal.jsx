@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     margin: 250,
     width: "80%",
     backgroundColor: "black",
-    borderRadius: 5, // Rounded corners (if you want to keep this)
+    borderRadius: 20, // Rounded corners (if you want to keep this)
     padding: 14, // Padding inside the modal for better spacing
     // alignItems: "center",
     borderWidth: 1, // Add border width

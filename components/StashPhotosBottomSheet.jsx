@@ -35,17 +35,18 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import CircularProgressBar from "./CircularProgressBar";
 import axios from "axios";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import { usePhotoRefresh } from "./PhotoRefreshContext";
 
 export default function StashPhotosBottomSheet({
   sheetRef,
   snapPoints,
-  handleClosePress,
+  // handleClosePress,
   isOpen,
   bottomSheetTitle,
   eventId,
   eventName,
   overallProgress,
-  setOverallProgress 
+  setOverallProgress,
 }) {
   const [authToken, setAuthToken] = useState(null);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -57,7 +58,15 @@ export default function StashPhotosBottomSheet({
   const [compressingProgress, setCompressingProgress] = useState(0);
   const compressionCancelled = useRef(false);
   const abortControllerRef = useRef(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const stashingRef = useRef(false);
+  const uploadingStartedRef = useRef(false);
+  const compressingRef = useRef(false);
+  const { triggerRefresh } = usePhotoRefresh();
+
+  useEffect(() => {
+    compressingRef.current = isCompressing;
+  }, [isCompressing]);
 
   useEffect(() => {
     stashingRef.current = stashing;
@@ -67,7 +76,14 @@ export default function StashPhotosBottomSheet({
     (index) => {
       console.log("handleSheetChange", index);
       if (index === -1) {
-        if (stashingRef.current) {
+        const isStillCompressing = compressingRef.current;
+        const hasNotStartedUploading = !uploadingStartedRef.current;
+
+        if (
+          stashingRef.current &&
+          isStillCompressing &&
+          hasNotStartedUploading
+        ) {
           Alert.alert(
             "Cancel stash",
             "Are you sure? These photos will not be stashed.",
@@ -90,6 +106,8 @@ export default function StashPhotosBottomSheet({
             { cancelable: true }
           );
         }
+
+        // ✅ always clear UI regardless
         setSelectedPhotos([]);
         setCompressingProgress(0);
       }
@@ -97,11 +115,16 @@ export default function StashPhotosBottomSheet({
     [stashing]
   ); // <-- Add this
 
+  const handleClosePress = useCallback(() => {
+    sheetRef.current?.close();
+  }, []);
+
   const cancelStashProcess = () => {
     console.log("✅ User confirmed cancellation.");
     setSelectedPhotos([]);
     setCompressingProgress(0);
     compressionCancelled.current = true;
+    uploadingStartedRef.current = false; // ✅ reset
 
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -227,7 +250,7 @@ export default function StashPhotosBottomSheet({
     const resizeWidth = originalWidth > maxWidth ? maxWidth : originalWidth;
 
     // ✅ Try different compression levels
-    for (let i = 0; i < 5 && quality >= minQuality; i++) {
+    for (let i = 0; i < 3 && quality >= minQuality; i++) {
       result = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: resizeWidth } }],
@@ -250,9 +273,10 @@ export default function StashPhotosBottomSheet({
     };
   };
 
-  const compressWithLimit = async (photos, limit = 3) => {
+  const compressWithLimit = async (photos, limit = 3, onProgress) => {
     const results = [];
     let index = 0;
+    let completed = 0;
 
     const worker = async () => {
       while (index < photos.length) {
@@ -270,6 +294,8 @@ export default function StashPhotosBottomSheet({
             originalFileName: photo.fileName,
           };
         }
+        completed++;
+        onProgress?.(Math.round((completed / photos.length) * 100)); // 🔥 Report actual compression progress
       }
     };
 
@@ -341,7 +367,17 @@ export default function StashPhotosBottomSheet({
         setCompressingProgress(Math.min((completed / total) * 100, 100));
       }, 500); // Simulate smooth progress
 
-      const compressedResults = await compressWithLimit(selectedPhotos, 3);
+      // const compressedResults = await compressWithLimit(selectedPhotos, 3);
+      setIsCompressing(true);
+      const compressedResults = await compressWithLimit(
+        selectedPhotos,
+        3,
+        (percent) => {
+          setCompressingProgress(percent);
+        }
+      );
+      setIsCompressing(false);
+
       clearInterval(progressInterval);
       setCompressingProgress(100);
 
@@ -436,10 +472,12 @@ export default function StashPhotosBottomSheet({
         );
         console.log("✅ Upload confirmation complete");
         incrementProgress(); // ✅ Confirm step done
-
+        triggerRefresh();
+        setSelectedPhotos([]);
+        setCompressingProgress(0);
         Alert.alert(
-          "Upload complete",
-          `${uploadedInfo.length} files uploaded successfully.`
+          "Stash complete",
+          `${uploadedInfo.length} photos stashed successfully.`
         );
       } else {
         console.warn("⚠️ No files to confirm upload");
@@ -458,12 +496,21 @@ export default function StashPhotosBottomSheet({
         // Alert.alert("Upload failed", "An error occurred during upload.");
       }
     } finally {
+      setIsCompressing(false);
       setStashing(false);
-      setOverallProgress(100); // ✅ Ensure it's 100% on finish
+      uploadingStartedRef.current = false; // ✅ reset here too
 
+      setOverallProgress(100);
       console.log("🏁 handleSubmit process finished");
     }
   };
+
+  useEffect(() => {
+    if (!isCompressing && stashing) {
+      console.log("🔥 Compression finished. Uploading is starting...");
+      handleClosePress();
+    }
+  }, [isCompressing, stashing]);
 
   return (
     <>
@@ -475,7 +522,7 @@ export default function StashPhotosBottomSheet({
           backgroundStyle={{ backgroundColor: grey2 }}
           ref={sheetRef}
           snapPoints={snapPoints}
-          enablePanDownToClose={!loading ? true : false}
+          // enablePanDownToClose={!loading ? true : false}
           onChange={handleSheetChange}
           backdropComponent={(props) => (
             <BottomSheetBackdrop
@@ -486,11 +533,11 @@ export default function StashPhotosBottomSheet({
             />
           )}
         >
-          <View style={{ flex: 1, backgroundColor: grey2 }}>
+          <View style={{ flex: 1, backgroundColor: grey2, paddingBottom: 50 }}>
             <BottomSheetView className="px-4">
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {/* Left-aligned text */}
-                {/* <TouchableOpacity
+              {/* <View style={{ flexDirection: "row", alignItems: "center" }}> */}
+              {/* Left-aligned text */}
+              {/* <TouchableOpacity
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   //   onPress={() => {
                   //     handleClosePress2();
@@ -502,24 +549,24 @@ export default function StashPhotosBottomSheet({
                   </Text>
                 </TouchableOpacity> */}
 
-                {/* Spacer to center the second text */}
-                <View style={{ flex: 1 }}>
+              {/* Spacer to center the second text */}
+              {/* <View style={{ flex: 1, marginBottom: 10 }}>
                   <Text
                     style={{
                       color: "white",
                       fontWeight: "bold",
                       textAlign: "center",
                       marginTop: 4,
-                      marginBottom: 10,
+                      // marginBottom: 10,
                     }}
                   >
                     {bottomSheetTitle}
                   </Text>
-                </View>
-                {/* {uploading ? (
+                </View> */}
+              {/* {uploading ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : ( */}
-                {/* <TouchableOpacity
+              {/* <TouchableOpacity
                   // onPress={uploadImage}
                   // disabled={uploading}
                   hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
@@ -534,6 +581,38 @@ export default function StashPhotosBottomSheet({
                     Save
                   </Text>
                 </TouchableOpacity> */}
+              {/* )} */}
+              {/* </View> */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      marginTop: 4,
+                    }}
+                  >
+                    {bottomSheetTitle}
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={handleClosePress} disabled={loading}>
+                  <View
+                    style={{
+                      backgroundColor: grey1,
+                      padding: 5,
+                      borderRadius: 50,
+                    }}
+                  >
+                    <AntDesign name="close" size={20} color="white" />
+                  </View>
+                </TouchableOpacity>
                 {/* )} */}
               </View>
               <ScrollView contentContainerStyle={{ padding: "" }}>
@@ -580,27 +659,24 @@ export default function StashPhotosBottomSheet({
                                 position: "absolute",
                                 top: 5,
                                 right: 5,
-                                backgroundColor:
-                                  compressingProgress > 0 &&
-                                  compressingProgress < 100
-                                    ? "rgba(0,0,0,0.3)"
-                                    : "rgba(0,0,0,0.6)",
+                                backgroundColor: isCompressing
+                                  ? "rgba(0,0,0,0.3)"
+                                  : "rgba(0,0,0,0.6)",
+
                                 borderRadius: 12,
                                 width: 24,
                                 height: 24,
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
-                              disabled={
-                                compressingProgress > 0 &&
-                                compressingProgress < 100
-                              }
+                              disabled={isCompressing}
                             >
                               <Ionicons name="close" size={16} color="#fff" />
                             </TouchableOpacity>
                           </View>
                         ))}
-                        {overallProgress > 0 && (
+
+                        {/* {overallProgress > 0 && (
                           <View style={{ marginVertical: 10 }}>
                             <Text style={{ color: "white", marginBottom: 5 }}>
                               Uploading: {overallProgress}%
@@ -622,7 +698,7 @@ export default function StashPhotosBottomSheet({
                               />
                             </View>
                           </View>
-                        )}
+                        )} */}
                       </View>
                     )}
                   </View>
@@ -630,7 +706,7 @@ export default function StashPhotosBottomSheet({
                 <View style={{ marginBottom: 50 }}>
                   {selectedPhotos.length > 0 && (
                     <View>
-                      {!compressingProgress > 0 && (
+                      {!isCompressing && (
                         <View
                           style={{
                             flexDirection: "row",
@@ -752,7 +828,7 @@ export default function StashPhotosBottomSheet({
                     </View>
                   )}
 
-                  {compressingProgress > 0 && compressingProgress < 100 && (
+                  {isCompressing && (
                     <View
                       style={{
                         flexDirection: "row",

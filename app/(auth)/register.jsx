@@ -9,6 +9,7 @@ import {
   Button,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -48,7 +49,7 @@ const Register = () => {
   const [modalVisible2, setModalVisible2] = useState(false);
   const validateFirstStep = () => {
     if (!form.firstname || !form.lastname) {
-      alert("Please fill in all fields");
+      Alert.alert("", "Please fill in all fields");
       return;
     }
     console.log(JSON.stringify(form)); // Log form data as string
@@ -58,7 +59,7 @@ const Register = () => {
 
   const validateDob = () => {
     if (!form.dob) {
-      alert("Please select your date of birth");
+      Alert.alert("", "Please select your date of birth");
       return;
     }
     console.log(JSON.stringify(form)); // Log form data as string
@@ -68,16 +69,16 @@ const Register = () => {
 
   const validatePhoneEmail = () => {
     if (!form.phone) {
-      alert("Phone number is required");
+      Alert.alert("", "Phone number is required");
     } else if (form.phone.length < 10 || form.phone.length > 15) {
       // Adjust length as needed
-      alert("Phone number must be between 10 and 15 digits.");
+      Alert.alert("", "Phone number must be between 10 and 15 digits.");
     } else if (!/^[0-9]*$/.test(form.phone)) {
-      alert("Phone number is invalid. Please use digits only.");
+      Alert.alert("", "Phone number is invalid. Please use digits only.");
     } else if (!form.email) {
-      alert("Email is required");
+      Alert.alert("", "Email is required");
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      alert("Email is invalid");
+      Alert.alert("", "Email is invalid");
     } else {
       console.log(JSON.stringify(form)); // Log form data as string
       nextStep();
@@ -85,15 +86,15 @@ const Register = () => {
   };
 
   const validateFinalStep = () => {
-    if (!form.username) alert("Username is required");
+    if (!form.username) Alert.alert("", "Username is required");
     else if (form.username.length < 3) {
-      alert("Username must be at least 3 characters long");
+      Alert.alert("", "Username must be at least 3 characters long");
     } else if (!form.password) {
-      alert("Password is required");
+      Alert.alert("", "Password is required");
     } else if (form.password.length < 8) {
-      alert("Password must be at least 8 characters long");
+      Alert.alert("", "Password must be at least 8 characters long");
     } else if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+      Alert.alert("", "Passwords do not match");
     } else {
       const { confirmPassword, ...formData } = form; // Remove confirmPassword
       console.log(formData); // Log form data without confirmPassword
@@ -436,7 +437,7 @@ const Register = () => {
               modalText={error}
               okText={"OK"}
               onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
+                // Alert.alert("Modal has been closed.");
                 setModalVisible2(false);
               }}
               loading={loading}

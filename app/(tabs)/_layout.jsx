@@ -1,11 +1,12 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { Stack, Tabs } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { StatusBar } from "expo-status-bar";
 import Header from "../../components/header";
 import { grey1, grey2, grey3 } from "../../components/colors";
+import React, { useEffect, useState } from "react";
 import BlurTabBar from "../../components/BlurTabBar";
+import * as Network from "expo-network";
 
 const TabIcon = ({ focused, icon, name, color }) => {
   return (
@@ -29,26 +30,50 @@ const TabIcon = ({ focused, icon, name, color }) => {
   );
 };
 
+const NetworkStatus = ({ isOnline }) => {
+  if (isOnline) return null;
+
+  return (
+    <View style={styles.banner}>
+      <Text style={styles.text}>You're offline</Text>
+    </View>
+  );
+};
+
 const TabsLayout = () => {
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const checkNetwork = async () => {
+      const networkState = await Network.getNetworkStateAsync();
+      setIsOnline(networkState.isConnected && networkState.isInternetReachable);
+    };
+
+    checkNetwork();
+
+    const interval = setInterval(checkNetwork, 3000); // Check every 3 secs
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <Header />
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: "#ff5600",
-          tabBarInactiveTintColor: "white",
+          tabBarActiveTintColor: "#ffffff",
+          tabBarInactiveTintColor: grey3,
           tabBarStyle: {
-            backgroundColor: '#121212',
+            backgroundColor: "#121212",
             borderTopWidth: 1,
             borderTopColor: grey2,
             // paddingBottom: 10,
             paddingTop: 10,
-            height: 84,
+            height: isOnline ? 84 : 60,
           },
         }}
       >
-      {/* <Tabs
+        {/* <Tabs
         tabBar={(props) => <BlurTabBar {...props} />}
         screenOptions={{
           tabBarShowLabel: false,
@@ -76,7 +101,7 @@ const TabsLayout = () => {
                 color={color}
                 focused={focused}
                 icon={<AntDesign name="home" size={25} color={color} />}
-                // name="Stashes"
+                name="Stashes"
               />
             ),
           }}
@@ -91,7 +116,7 @@ const TabsLayout = () => {
                 color={color}
                 focused={focused}
                 icon={<AntDesign name="hearto" size={25} color={color} />}
-                // name="Events"
+                name="Events"
               />
             ),
           }}
@@ -106,7 +131,7 @@ const TabsLayout = () => {
                 color={color}
                 focused={focused}
                 icon={<AntDesign name="bells" size={25} color={color} />}
-                // name="Notifications"
+                name="Notifications"
               />
             ),
           }}
@@ -121,33 +146,31 @@ const TabsLayout = () => {
                 color={color}
                 focused={focused}
                 icon={<AntDesign name="user" size={25} color={color} />}
-                // name="Profile"
+                name="Profile"
               />
             ),
           }}
         />
-
-        {/* <Tabs.Screen
-          name="viewStash"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="viewEvent"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="withdrawalStatus"
-          options={{
-            href: null,
-          }}
-        /> */}
       </Tabs>
+      <NetworkStatus isOnline={isOnline} />
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  banner: {
+    backgroundColor: grey1,
+    padding: 6,
+    // position: "absolute",
+    // top: 50,
+    width: "100%",
+    zIndex: 1000,
+    height: 50,
+  },
+  text: {
+    color: "white",
+    textAlign: "center",
+  },
+});
 
 export default TabsLayout;

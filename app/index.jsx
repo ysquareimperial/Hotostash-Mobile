@@ -8,6 +8,7 @@ import CustomButton from "../components/CustomButton";
 import { Redirect, router } from "expo-router";
 import { useUser } from "../context/UserContext";
 import { useEffect } from "react";
+import NetworkStatus from "../components/NetworkStatus";
 export default function App() {
   const { user } = useUser();
 
@@ -53,6 +54,7 @@ export default function App() {
       </View>
       {/* </ScrollView> */}
       <StatusBar backgroundColor="#000000" style="light" />
+      {/* <NetworkStatus/> */}
     </SafeAreaView>
   );
 }

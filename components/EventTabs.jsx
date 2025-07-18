@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { grey1, grey2, orange } from "./colors";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { grey1, grey2, grey3, orange } from "./colors";
 import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
 import Contribution from "../app/contribution/contribution";
@@ -15,6 +15,7 @@ export default function EventTabs({
   openStashPhotosSheet,
   existingPublicLink,
   overallProgress,
+  triggerCancelStash,
 }) {
   const [activeItem, setActiveItem] = useState("photos");
 
@@ -23,7 +24,29 @@ export default function EventTabs({
   };
   console.log("Event ID in EventTabs:", eventId); // Add this to debug
   console.log("Stash ID in EventTabs:", stashId); // Add this to debug
-
+  const confirmCancelStash = () => {
+    Alert.alert(
+      "Cancel stash",
+      "Are you sure? These photos will not be stashed.",
+      [
+        {
+          text: "No",
+          style: "cancel",
+          onPress: () => {
+            console.log("❌ Cancel aborted by user.");
+          },
+        },
+        {
+          text: "Yes",
+          style: "destructive",
+          onPress: () => {
+            triggerCancelStash(); // ✅ this calls the exposed function in StashPhotosBottomSheet
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
   return (
     <View style={{ flex: 1 }}>
       {/* Tab Navigation */}
@@ -79,13 +102,20 @@ export default function EventTabs({
               </Text>
             </View>
             <View>
-              <Text style={{ color: orange, fontWeight: "bold" }}>Cancel</Text>
+              <TouchableOpacity
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                onPress={confirmCancelStash}
+              >
+                <Text style={{ color: orange, fontWeight: "bold" }}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
           <View
             className=""
             style={{
-              borderColor: grey1,
+              borderColor: grey3,
               borderWidth: 1,
               width: `${overallProgress}%`,
             }}

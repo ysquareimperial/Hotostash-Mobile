@@ -6,6 +6,7 @@ import "../global.css";
 import { UserProvider } from "../context/UserContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Header from "../components/header";
+import NetworkStatus from "../components/NetworkStatus";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,6 +33,7 @@ const RootLayout = () => {
     <GestureHandlerRootView>
       <UserProvider>
         {/* <Header /> */}
+        {/* <NetworkStatus/> */}
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />

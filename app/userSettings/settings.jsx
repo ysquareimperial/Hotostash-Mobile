@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import CustomModal from "../../components/CustomModal";
 import Logout from "../(auth)/logout";
+import * as Network from "expo-network";
 
 export default function Settings() {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -40,6 +41,29 @@ export default function Settings() {
   const [modalVisible3, setModalVisible3] = useState(false);
   const [settingsMenu, setSettingsMenu] = useState("");
   const [validMail, setValidMail] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  const NetworkStatus = ({ isOnline }) => {
+    if (isOnline) return null;
+
+    return (
+      <View style={styles.banner}>
+        <Text style={styles.text}>You're offline</Text>
+      </View>
+    );
+  };
+
+  useEffect(() => {
+    const checkNetwork = async () => {
+      const networkState = await Network.getNetworkStateAsync();
+      setIsOnline(networkState.isConnected && networkState.isInternetReachable);
+    };
+
+    checkNetwork();
+
+    const interval = setInterval(checkNetwork, 3000); // Check every 3 secs
+    return () => clearInterval(interval);
+  }, []);
 
   // callbacks
   const handleSheetChange = useCallback((index) => {
@@ -733,8 +757,23 @@ export default function Settings() {
         modalVisible={modalVisible3} // Pass modalVisible as a prop
         setModalVisible={setModalVisible3} // Pass the setter function to update the state
       />
+      <NetworkStatus isOnline={isOnline} />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  banner: {
+    backgroundColor: grey1,
+    padding: 6,
+    // position: "absolute",
+    // top: 50,
+    width: "100%",
+    zIndex: 1000,
+    height: 50,
+  },
+  text: {
+    color: "white",
+    textAlign: "center",
+  },
+});

@@ -647,9 +647,9 @@ export default function ViewStash() {
                   href={`/events/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`}
                   push
                   asChild
+                  key={index}
                 >
                   <TouchableOpacity
-                    key={index}
                     // onPress={() =>
                     //   router.push(
                     //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`

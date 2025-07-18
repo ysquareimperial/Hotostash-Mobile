@@ -7,6 +7,7 @@ import {
   ScrollView,
   RefreshControl,
   Keyboard,
+  StyleSheet,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalSearchParams, router, Link } from "expo-router";
@@ -27,8 +28,11 @@ import DownloadAllPhotosBottomSheet from "../../components/DownloadAllPhotosBott
 import EventPhotoBottomSheet from "../../components/EventPhotoBottomSheet";
 import StashPhotosBottomSheet from "../../components/StashPhotosBottomSheet";
 import { PhotoRefreshProvider } from "../../components/PhotoRefreshContext";
+import * as Network from "expo-network";
 
 export default function ViewEvent() {
+  const stashPhotosRef = useRef();
+  const [isOnline, setIsOnline] = useState(true);
   const { user } = useUser();
   const params = useLocalSearchParams();
   const [contributionStatus, setContributionStatus] = useState(null);
@@ -48,6 +52,29 @@ export default function ViewEvent() {
     date: params.date,
     location: params.location,
   });
+
+  const NetworkStatus = ({ isOnline }) => {
+    if (isOnline) return null;
+
+    return (
+      <View style={styles.banner}>
+        <Text style={styles.text}>You're offline</Text>
+      </View>
+    );
+  };
+
+
+  useEffect(() => {
+    const checkNetwork = async () => {
+      const networkState = await Network.getNetworkStateAsync();
+      setIsOnline(networkState.isConnected && networkState.isInternetReachable);
+    };
+
+    checkNetwork();
+
+    const interval = setInterval(checkNetwork, 3000); // Check every 3 secs
+    return () => clearInterval(interval);
+  }, []);
 
   //Updating stash image
   const handleImageUpdate = (newImageUrl) => {
@@ -261,6 +288,10 @@ export default function ViewEvent() {
     }));
   };
 
+  const triggerCancelStash = () => {
+    stashPhotosRef.current?.cancelStashProcess(); // ✅ Call the function from EventTabs
+  };
+
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -351,6 +382,7 @@ export default function ViewEvent() {
           </View>
         </View>
       </View>
+
       <PhotoRefreshProvider>
         <View style={{ flex: 1 }}>
           <EventTabs
@@ -363,6 +395,7 @@ export default function ViewEvent() {
             openDownloadSheet={() => handleSnapPress2(0)}
             openStashPhotosSheet={() => handleSnapPress4(0)}
             overallProgress={overallProgress} // ✅ pass to EventTabs
+            triggerCancelStash={triggerCancelStash}
           />
         </View>
 
@@ -377,6 +410,7 @@ export default function ViewEvent() {
           eventName={eventParams.name}
           overallProgress={overallProgress}
           setOverallProgress={setOverallProgress} // ✅ pass setter to BottomSheet
+          ref={stashPhotosRef}
         />
       </PhotoRefreshProvider>
 
@@ -418,6 +452,23 @@ export default function ViewEvent() {
         existingImage={eventParams?.image}
         onImageUpload={handleImageUpdate}
       />
+      <NetworkStatus isOnline={isOnline} />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  banner: {
+    backgroundColor: grey1,
+    padding: 6,
+    // position: "absolute",
+    // top: 50,
+    width: "100%",
+    zIndex: 1000,
+    height: 50,
+  },
+  text: {
+    color: "white",
+    textAlign: "center",
+  },
+});

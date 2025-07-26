@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "Hotostash",
-    "slug": "mobileapp",
+    "slug": "hotostash",
     "platforms": ["ios", "android"],
-    "scheme": "com.anonymous.mobileapp",
+    "scheme": "hotostash",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,7 +18,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.mobileapp",
+      "bundleIdentifier": "com.hotostash.app",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Hotostash needs access to your photos to allow image selection and upload.",
         "NSCameraUsageDescription": "Hotostash needs access to your camera to take and upload photos.",
@@ -30,7 +30,25 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.anonymous.mobileapp",
+      "package": "com.hotostash.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "www.hotostash.com",
+              "pathPrefix": "/public"
+            },
+            {
+              "scheme": "https",
+              "host": "www.hotostash.com",
+              "pathPrefix": ""
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",

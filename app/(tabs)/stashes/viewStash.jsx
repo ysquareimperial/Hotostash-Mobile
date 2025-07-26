@@ -590,7 +590,7 @@ export default function ViewStash() {
                     style={{
                       color: "grey",
                       fontSize: 14,
-                      marginTop:5
+                      marginTop: 5,
                       // width: 200, // Constrained width for truncation
                     }}
                   >
@@ -642,19 +642,22 @@ export default function ViewStash() {
             </View>
           ) : (
             <View style={{ marginTop: 10 }}>
+              <Link href={`/events/joinEvent`} push asChild>
+                <Text style={{ color: "white" }}>JOIN EVENT</Text>
+              </Link>
               {stashEvents?.map((item, index) => (
                 <Link
-                  href={`/events/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`}
+                  href={`/events/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${encodeURIComponent(item?.name)}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`}
                   push
                   asChild
                   key={index}
                 >
                   <TouchableOpacity
-                    // onPress={() =>
-                    //   router.push(
-                    //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
-                    //   )
-                    // }
+                  // onPress={() =>
+                  //   router.push(
+                  //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
+                  //   )
+                  // }
                   >
                     <View
                       style={{

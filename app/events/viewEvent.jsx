@@ -63,7 +63,6 @@ export default function ViewEvent() {
     );
   };
 
-
   useEffect(() => {
     const checkNetwork = async () => {
       const networkState = await Network.getNetworkStateAsync();
@@ -246,6 +245,7 @@ export default function ViewEvent() {
         console.error("Error retrieving token:", error);
       }
     };
+    console.log("nameeeeeeeeee", eventParams.name);
 
     fetchToken();
   }, []);

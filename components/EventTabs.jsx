@@ -4,6 +4,7 @@ import { grey1, grey2, grey3, orange } from "./colors";
 import EventPhotos from "./EventPhotos";
 import EventParticipants from "../app/(tabs)/stashes/eventParticipants";
 import Contribution from "../app/contribution/contribution";
+import IV from "./IV";
 
 export default function EventTabs({
   eventId,
@@ -60,7 +61,7 @@ export default function EventTabs({
           borderBottomWidth: 1,
         }}
       >
-        {["photos", "participants", "contribution", "ivcard"].map((tab) => (
+        {["photos", "participants", "contribution", "Event card"].map((tab) => (
           <View
             key={tab}
             style={{
@@ -174,11 +175,9 @@ export default function EventTabs({
             <Contribution eventId={eventId} stashId={stashId} event={event} />
           </View>
         )}
-        {activeItem === "ivcard" && (
+        {activeItem === "Event card" && (
           <View>
-            <Text style={{ color: "white" }}>
-              Invitation Card for the Event
-            </Text>
+            <IV eventId={eventId} />
             {/* Render IV Card component */}
           </View>
         )}

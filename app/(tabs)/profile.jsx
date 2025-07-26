@@ -227,13 +227,18 @@ const Profile = () => {
                 <AntDesign name="edit" size={25} style={{ color: "white" }} />
               </TouchableOpacity>
             </View>
-            <Text className="text-white" style={{ marginTop: 20 }}>
-              {user?.about}
-            </Text>
+            {user?.about?.length === 0 ? (
+              <Text className="" style={{ marginTop: 20, color: "grey" }}>
+                You haven’t written anything about yourself yet.
+              </Text>
+            ) : (
+              <Text className="text-white" style={{ marginTop: 20 }}>
+                {user?.about}
+              </Text>
+            )}
             <Text className="" style={{ marginTop: 10, color: "white" }}>
               {user?.email} • {user?.phone}
             </Text>
-
             <View
               style={{
                 flexDirection: "row",

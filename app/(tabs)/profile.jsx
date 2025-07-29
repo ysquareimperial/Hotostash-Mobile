@@ -196,7 +196,10 @@ const Profile = () => {
           {/* <ProfilePictureUpload /> */}
           {/* <Text style={{color:'white'}}>{authToken}</Text> */}
           <View>
-            <TouchableOpacity onPress={() => handleSnapPress2(0)}>
+            <TouchableOpacity
+              onPress={() => handleSnapPress2(0)}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            >
               <Image
                 source={{ uri: user?.image }}
                 // className="w-[84px] h-[84px]"
@@ -223,7 +226,10 @@ const Profile = () => {
                   @{user?.username}
                 </Text>
               </View>
-              <TouchableOpacity onPress={() => handleSnapPress(0)}>
+              <TouchableOpacity
+                onPress={() => handleSnapPress(0)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
                 <AntDesign name="edit" size={25} style={{ color: "white" }} />
               </TouchableOpacity>
             </View>

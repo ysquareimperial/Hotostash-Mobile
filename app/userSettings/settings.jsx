@@ -308,7 +308,9 @@ export default function Settings() {
       <View className="w-full min-h-[85vh] px-4 my-6" style={{ marginTop: 60 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           <View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            >
               <MaterialIcons
                 onPress={() => router.back()}
                 name="arrow-back-ios"
@@ -333,6 +335,7 @@ export default function Settings() {
 
         <View style={{ marginTop: 20 }}>
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -368,6 +371,7 @@ export default function Settings() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -402,6 +406,8 @@ export default function Settings() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            v
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -435,6 +441,7 @@ export default function Settings() {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             style={{
               flexDirection: "row",
               alignItems: "center",

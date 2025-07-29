@@ -118,7 +118,7 @@ const Contribution = ({ eventId, stashId, event }) => {
       .then(async (response) => {
         setLoading2(false);
         if (response?.status === 200) {
-          fetchContributionDetails()
+          fetchContributionDetails();
           setContributionStatus(true);
           try {
             await AsyncStorage.removeItem("contributionStatus");
@@ -466,7 +466,9 @@ const Contribution = ({ eventId, stashId, event }) => {
                     marginBottom: 10,
                   }}
                 >
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                  >
                     <View
                       style={{
                         backgroundColor: "#87FF87",
@@ -488,7 +490,15 @@ const Contribution = ({ eventId, stashId, event }) => {
                     <View>
                       {event?.withdrawal_exists === true ? (
                         <View style={{ flexDirection: "row", gap: 5 }}>
-                          <TouchableOpacity onPress={() => handleSnapPress(0)}>
+                          <TouchableOpacity
+                            onPress={() => handleSnapPress(0)}
+                            hitSlop={{
+                              top: 15,
+                              bottom: 15,
+                              left: 15,
+                              right: 15,
+                            }}
+                          >
                             <View
                               style={{
                                 backgroundColor: grey1,
@@ -501,6 +511,12 @@ const Contribution = ({ eventId, stashId, event }) => {
                             </View>
                           </TouchableOpacity>
                           <TouchableOpacity
+                            hitSlop={{
+                              top: 15,
+                              bottom: 15,
+                              left: 15,
+                              right: 15,
+                            }}
                             onPress={() =>
                               router.push(
                                 `/stashes/withdrawalRequests?eventId=${event?.id}`
@@ -527,6 +543,12 @@ const Contribution = ({ eventId, stashId, event }) => {
                         <View>
                           {contributionDetails?.available_balance !== 0 && (
                             <TouchableOpacity
+                              hitSlop={{
+                                top: 15,
+                                bottom: 15,
+                                left: 15,
+                                right: 15,
+                              }}
                               onPress={() => handleSnapPress(0)}
                             >
                               <View

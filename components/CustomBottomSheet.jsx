@@ -78,6 +78,7 @@ export default function CustomBottomSheet({
                   <ActivityIndicator size="small" color="white" />
                 ) : (
                   <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     onPress={handleSubmit}
                     disabled={loading || !form.title}
                   >

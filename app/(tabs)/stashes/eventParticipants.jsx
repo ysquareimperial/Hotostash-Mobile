@@ -45,7 +45,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
 
   //BOTTOM SHEET PROPS 2
   const [isOpen2, setIsOpen2] = useState(false);
-  const snapPoints2 = ["65%"];
+  const snapPoints2 = ["50%"];
   const sheetRef2 = useRef(null);
 
   const handleSheetChange2 = useCallback((index) => {
@@ -328,7 +328,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
                 participants.role === "admin"
             ) ? (
               <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
-                <TouchableOpacity onPress={() => handleSnapPress3(0)}>
+                <TouchableOpacity onPress={() => handleSnapPress3(0)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -339,7 +339,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
                     <AntDesign name="adduser" size={25} color="white" />
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisible2(true)}>
+                <TouchableOpacity onPress={() => setModalVisible2(true)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -496,7 +496,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
               </View>
             ))}
 
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
               <View
                 style={{
                   flexDirection: "row",
@@ -588,7 +588,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
       />
 
       <GenerateEventLink
-        modalTitle={"Invite to event via link"}
+        modalTitle={"Share to invite friends via link"}
         modalText={"Anyone with this link will be able to join this event"}
         eventParticipants={eventParticipants}
         user={user}

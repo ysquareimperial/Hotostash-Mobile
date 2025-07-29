@@ -24,6 +24,7 @@ import { useUser } from "../../../context/UserContext";
 import CustomModal from "../../../components/CustomModal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ToggleSwitch from "../../../components/ToggleSwitch";
+import { router, Link } from "expo-router";
 
 export default function CreateEvent({
   sheetRef,
@@ -135,17 +136,24 @@ export default function CreateEvent({
       .then((response) => {
         setLoading2(false);
         console.log(response?.data);
-        handleClosePress();
-        setForm((prevForm) => ({
-          ...prevForm, // Keep the existing image
-          name: "",
-          description: "",
-          date: new Date(),
-          time: new Date(),
-          location: "",
-          contribution_status: false,
-        }));
+        if (response?.status === 201) {
+          handleClosePress();
+          setForm((prevForm) => ({
+            ...prevForm, // Keep the existing image
+            name: "",
+            description: "",
+            date: new Date(),
+            time: new Date(),
+            location: "",
+            contribution_status: false,
+          }));
 
+          console.log("Event time:", response?.data.time);
+
+          router.push(
+            `/events/viewEvent?eventId=${response?.data.id}&stashId=${response?.data.album_id}&name=${response?.data.name}&image=${response?.data.image}&description=${response?.data.description}&date=${response?.data.date}&location=${response?.data.location}&time=${response?.data.time}&contributionStatus=${response?.data.contribution_status}`
+          );
+        }
         // const extractedEventData = {
         //   id: response.data.id, // Pick only the ID
         //   name: response.data.name, // Pick only the Name
@@ -205,6 +213,7 @@ export default function CreateEvent({
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     {/* Left-aligned text */}
                     <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       onPress={() => {
                         handleClosePress();
                         // setForm('')
@@ -240,6 +249,7 @@ export default function CreateEvent({
                       <ActivityIndicator size="small" color="white" />
                     ) : (
                       <TouchableOpacity
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                         onPress={postCreateEvent}
                         disabled={
                           form.name.length === 0 || form.location.length === 0

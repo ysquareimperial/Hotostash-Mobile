@@ -389,8 +389,6 @@ const StashPhotosBottomSheet = forwardRef(
       }
     };
 
-    
-
     const handleSubmit = async () => {
       console.log("🔁 handleSubmit called");
       setCompressingProgress(0);
@@ -556,7 +554,6 @@ const StashPhotosBottomSheet = forwardRef(
       }
     }, [isCompressing, stashing]);
 
-    
     return (
       <>
         {isOpen && (
@@ -651,6 +648,7 @@ const StashPhotosBottomSheet = forwardRef(
                     </Text>
                   </View>
                   <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     onPress={handleClosePress}
                     disabled={loading}
                   >
@@ -705,6 +703,12 @@ const StashPhotosBottomSheet = forwardRef(
                                 }}
                               />
                               <TouchableOpacity
+                                hitSlop={{
+                                  top: 15,
+                                  bottom: 15,
+                                  left: 15,
+                                  right: 15,
+                                }}
                                 onPress={() => deselectPhoto(image.uri)}
                                 style={{
                                   position: "absolute",
@@ -770,10 +774,10 @@ const StashPhotosBottomSheet = forwardRef(
                               <View>
                                 <TouchableOpacity
                                   hitSlop={{
-                                    top: 10,
-                                    bottom: 10,
-                                    left: 10,
-                                    right: 10,
+                                    top: 15,
+                                    bottom: 15,
+                                    left: 15,
+                                    right: 15,
                                   }}
                                   style={{
                                     backgroundColor: grey1,
@@ -819,10 +823,10 @@ const StashPhotosBottomSheet = forwardRef(
                             <View>
                               <TouchableOpacity
                                 hitSlop={{
-                                  top: 10,
-                                  bottom: 10,
-                                  left: 10,
-                                  right: 10,
+                                  top: 15,
+                                  bottom: 15,
+                                  left: 15,
+                                  right: 15,
                                 }}
                                 style={{
                                   backgroundColor: orange,
@@ -896,7 +900,10 @@ const StashPhotosBottomSheet = forwardRef(
                     )}
 
                     {!loading && !selectedPhotos.length > 0 && (
-                      <TouchableOpacity onPress={selectPhotos}>
+                      <TouchableOpacity
+                        onPress={selectPhotos}
+                        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                      >
                         <View
                           style={{
                             borderWidth: 1, // use borderWidth instead of border

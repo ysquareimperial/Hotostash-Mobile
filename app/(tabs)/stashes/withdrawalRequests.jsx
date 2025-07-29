@@ -107,6 +107,7 @@ export default function WithdrawalRequests() {
                         `/stashes/RequestStatus?withdrawalId=${item?.id}`
                       )
                     }
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     style={{
                       flexDirection: "row",
                       marginBottom: 10,

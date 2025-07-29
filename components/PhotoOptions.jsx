@@ -18,6 +18,7 @@ export const PhotoOptions = ({ handleDownload, handleShare }) => {
       }}
     >
       <TouchableOpacity
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         style={{
           backgroundColor: grey1,
           paddingHorizontal: 5,
@@ -48,6 +49,7 @@ export const PhotoOptions = ({ handleDownload, handleShare }) => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         style={{
           backgroundColor: grey1,
           paddingHorizontal: 5,

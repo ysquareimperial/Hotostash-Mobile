@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import MasonryList from 'react-native-masonry-list';
-import { Ionicons } from '@expo/vector-icons'; // for checkbox icons
+import React, { useState } from "react";
+import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import MasonryList from "react-native-masonry-list";
+import { Ionicons } from "@expo/vector-icons"; // for checkbox icons
 
 const images = [
-  { uri: 'https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg' },
-  { uri: 'https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg' },
-  { uri: 'https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg' },
+  {
+    uri: "https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg",
+  },
+  {
+    uri: "https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg",
+  },
+  {
+    uri: "https://cdn1.hotostash.com/compressed/jordan-whitfield-sm3Ub_IJKQg-unsplash_2025-06-10_at_10.31.19_9cb.jpeg",
+  },
   // Add more images here
 ];
 
@@ -25,6 +31,7 @@ const MasonryWithSelection = () => {
     return (
       <View style={styles.imageContainer}>
         <TouchableOpacity
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
           activeOpacity={0.8}
           onPress={() => toggleSelect(item.uri)}
         >
@@ -35,9 +42,9 @@ const MasonryWithSelection = () => {
             />
             <View style={styles.checkboxContainer}>
               <Ionicons
-                name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
+                name={isSelected ? "checkmark-circle" : "ellipse-outline"}
                 size={24}
-                color={isSelected ? '#2e7d32' : '#fff'}
+                color={isSelected ? "#2e7d32" : "#fff"}
               />
             </View>
           </View>
@@ -64,17 +71,17 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   imageContainer: {
-    position: 'relative',
+    position: "relative",
   },
   image: {
     borderRadius: 8,
-    width: '100%',
+    width: "100%",
   },
   checkboxContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: '#00000070',
+    backgroundColor: "#00000070",
     borderRadius: 12,
     padding: 2,
   },

@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Semi-transparent black background
   },
   modalView: {
     margin: 250,
     width: "80%",
-    backgroundColor: "black",
+    backgroundColor: grey2,
     borderRadius: 20, // Rounded corners (if you want to keep this)
     padding: 14, // Padding inside the modal for better spacing
     // alignItems: "center",

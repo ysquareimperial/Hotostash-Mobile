@@ -370,6 +370,7 @@ const Register = () => {
                   />
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   >
                     <Text style={{ color: "white", marginTop: 16 }}>
                       {showPassword ? "Hide password" : "Show password"}

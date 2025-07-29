@@ -225,6 +225,7 @@ const Stashes = () => {
   // Render item for FlatList
   const renderItem = ({ item }) => (
     <TouchableOpacity
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       onPress={() =>
         router.push(
           `/stashes/viewStash?id=${item?.id}&title=${item?.title}&image=${item?.image}&description=${item?.description}&created_at=${item?.created_at}`
@@ -319,6 +320,7 @@ const Stashes = () => {
             Stashes
           </Text>
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             onPress={() => handleSnapPress(0)}
             style={{ backgroundColor: orange, padding: 5, borderRadius: 50 }}
           >

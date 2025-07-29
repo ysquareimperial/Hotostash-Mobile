@@ -25,6 +25,7 @@ const CustomNextButton = ({
 
   return (
     <TouchableOpacity
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       onPress={handlePress}
       activeOpacity={0.7}
       style={[

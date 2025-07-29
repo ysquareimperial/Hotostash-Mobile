@@ -31,6 +31,7 @@ import CreateEvent from "./createEvent";
 import CustomBottomSheet from "../../../components/CustomBottomSheet";
 import ProfilePictureBottomSheet from "../../../components/ProfilePictureBottomSheet";
 import StashPhotoBottomSheet from "../../../components/StashPhotoBottomSheet";
+// import * as Linking from "expo-linking";
 
 export default function ViewStash() {
   const { user } = useUser();
@@ -114,7 +115,7 @@ export default function ViewStash() {
 
   //BOTTOM SHEET PROPS 2
   const [isOpen2, setIsOpen2] = useState(false);
-  const snapPoints2 = ["35%"];
+  const snapPoints2 = ["25%"];
   const sheetRef2 = useRef(null);
 
   const handleSheetChange2 = useCallback((index) => {
@@ -561,7 +562,10 @@ export default function ViewStash() {
               backgroundColor: "",
             }}
           >
-            <TouchableOpacity onPress={() => handleSnapPress6(0)}>
+            <TouchableOpacity
+              onPress={() => handleSnapPress6(0)}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            >
               <Image
                 source={{ uri: stashParams.image }}
                 style={{ borderRadius: 500, width: 50, height: 50 }}
@@ -569,6 +573,7 @@ export default function ViewStash() {
             </TouchableOpacity>
             <View style={{ flex: 1 }}>
               <TouchableOpacity
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 onPress={() => handleSnapPress5(0)}
                 disabled={
                   !stash?.members?.some(
@@ -627,6 +632,7 @@ export default function ViewStash() {
               Events
             </Text>
             <TouchableOpacity
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               onPress={() => handleSnapPress4(0)}
               style={{ backgroundColor: orange, padding: 5, borderRadius: 50 }}
             >
@@ -642,22 +648,37 @@ export default function ViewStash() {
             </View>
           ) : (
             <View style={{ marginTop: 10 }}>
-              <Link href={`/events/joinEvent`} push asChild>
+              {/* <Link href={`/invite/event`} push asChild>
                 <Text style={{ color: "white" }}>JOIN EVENT</Text>
-              </Link>
+              </Link> */}
+              {/* <Button
+                title="Test Deep Link"
+                onPress={() => {
+                  Linking.openURL("hotostash://events/joinEvent");
+                }}
+              /> */}
               {stashEvents?.map((item, index) => (
                 <Link
-                  href={`/events/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${encodeURIComponent(item?.name)}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`}
+                  href={`/events/viewEvent?eventId=${item?.id}&stashId=${
+                    stash?.id
+                  }&name=${encodeURIComponent(item?.name)}&image=${
+                    item?.image
+                  }&description=${item?.description}&date=${
+                    item?.date
+                  }&location=${item?.location}&time=${
+                    item?.time
+                  }&contributionStatus=${item?.contribution_status}`}
                   push
                   asChild
                   key={index}
                 >
                   <TouchableOpacity
-                  // onPress={() =>
-                  //   router.push(
-                  //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
-                  //   )
-                  // }
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                    // onPress={() =>
+                    //   router.push(
+                    //     `/stashes/viewEvent?eventId=${item?.id}&stashId=${stash?.id}&name=${item?.name}&image=${item?.image}&description=${item?.description}&date=${item?.date}&location=${item?.location}&time=${item?.time}&contributionStatus=${item?.contribution_status}`
+                    //   )
+                    // }
                   >
                     <View
                       style={{
@@ -742,6 +763,7 @@ export default function ViewStash() {
           {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
           {/* // M E M B E R S */}
           <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -790,7 +812,10 @@ export default function ViewStash() {
                   member.user.username === user?.username &&
                   member.role === "admin"
               ) ? (
-                <TouchableOpacity onPress={() => handleSnapPress3(0)}>
+                <TouchableOpacity
+                  onPress={() => handleSnapPress3(0)}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                >
                   <View
                     style={{
                       flexDirection: "row",
@@ -911,25 +936,41 @@ export default function ViewStash() {
                             // Admin who is also the owner: show ellipsis for other admins (non-owners) and members
                             (item?.role === "admin" && !item?.is_owner) ||
                             item?.role === "member" ? (
-                              <Ionicons
-                                name="ellipsis-vertical"
-                                size={20}
-                                color="grey"
-                                onPress={() =>
-                                  handleManageMember(item?.user_id)
-                                }
-                              />
+                              <TouchableOpacity
+                                hitSlop={{
+                                  top: 15,
+                                  bottom: 15,
+                                  left: 15,
+                                  right: 15,
+                                }}
+                                onPress={() => handleManageMember(item.user_id)}
+                              >
+                                <Ionicons
+                                  name="ellipsis-vertical"
+                                  size={20}
+                                  color="grey"
+                                />
+                              </TouchableOpacity>
                             ) : null
                           ) : (
                             // Admin but not the owner: show ellipsis only for members
                             item?.role === "member" &&
                             user?.username !== item?.user?.username && (
-                              <Ionicons
-                                name="ellipsis-vertical"
-                                size={20}
-                                color="grey"
+                              <TouchableOpacity
+                                hitSlop={{
+                                  top: 15,
+                                  bottom: 15,
+                                  left: 15,
+                                  right: 15,
+                                }}
                                 onPress={() => handleManageMember(item.user_id)}
-                              />
+                              >
+                                <Ionicons
+                                  name="ellipsis-vertical"
+                                  size={20}
+                                  color="grey"
+                                />
+                              </TouchableOpacity>
                             )
                           )}
                         </View>
@@ -939,7 +980,10 @@ export default function ViewStash() {
                 ))}
               </View>
 
-              <TouchableOpacity onPress={() => handleSnapPress(0)}>
+              <TouchableOpacity
+                onPress={() => handleSnapPress(0)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
                 <View
                   style={{
                     flexDirection: "row",

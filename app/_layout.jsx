@@ -5,7 +5,6 @@ import { useFonts } from "expo-font";
 import "../global.css";
 import { UserProvider } from "../context/UserContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import linking from "./linking";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,17 +30,25 @@ const RootLayout = () => {
   return (
     <GestureHandlerRootView>
       <UserProvider>
-        <Stack linking={linking}>
+        <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
           <Stack.Screen
             name="events/viewEvent"
-            options={{ presentation: "modal", headerShown: false }}
+            options={{
+              // presentation: "modal",
+              headerShown: false,
+              title: "Event",
+            }}
           />
           <Stack.Screen
             name="events/joinEvent"
+            options={{ presentation: "modal", headerShown: false }}
+          />
+          <Stack.Screen
+            name="invite/event"
             options={{ presentation: "modal", headerShown: false }}
           />
           <Stack.Screen

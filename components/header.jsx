@@ -16,12 +16,16 @@ const Header = () => {
       />
       {/* Icons */}
       <View style={styles.icons}>
-        <TouchableOpacity style={styles.icon}>
+        <TouchableOpacity
+          style={styles.icon}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+        >
           <AntDesign name="bells" size={22} color="#fff" />
         </TouchableOpacity>
         {/* <Link>
         </Link> */}
         <TouchableOpacity
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
           style={styles.icon}
           onPress={() => router.push("/userSettings/settings")}
         >

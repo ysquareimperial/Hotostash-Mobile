@@ -31,7 +31,6 @@ import { useUser } from "../context/UserContext";
 import ShareComponent from "./ShareComponent";
 import { usePhotoRefresh } from "./PhotoRefreshContext";
 
-
 const EventPhotos = ({
   eventId,
   eventParticipants,
@@ -53,8 +52,7 @@ const EventPhotos = ({
   const imagesForViewer = fetchedImages.map((item) => ({ uri: item.url }));
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
-    const { refreshCount } = usePhotoRefresh();
-
+  const { refreshCount } = usePhotoRefresh();
 
   //Deleting photos----------------------------------------------------------
   const [loading2, setLoading2] = useState(false);
@@ -424,7 +422,7 @@ const EventPhotos = ({
         >
           {/* <MasonryWithSelection /> */}
           <TouchableOpacity
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             style={{
               backgroundColor: grey1,
               paddingHorizontal: 5,
@@ -458,7 +456,7 @@ const EventPhotos = ({
             <View style={{ flexDirection: "row", columnGap: 5 }}>
               <TouchableOpacity
                 onPress={openDownloadSheet}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 style={{
                   backgroundColor: grey1,
                   paddingHorizontal: 5,
@@ -490,7 +488,7 @@ const EventPhotos = ({
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setModalVisible2(true)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 style={{
                   backgroundColor: grey1,
                   paddingHorizontal: 5,
@@ -529,7 +527,7 @@ const EventPhotos = ({
             <View style={styles.actionBar}>
               <View>
                 <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   onPress={() => {
                     handleSelectAll();
                     setDeleteAllButton(!deleteAllButton);
@@ -544,7 +542,7 @@ const EventPhotos = ({
               </View>
               <View>
                 <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   onPress={() => setModalVisible(true)}
                 >
                   <AntDesign name="delete" size={22} color="white" />
@@ -615,7 +613,7 @@ const EventPhotos = ({
 
               return (
                 <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   activeOpacity={0.9}
                   onPress={() => handleImagePress(item.id)}
                   onLongPress={() => togglePhotoSelection(imageId)}
@@ -634,7 +632,7 @@ const EventPhotos = ({
                     {selectionMode && (
                       <View style={styles.checkboxWrapper}>
                         <TouchableOpacity
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                           style={[
                             styles.checkbox,
                             isSelected && styles.checkboxSelected,

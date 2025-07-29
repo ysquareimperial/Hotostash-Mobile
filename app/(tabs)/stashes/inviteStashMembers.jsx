@@ -200,6 +200,7 @@ export default function InviteStashMembers({
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   {/* Left-aligned text */}
                   <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     onPress={() => {
                       handleClosePress();
                       setSelectedMembers([]);
@@ -237,6 +238,7 @@ export default function InviteStashMembers({
                     <ActivityIndicator size="small" color="white" />
                   ) : (
                     <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       onPress={inviteStashMembersFunction}
                       disabled={selectedMembers.length === 0} // Disable the button if length is 0
                       // Optional: Reduce opacity when disabled
@@ -309,6 +311,7 @@ export default function InviteStashMembers({
                   >
                     {selectedMembers.map((member, index) => (
                       <TouchableOpacity
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                         key={index}
                         // style={{ marginBottom: 10 }}
                         onPress={() => handleSelectMember(member)}
@@ -382,6 +385,7 @@ export default function InviteStashMembers({
                             style={{}}
                           >
                             <TouchableOpacity
+                            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                               style={{
                                 flexDirection: "row",
                                 gap: 10,

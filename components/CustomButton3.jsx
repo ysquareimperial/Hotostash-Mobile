@@ -19,6 +19,7 @@ const CustomButton3 = ({
 
   return (
     <TouchableOpacity
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       onPress={handlePress}
       activeOpacity={0.7}
       style={[
@@ -36,7 +37,7 @@ const CustomButton3 = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "black",
+    backgroundColor: "",
     borderRadius: 15,
     borderWidth: 1,
     borderStyle: "solid",

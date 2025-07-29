@@ -52,7 +52,10 @@ export default function SelectPhotosSheet({
                     Stash event photos
                   </Text>
                 </View>
-                <TouchableOpacity onPress={handleClosePress}>
+                <TouchableOpacity
+                  onPress={handleClosePress}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                >
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -74,6 +77,7 @@ export default function SelectPhotosSheet({
               <TouchableOpacity
                 style={{ alignItems: "center", marginTop: 20 }}
                 onPress={selectPhotos}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
                 <View
                   style={{

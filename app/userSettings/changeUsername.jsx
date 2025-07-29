@@ -136,6 +136,7 @@ const ChangeUsername = () => {
   return (
     <View>
       <TouchableOpacity
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         style={{
           flexDirection: "row",
           alignItems: "center",

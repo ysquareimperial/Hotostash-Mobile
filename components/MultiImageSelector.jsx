@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
-import { View, Button, Image, Text, Alert, ScrollView, TouchableOpacity } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
+import React, { useState } from "react";
+import {
+  View,
+  Button,
+  Image,
+  Text,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 export default function MultiImageSelector() {
   const [images, setImages] = useState([]);
@@ -10,7 +18,10 @@ export default function MultiImageSelector() {
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      return Alert.alert('Permission denied', 'We need permission to access your gallery.');
+      return Alert.alert(
+        "Permission denied",
+        "We need permission to access your gallery."
+      );
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -24,7 +35,7 @@ export default function MultiImageSelector() {
       const sizeMB = fileInfo.size / (1024 * 1024);
 
       if (sizeMB > MAX_SIZE_MB) {
-        return Alert.alert('Large File', 'Use image files less than 10MB.');
+        return Alert.alert("Large File", "Use image files less than 10MB.");
       }
 
       setImages((prev) => [...prev, image]);
@@ -43,9 +54,15 @@ export default function MultiImageSelector() {
           <Text>Selected Images:</Text>
           {images.map((img, index) => (
             <View key={index} style={{ marginVertical: 10 }}>
-              <Image source={{ uri: img.uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
-              <TouchableOpacity onPress={() => removeImage(index)}>
-                <Text style={{ color: 'red', marginTop: 5 }}>Remove</Text>
+              <Image
+                source={{ uri: img.uri }}
+                style={{ width: 100, height: 100, borderRadius: 10 }}
+              />
+              <TouchableOpacity
+                onPress={() => removeImage(index)}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
+                <Text style={{ color: "red", marginTop: 5 }}>Remove</Text>
               </TouchableOpacity>
             </View>
           ))}

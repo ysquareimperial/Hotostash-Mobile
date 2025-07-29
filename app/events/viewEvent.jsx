@@ -298,6 +298,7 @@ export default function ViewEvent() {
       style={{ backgroundColor: "#000000", flex: 1 }}
       className="h-full"
     >
+      {/* <View className="w-full min-h-[85vh] px-4 my-6" style={{ marginTop: 60 }}></View> */}
       {/* <ScrollView> */}
       <View
         className="px-4"
@@ -305,7 +306,7 @@ export default function ViewEvent() {
           backgroundColor: "",
           // flex: 1,
           marginVertical: 0,
-          marginTop: 10,
+          paddingTop: 50,
         }}
       >
         <View
@@ -316,7 +317,10 @@ export default function ViewEvent() {
             backgroundColor: "",
           }}
         >
-          <TouchableOpacity onPress={() => handleSnapPress3(0)}>
+          <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            onPress={() => handleSnapPress3(0)}
+          >
             <Image
               source={{ uri: eventParams.image }}
               style={{ borderRadius: 500, width: 50, height: 50 }}
@@ -324,6 +328,7 @@ export default function ViewEvent() {
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <TouchableOpacity
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               onPress={() => handleSnapPress(0)}
               disabled={
                 !event?.participants?.some(

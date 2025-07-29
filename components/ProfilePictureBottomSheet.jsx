@@ -203,7 +203,7 @@ export default function ProfilePictureBottomSheet({
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 {/* Left-aligned text */}
                 <TouchableOpacity
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   onPress={() => {
                     handleClosePress2();
                   }}
@@ -233,7 +233,7 @@ export default function ProfilePictureBottomSheet({
                   <TouchableOpacity
                     onPress={uploadImage}
                     disabled={uploading}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                   >
                     <Text
                       style={{
@@ -258,7 +258,7 @@ export default function ProfilePictureBottomSheet({
                   />
                   <View style={{ flexDirection: "row", columnGap: 5 }}>
                     <TouchableOpacity
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       style={{
                         backgroundColor: grey1,
                         paddingHorizontal: 5,
@@ -297,7 +297,7 @@ export default function ProfilePictureBottomSheet({
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={takePhoto}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       style={{
                         backgroundColor: grey1,
                         paddingHorizontal: 5,

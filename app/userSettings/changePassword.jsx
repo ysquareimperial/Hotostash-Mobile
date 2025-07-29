@@ -97,10 +97,12 @@ export default function ChangePassword() {
             flexDirection: "row",
             alignItems: "center",
             gap: 20,
-            justifyContent: "space-between",
+            // justifyContent: "space-between",
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
             <MaterialIcons
               onPress={() => router.back()}
               name="arrow-back-ios"
@@ -114,16 +116,19 @@ export default function ChangePassword() {
                 fontWeight: "bold",
                 color: "white",
                 fontSize: 20,
-                textAlign: "center",
+                // textAlign: "center",
               }}
             >
               Change password
             </Text>
           </View>
-          <TouchableOpacity onPress={updatePassword}>
+          <TouchableOpacity
+            onPress={updatePassword}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
             {form.currentPassword.length > 3 &&
               form.newPassword.length > 3 &&
-              (form.confirmPassword.length > 3 && (
+              form.confirmPassword.length > 3 && (
                 <Text
                   style={{
                     fontWeight: "bold",
@@ -138,7 +143,7 @@ export default function ChangePassword() {
                     "Save"
                   )}
                 </Text>
-              ))}
+              )}
           </TouchableOpacity>
         </View>
 

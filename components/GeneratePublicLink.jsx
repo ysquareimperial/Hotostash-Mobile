@@ -11,7 +11,7 @@ import {
   Share,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { grey2 } from "./colors";
+import { grey1, grey2 } from "./colors";
 import CustomButton from "./CustomButton";
 import CustomButton2 from "./CustomButton2";
 import CustomButton3 from "./CustomButton3";
@@ -127,7 +127,7 @@ const GeneratePublicLink = ({
       const urlToShare = link?.public_link ? link.public_link : existingLink;
 
       await Share.share({
-        message: `Check this out: ${urlToShare}`,
+        message: ``,
         url: urlToShare,
       });
     } catch (error) {
@@ -183,7 +183,7 @@ const GeneratePublicLink = ({
                     <Text style={{ color: "white" }}>Link copied</Text>
                   ) : (
                     <TouchableOpacity
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       onPress={handleCancelPress}
                     >
                       <Text style={{ color: "white", fontWeight: "bold" }}>
@@ -195,7 +195,7 @@ const GeneratePublicLink = ({
                 <View
                   style={{
                     flexDirection: "row",
-                    columnGap: 7,
+                    columnGap: 10,
                     // marginTop: 30,
                     justifyContent: "flex-end",
                   }}
@@ -210,25 +210,31 @@ const GeneratePublicLink = ({
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <TouchableOpacity
-                          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                           onPress={showAlert}
                         >
-                          <AntDesign name="reload1" size={24} color="white" />
+                          <AntDesign name="reload1" size={20} color="white" />
                         </TouchableOpacity>
                       )}
                     </>
                   ) : null}
                   <TouchableOpacity
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     onPress={handleCopy}
                   >
-                    <AntDesign name="copy1" size={24} color="white" />
+                    <AntDesign name="copy1" size={20} color="white" />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     onPress={shareViaSystem}
                   >
-                    <Ionicons name="share-outline" size={24} color="white" />
+                    <Ionicons name="share-outline" size={20} color="white" />
+                  </TouchableOpacity>
+                   <TouchableOpacity
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                    onPress={shareViaSystem}
+                  >
+                    <Ionicons name="open-outline" size={20} color="white" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -281,13 +287,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // Semi-transparent black background
   },
   modalView: {
     margin: 250,
     width: "80%",
-    backgroundColor: "black",
-    borderRadius: 5, // Rounded corners (if you want to keep this)
+    backgroundColor: grey2,
+    borderRadius: 20, // Rounded corners (if you want to keep this)
     padding: 14, // Padding inside the modal for better spacing
     // alignItems: "center",
     borderWidth: 1, // Add border width

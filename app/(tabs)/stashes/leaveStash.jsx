@@ -60,7 +60,11 @@ export default function LeaveStash({
                     Leave "{stashName}"?
                   </Text>
                 </View>
-                <TouchableOpacity onPress={handleClosePress} disabled={loading}>
+                <TouchableOpacity
+                  onPress={handleClosePress}
+                  disabled={loading}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                >
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -82,7 +86,11 @@ export default function LeaveStash({
                 Leaving this stash means you won't be able to access any events
                 or pictures in the stash.
               </Text>
-              <TouchableOpacity onPress={handleSubmit} disabled={loading}>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                disabled={loading}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              >
                 <View
                   style={{
                     flexDirection: "row",

@@ -213,6 +213,7 @@ export default function AddEventParticipants({
                       setSelectedMembers([]);
                       setSearchQuery("");
                     }}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     disabled={loading2}
                   >
                     <Text
@@ -245,6 +246,7 @@ export default function AddEventParticipants({
                   ) : (
                     <TouchableOpacity
                       onPress={addParticipants}
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       disabled={selectedMembers.length === 0} // Disable the button if length is 0
                       // Optional: Reduce opacity when disabled
                     >
@@ -308,6 +310,7 @@ export default function AddEventParticipants({
                   >
                     {selectedMembers.map((member, index) => (
                       <TouchableOpacity
+                        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                         key={index}
                         onPress={() => handleSelectMember(member)}
                       >
@@ -383,6 +386,12 @@ export default function AddEventParticipants({
                               onPress={() => {
                                 Keyboard.dismiss();
                                 handleSelectMember(item);
+                              }}
+                              hitSlop={{
+                                top: 15,
+                                bottom: 15,
+                                left: 15,
+                                right: 15,
                               }}
                             >
                               <View>

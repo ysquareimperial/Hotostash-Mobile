@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../../helpers/helpers";
 import axios from "axios";
 
-export default function JoinEvent() {
+export default function event() {
   const [authToken, setAuthToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -119,7 +119,12 @@ export default function JoinEvent() {
           </View>
 
           {loading ? (
-            <ActivityIndicator size="small" color="white" />
+            <View style={{ marginTop: 30 }}>
+              <ActivityIndicator size="small" color="white" />
+              <Text style={[styles.subhead, { marginTop: 10 }]}>
+                Just a sec... Finalizing your invitation.{" "}
+              </Text>
+            </View>
           ) : displayPage ? (
             <View>
               <View>

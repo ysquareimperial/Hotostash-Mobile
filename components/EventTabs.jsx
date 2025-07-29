@@ -70,6 +70,7 @@ export default function EventTabs({
             }}
           >
             <TouchableOpacity
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               style={{ marginBottom: 10, padding: 10 }}
               onPress={() => handleTabItemClick(tab)}
             >
@@ -104,7 +105,7 @@ export default function EventTabs({
             </View>
             <View>
               <TouchableOpacity
-                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 onPress={confirmCancelStash}
               >
                 <Text style={{ color: orange, fontWeight: "bold" }}>

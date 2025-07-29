@@ -86,6 +86,7 @@ export default function ManageParticipant({
               <TouchableOpacity
                 onPress={() => handleSubmit1()}
                 disabled={loading1}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
                 <View
                   style={{
@@ -143,6 +144,7 @@ export default function ManageParticipant({
               <TouchableOpacity
                 onPress={() => handleSubmit2()}
                 disabled={loading2}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
                 <View
                   style={{
@@ -201,6 +203,7 @@ export default function ManageParticipant({
               <TouchableOpacity
                 onPress={() => handleSubmit3()}
                 disabled={loading3}
+                hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
               >
                 <View
                   style={{

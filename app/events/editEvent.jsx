@@ -161,6 +161,7 @@ export default function EditEvent({
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     {/* Left-aligned text */}
                     <TouchableOpacity
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                       onPress={() => {
                         handleClosePress();
                         // setForm('')
@@ -196,6 +197,7 @@ export default function EditEvent({
                       <ActivityIndicator size="small" color="white" />
                     ) : (
                       <TouchableOpacity
+                        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                         onPress={_editEvent}
                         disabled={
                           form.name.length === 0 || form.location.length === 0

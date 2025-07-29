@@ -20,6 +20,7 @@ const CustomButton2 = ({
 
   return (
     <TouchableOpacity
+      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       onPress={handlePress}
       activeOpacity={0.7}
       style={[
@@ -28,7 +29,7 @@ const CustomButton2 = ({
         isLoading && styles.disabledButton,
       ]}
       disabled={isLoading}
-    //   className="mt-7"
+      //   className="mt-7"
     >
       <View style={styles.buttonContent}>
         <Image

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Slot, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import "../global.css";
+// import { PaystackProvider } from "react-native-paystack-webview";
 import { UserProvider } from "../context/UserContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -30,11 +31,12 @@ const RootLayout = () => {
   return (
     <GestureHandlerRootView>
       <UserProvider>
+        {/* <PaystackProvider publicKey="pk_test_ac95b08abbda866c61e311476591cec34beaa2ed"> */}
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          {/* <Stack.Screen name="modal" options={{ presentation: "modal" }} /> */}
           <Stack.Screen
             name="events/viewEvent"
             options={{
@@ -43,14 +45,31 @@ const RootLayout = () => {
               title: "Event",
             }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="events/joinEvent"
+            options={{ presentation: "modal", headerShown: false }}
+          /> */}
+          <Stack.Screen
+            name="contribution/contribute"
+            options={{ presentation: "modal", headerShown: false }}
+          />
+          <Stack.Screen
+            name="contribution/paystackWebview"
             options={{ presentation: "modal", headerShown: false }}
           />
           <Stack.Screen
             name="invite/event"
             options={{ presentation: "modal", headerShown: false }}
           />
+          <Stack.Screen
+            name="invite"
+            options={{ presentation: "modal", headerShown: false }}
+          />
+          <Stack.Screen name="public" options={{ headerShown: false }} />
+          {/* <Stack.Screen
+            name="public"
+            options={{ presentation: "modal", headerShown: false }}
+          /> */}
           <Stack.Screen
             name="userSettings/settings"
             options={{
@@ -70,6 +89,7 @@ const RootLayout = () => {
             options={{ headerShown: false }}
           />
         </Stack>
+        {/* </PaystackProvider> */}
       </UserProvider>
     </GestureHandlerRootView>
   );

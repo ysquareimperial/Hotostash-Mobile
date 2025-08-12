@@ -319,6 +319,9 @@ const Stashes = () => {
           >
             Stashes
           </Text>
+          {/* <Link href="/public" style={{ color: orange, fontWeight: "bold" }}>
+            Log in
+          </Link> */}
           <TouchableOpacity
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             onPress={() => handleSnapPress(0)}

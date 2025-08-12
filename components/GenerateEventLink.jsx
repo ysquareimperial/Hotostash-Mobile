@@ -36,7 +36,7 @@ const GenerateEventLink = ({
   children,
   eventParticipants,
   user,
-  existingLink,
+  existingEventLink,
   eventId,
   ...props
 }) => {
@@ -65,7 +65,7 @@ const GenerateEventLink = ({
   }, []);
 
   const handleCopy = async () => {
-    const textToCopy = link?.invite_link || existingLink;
+    const textToCopy = link?.invite_link || existingEventLink;
 
     await Clipboard.setStringAsync(textToCopy);
     setCopied(true);
@@ -81,7 +81,7 @@ const GenerateEventLink = ({
     setLoading(true);
     axios
       .post(
-        `${api}events/${eventId}/generate-invite`,
+        `${api}events/${eventId}/generate-invite2`,
         {},
         {
           headers: {
@@ -121,18 +121,18 @@ const GenerateEventLink = ({
       { cancelable: false }
     );
   };
-    const shareViaSystem = async () => {
-      try {
-        const urlToShare = link?.invite_link || existingLink;
-  
-        await Share.share({
-          message: ``,
-          url: urlToShare,
-        });
-      } catch (error) {
-        alert(error.message);
-      }
-    };
+  const shareViaSystem = async () => {
+    try {
+      const urlToShare = link?.invite_link || existingEventLink;
+
+      await Share.share({
+        message: ``,
+        url: urlToShare,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <View>
@@ -152,7 +152,7 @@ const GenerateEventLink = ({
               {link?.invite_link ? (
                 <Text style={{ color: "grey" }}>{link?.invite_link}</Text>
               ) : (
-                <Text style={{ color: "grey" }}>{existingLink}</Text>
+                <Text style={{ color: "grey" }}>{existingEventLink}</Text>
               )}
             </View>
 
@@ -168,7 +168,7 @@ const GenerateEventLink = ({
                 </Text>
               ) : null}
             </View>
-            {existingLink || link?.invite_link ? (
+            {existingEventLink || link?.invite_link ? (
               <View
                 style={{
                   flexDirection: "row",

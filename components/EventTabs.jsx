@@ -9,7 +9,7 @@ import IV from "./IV";
 export default function EventTabs({
   eventId,
   stashId,
-  existingLink,
+  existingEventLink,
   event,
   eventParticipants,
   openDownloadSheet,
@@ -167,7 +167,7 @@ export default function EventTabs({
             <EventParticipants
               eventId={eventId}
               stashId={stashId}
-              existingLink={existingLink}
+              existingEventLink={existingEventLink}
             />
           </View>
         )}

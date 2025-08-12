@@ -40,7 +40,7 @@ export default function ViewEvent() {
   const [loading2, setLoading2] = useState(false);
   const [authToken, setAuthToken] = useState(null);
   const [event, setEvent] = useState({});
-  const [existingLink, setExistingLink] = useState(null);
+  // const [existingLink, setExistingLink] = useState(null);
   const { eventId } = useLocalSearchParams();
   const { stashId } = useLocalSearchParams();
   const [overallProgress, setOverallProgress] = useState(0);
@@ -258,7 +258,7 @@ export default function ViewEvent() {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setExistingLink(response?.data?.public_photo_link);
+      // setExistingLink(response?.data?.public_photo_link);
       setEvent(response?.data);
       console.log("from view eventtttttttttttttttttttttttt");
       console.log(response?.data);
@@ -394,7 +394,7 @@ export default function ViewEvent() {
             event={event}
             eventId={eventId}
             stashId={stashId}
-            existingLink={existingLink}
+            existingEventLink={event?.invite_link}
             existingPublicLink={event?.public_photo_link}
             eventParticipants={event?.participants}
             openDownloadSheet={() => handleSnapPress2(0)}

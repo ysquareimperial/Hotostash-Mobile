@@ -6,23 +6,24 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
-import { grey1 } from "../../components/colors";
+import { grey1 } from "../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import CustomButton from "../../components/CustomButton";
+import CustomButton from "../components/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { api } from "../../helpers/helpers";
+import { api } from "../helpers/helpers";
 import axios from "axios";
 
-export default function JoinEvent() {
+export default function Invite() {
   const [authToken, setAuthToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const { invite_id } = useLocalSearchParams();
+  const { token } = useLocalSearchParams();
   const [error, setError] = useState("");
   const [displayPage, setDisplayPage] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [eventData, setEventData] = useState(null);
   const rotateInterpolate = rotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -69,7 +70,7 @@ export default function JoinEvent() {
     setHasError(false);
 
     axios
-      .get(`${api}events/invite/event?invite_id=${invite_id}`, {
+      .get(`${api}albums/invite?token=${token}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -77,6 +78,8 @@ export default function JoinEvent() {
       .then((response) => {
         console.log(response.data);
         if (response.status === 200) {
+          console.log(response.data);
+          //   setEventData(response.data?.event);
           setDisplayPage(true);
         } else {
           setHasError(true);
@@ -92,6 +95,11 @@ export default function JoinEvent() {
       });
   }, [authToken]); // depend on authToken
 
+  //   const viewStash = () => {
+  //     router.replace(
+  //       `/events/viewEvent?eventId=${eventData.event_id}&stashId=${eventData.album_id}&name=${eventData.name}&image=${eventData.image}&description=${eventData.description}&date=${eventData.date}&location=${eventData.location}&time=${eventData.time}`
+  //     );
+  //   };
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -113,32 +121,48 @@ export default function JoinEvent() {
             }}
           >
             <Animated.Image
-              source={require("../../assets/Hotostash_PNG/image.png")}
+              source={require("../assets/Hotostash_PNG/image.png")}
               style={[styles.image, animatedStyle]}
             />
           </View>
 
           {loading ? (
-            <ActivityIndicator size="small" color="white" />
+            <View style={{ marginTop: 30 }}>
+              <ActivityIndicator size="small" color="white" />
+              <Text style={[styles.subhead, { marginTop: 10 }]}>
+                Just a sec... Finalizing your invitation.{" "}
+              </Text>
+            </View>
           ) : displayPage ? (
             <View>
               <View>
                 <Text style={styles.head}>Invitation accepted</Text>
                 <Text style={[styles.subhead, { marginTop: 10 }]}>
-                  Thank you for joining the event on Hotostash.
+                  Thank you for joining the stash on Hotostash!
                 </Text>
                 <Text style={[styles.subhead, { marginTop: 5 }]}>
-                  We can't wait to see the memories you'll stash.
+                  We're excited to have you, and we can't wait to see the
+                  memories you create.
                 </Text>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                <CustomButton title={"View event"} />
+                <CustomButton
+                  title={"View stash"}
+                  // handlePress={viewStash}
+                />
               </View>
             </View>
           ) : hasError ? (
             <View>
-              <Text style={{ color: "white", textAlign: "center" }}>
-                {error}
+              <Text
+                style={{ color: "white", textAlign: "center", marginTop: 30 }}
+              >
+                {error}!
+              </Text>
+              <Text
+                style={{ color: "white", textAlign: "center", marginTop: 5 }}
+              >
+                Please contact the stash admin.
               </Text>
             </View>
           ) : (

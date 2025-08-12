@@ -639,7 +639,7 @@ export default function ViewStash() {
               <AntDesign name="plus" size={20} color="white" />
             </TouchableOpacity>
           </View>
-          {/* <Link href="/events/viewEvent" push asChild>
+          {/* <Link href="/contribution/contribute" push asChild>
             <Button title="open modal" />
           </Link> */}
           {loading ? (

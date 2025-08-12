@@ -26,7 +26,7 @@ import { useRouter } from "expo-router";
 import CustomButton2 from "../../../components/CustomButton2";
 import GenerateEventLink from "../../../components/GenerateEventLink";
 
-const EventParticipants = ({ eventId, stashId, existingLink }) => {
+const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
   const { user } = useUser();
   const [authToken, setAuthToken] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null); // To track selected user ID
@@ -592,7 +592,7 @@ const EventParticipants = ({ eventId, stashId, existingLink }) => {
         modalText={"Anyone with this link will be able to join this event"}
         eventParticipants={eventParticipants}
         user={user}
-        existingLink={existingLink}
+        existingEventLink={existingEventLink}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
           setModalVisible2(false);

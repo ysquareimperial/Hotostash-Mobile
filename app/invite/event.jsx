@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { grey1 } from "../../components/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,6 +23,7 @@ export default function event() {
   const [error, setError] = useState("");
   const [displayPage, setDisplayPage] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [eventData, setEventData] = useState(null);
   const rotateInterpolate = rotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
@@ -69,7 +70,7 @@ export default function event() {
     setHasError(false);
 
     axios
-      .get(`${api}events/invite/event?invite_id=${invite_id}`, {
+      .get(`${api}events/invite/event2?invite_id=${invite_id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -77,6 +78,8 @@ export default function event() {
       .then((response) => {
         console.log(response.data);
         if (response.status === 200) {
+          console.log(response.data?.event);
+          setEventData(response.data?.event);
           setDisplayPage(true);
         } else {
           setHasError(true);
@@ -92,6 +95,11 @@ export default function event() {
       });
   }, [authToken]); // depend on authToken
 
+  const viewEvent = () => {
+    router.replace(
+      `/events/viewEvent?eventId=${eventData.event_id}&stashId=${eventData.album_id}&name=${eventData.name}&image=${eventData.image}&description=${eventData.description}&date=${eventData.date}&location=${eventData.location}&time=${eventData.time}`
+    );
+  };
   return (
     <SafeAreaView
       edges={["left", "right"]}
@@ -137,12 +145,14 @@ export default function event() {
                 </Text>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                <CustomButton title={"View event"} />
+                <CustomButton title={"View event"} handlePress={viewEvent} />
               </View>
             </View>
           ) : hasError ? (
             <View>
-              <Text style={{ color: "white", textAlign: "center" }}>
+              <Text
+                style={{ color: "white", textAlign: "center", marginTop: 30 }}
+              >
                 {error}
               </Text>
             </View>

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Keyboard,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
@@ -19,7 +20,7 @@ import { grey1, grey2, orange } from "../../components/colors";
 import { useUser } from "../../context/UserContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import defaultProfile from "../../assets/profile.png";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../../components/CustomButton";
@@ -46,6 +47,7 @@ const Contribution = ({ eventId, stashId, event }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [tappedParticipantId, setTappedParticipantId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [participantId, setParticipantId] = useState(null);
 
   const [formData, setFormData] = useState({
     contribution_id: "",
@@ -75,6 +77,21 @@ const Contribution = ({ eventId, stashId, event }) => {
 
     fetchToken();
   }, []);
+
+  // Find the matching participant
+  useEffect(() => {
+    const matchingParticipant = event?.participants?.find(
+      (participant) =>
+        participant.user.firstname === user.firstname &&
+        participant.user.lastname === user.lastname &&
+        participant.user.username === user.username
+    );
+
+    // Update the state with the matching participant ID if found
+    if (matchingParticipant) {
+      setParticipantId(matchingParticipant.id);
+    }
+  }, [event, user]);
 
   // Fetch contribution status
   useEffect(() => {
@@ -466,22 +483,36 @@ const Contribution = ({ eventId, stashId, event }) => {
                     marginBottom: 10,
                   }}
                 >
-                  <TouchableOpacity
-                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                  <Link
+                    href={{
+                      pathname: "/contribution/contribute",
+                      params: {
+                        eventName: event?.name,
+                        eventId: eventId,
+                        contributionId: contributionDetails?.id,
+                        participantId: participantId
+                      },
+                    }}
+                    push
+                    asChild
                   >
-                    <View
-                      style={{
-                        backgroundColor: "#87FF87",
-                        padding: 10,
-                        borderRadius: 50,
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
+                    <TouchableOpacity
+                      hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                     >
-                      {/* <AntDesign name="adduser" size={25} color="white" /> */}
-                      <Text style={{ color: "black" }}>Contribute</Text>
-                    </View>
-                  </TouchableOpacity>
+                      <View
+                        style={{
+                          backgroundColor: "#87FF87",
+                          padding: 10,
+                          borderRadius: 50,
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        {/* <AntDesign name="adduser" size={25} color="white" /> */}
+                        <Text style={{ color: "black" }}>Contribute</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </Link>
                   {event?.participants?.some(
                     (participant) =>
                       participant.user.username === user?.username &&

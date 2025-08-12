@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 // import MasonryList from "react-native-masonry-list";
 import ImageViewing from "react-native-image-viewing";
-import { Image as RNImage } from "react-native";
+import { Alert, Image as RNImage } from "react-native";
 import {
   View,
   ActivityIndicator,
@@ -127,7 +127,7 @@ const EventPhotos = ({
 
       await MediaLibrary.saveToLibraryAsync(uri);
 
-      alert("Photo saved to your gallery!");
+      Alert.alert("", "Photo saved to your gallery!");
     } catch (error) {
       console.error("Error downloading image:", error);
       alert("Failed to download image.");
@@ -404,6 +404,8 @@ const EventPhotos = ({
 
   //Refresh Images
   const handleRefresh = () => {
+    console.log("called");
+
     setRefreshing(true);
     fetchImages(true);
   };
@@ -571,13 +573,20 @@ const EventPhotos = ({
             numColumns={2}
             contentContainerStyle={{
               backgroundColor: "black",
-              // padding: 2,
               paddingBottom: 250,
+              flexGrow: 1, // 🔥 ensures scrollability
+              minHeight: 1, // 🔥 required to avoid zero height
             }}
             // style={{marginBottom:200}}
             showsVerticalScrollIndicator={false}
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                colors={["#fff"]}
+                tintColor="#fff"
+              />
+            }
             onEndReachedThreshold={0.5}
             onEndReached={() => fetchImages(false)}
             ListFooterComponent={
@@ -624,7 +633,7 @@ const EventPhotos = ({
                       source={{ uri: item.url }}
                       style={{
                         width: "100%", // 🔥 this is crucial
-                        aspectRatio: item.width / item.height || 1,
+                        aspectRatio: item?.width / item.height || 1,
                         borderRadius: 10,
                       }}
                       resizeMethod="cover"

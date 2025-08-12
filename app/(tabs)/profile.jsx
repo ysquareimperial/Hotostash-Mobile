@@ -16,7 +16,10 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { format, parseISO, addDays, differenceInDays } from "date-fns";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import FormField2 from "../../components/FormField2";
 import { TextInput } from "react-native-gesture-handler";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -82,7 +85,7 @@ const Profile = () => {
     about: user?.about,
   });
 
-  const snapPoints = ["95%"];
+  const snapPoints = ["100%"];
   // callbacks
   const handleSheetChange = useCallback((index) => {
     console.log("handleSheetChange", index);
@@ -198,12 +201,22 @@ const Profile = () => {
           <View>
             <TouchableOpacity
               onPress={() => handleSnapPress2(0)}
-              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+              style={{
+                borderRadius: 500,
+                width: 80,
+                height: 80,
+                overflow: "hidden", // ensures no extra clickable area outside the circle
+              }}
             >
               <Image
                 source={{ uri: user?.image }}
                 // className="w-[84px] h-[84px]"
-                style={{ borderRadius: 500, width: 80, height: 80 }}
+                style={{
+                  borderRadius: 500,
+                  width: 80,
+                  height: 80,
+                  backgroundColor: "red",
+                }}
                 // resizeMode="contain"
               />
             </TouchableOpacity>
@@ -374,6 +387,14 @@ const Profile = () => {
                 backgroundColor: "white",
               }}
               backgroundStyle={{ backgroundColor: grey2 }}
+              backdropComponent={(props) => (
+                <BottomSheetBackdrop
+                  {...props}
+                  appearsOnIndex={0}
+                  disappearsOnIndex={-1}
+                  pressBehavior={"close"} // closes sheet when background is pressed
+                />
+              )}
             >
               <View style={{ flex: 1, backgroundColor: grey2 }}>
                 <BottomSheetView className="px-4">

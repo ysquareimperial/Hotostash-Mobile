@@ -215,7 +215,7 @@ const Profile = () => {
                   borderRadius: 500,
                   width: 80,
                   height: 80,
-                  backgroundColor: "red",
+                  backgroundColor: "",
                 }}
                 // resizeMode="contain"
               />

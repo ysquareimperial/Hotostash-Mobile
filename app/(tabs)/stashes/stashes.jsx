@@ -23,6 +23,10 @@ import SkeletonPlaceholder from "../../../components/SkeletonPlaceholder";
 import { router, Link } from "expo-router";
 import MultiImageSelector from "../../../components/MultiImageSelector";
 import UploadPhotos from "../../../components/UploadPhotos";
+import {
+  setShouldRefreshPageA,
+  shouldRefreshPageA,
+} from "../../../helpers/refreshFlag";
 
 const Stashes = () => {
   const [form, setForm] = useState({
@@ -40,7 +44,7 @@ const Stashes = () => {
   const sheetRef = useRef(null);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-
+  const { refreshPageA, setRefreshPageA } = useUser();
   // Fetching token
   useEffect(() => {
     const fetchToken = async () => {
@@ -82,26 +86,38 @@ const Stashes = () => {
   }, [authToken]);
 
   //Refresh if user edited a stash
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
+  // useFocusEffect(
+  //   useCallback(() => {
 
-      const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("stashEdited");
-        console.log("Flag value:", flag);
-        if (flag === "true" && isActive) {
-          await fetchStashes();
-          await AsyncStorage.removeItem("stashEdited");
-        }
-      };
+  //     let isActive = true;
 
-      checkFlag();
+  //     const checkFlag = async () => {
+  //       const flag = await AsyncStorage.getItem("stashEdited");
+  //       console.log("Flag value:", flag);
+  //       if (flag === "true" && isActive) {
+  //         await fetchStashes();
+  //         await AsyncStorage.removeItem("stashEdited");
+  //       }
+  //     };
 
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
+  //     checkFlag();
+
+  //     return () => {
+  //       isActive = false;
+  //     };
+  //   }, [])
+  // );
+
+  //Refresh page
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (shouldRefreshPageA) {
+  //       console.log("Refreshing Page A...");
+  //       setShouldRefreshPageA(false); // reset so it doesn’t trigger again
+  //       onRefresh();
+  //     }
+  //   }, [shouldRefreshPageA])
+  // );
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
@@ -128,28 +144,40 @@ const Stashes = () => {
     }
   }, [authToken]);
 
-  //Refresh if user left stash
+  // //Refresh if user left stash
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     let isActive = true;
+
+  //     const checkFlag = async () => {
+  //       const flag = await AsyncStorage.getItem("leftStash");
+  //       console.log("Flag value:", flag);
+  //       if (flag === "true" && isActive) {
+  //         await onRefresh();
+  //         await AsyncStorage.removeItem("leftStash");
+  //       }
+  //     };
+
+  //     checkFlag();
+
+  //     return () => {
+  //       isActive = false;
+  //     };
+  //   }, [])
+  // );
+
   useFocusEffect(
     useCallback(() => {
-      let isActive = true;
-
-      const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("leftStash");
-        console.log("Flag value:", flag);
-        if (flag === "true" && isActive) {
-          await onRefresh();
-          await AsyncStorage.removeItem("leftStash");
-        }
-      };
-
-      checkFlag();
-
-      return () => {
-        isActive = false;
-      };
-    }, [])
+      console.log('context flag', refreshPageA);
+      
+      if (refreshPageA) {
+        console.log("Refreshing Page A...");
+        setRefreshPageA(false); // reset flag
+        onRefresh();
+      }
+    }, [refreshPageA])
   );
-
+  
   //B o t t o m s h e e t
   const snapPoints = ["100%"];
   // callbacks

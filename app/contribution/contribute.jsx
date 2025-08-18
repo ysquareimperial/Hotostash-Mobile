@@ -41,7 +41,7 @@ const Contribute = () => {
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-
+  const { refreshPageA, setRefreshPageA } = useUser();
   const { eventName, eventId, contributionId, participantId } =
     useLocalSearchParams();
   const [showWebView, setShowWebView] = React.useState(false);
@@ -112,6 +112,7 @@ const Contribute = () => {
   const paymentAPIPaystack = `${api}payment/?participant_id=${Number(
     participantId
   )}&contribution_id=${Number(contributionId)}&provider=paystack`;
+
   const postPaystackTransactionToDB = (transaction_id, reference_id) => {
     setLoading2(true);
     setModalVisible(true);
@@ -124,7 +125,6 @@ const Contribute = () => {
           amount: Number(formData?.amount),
           anonymity: enableAnonymity,
           payment_datetime: new Date().toISOString(),
-
           // description: description,
         },
         {
@@ -134,9 +134,11 @@ const Contribute = () => {
         }
       )
       .then((response) => {
-        // if (response?.status === 201 && response?.data?.status === "success") {
-        //   handleModal();
-        // } else {
+        if (response?.status === 201 && response?.data?.status === "success") {
+          setRefreshPageA(true);
+           console.log("before set in contribute:", refreshPageA);
+        }
+        // else {
         //   handleModal3();
         // }
         setModalVisible(true);

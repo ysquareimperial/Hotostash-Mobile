@@ -31,10 +31,19 @@ import CreateEvent from "./createEvent";
 import CustomBottomSheet from "../../../components/CustomBottomSheet";
 import ProfilePictureBottomSheet from "../../../components/ProfilePictureBottomSheet";
 import StashPhotoBottomSheet from "../../../components/StashPhotoBottomSheet";
+import {
+  setShouldRefreshPageA,
+  shouldRefreshPageA,
+} from "../../../helpers/refreshFlag";
 // import * as Linking from "expo-linking";
 
 export default function ViewStash() {
+  const [leaveSuccess, setLeaveSuccess] = useState(false);
+
   const { user } = useUser();
+  const { refreshPageA, setRefreshPageA, eventEdited, setEventEdited } =
+    useUser();
+
   // const { id } = useLocalSearchParams();
   // const { title } = useLocalSearchParams();
   // const { image } = useLocalSearchParams();
@@ -304,6 +313,20 @@ export default function ViewStash() {
     fetchStash();
   }, [authToken]);
 
+  useFocusEffect(
+    useCallback(() => {
+      console.log("context flag", refreshPageA);
+      console.log("context flag", eventEdited );
+
+      if (refreshPageA && eventEdited) {
+        console.log("Refreshing Page A...");
+        setRefreshPageA(false); // reset flag
+        setEventEdited(false);
+        onRefresh();
+      }
+    }, [refreshPageA, eventEdited])
+  );
+
   //Refresh if user left an event
   // useFocusEffect(
   //   useCallback(() => {
@@ -321,50 +344,50 @@ export default function ViewStash() {
   //   }, [])
   // );
 
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     let isActive = true;
 
-      const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("leftEvent");
-        console.log("Flag value:", flag);
-        if (flag === "true" && isActive) {
-          console.log("User came back from leaving event");
-          await onRefresh();
-          await AsyncStorage.removeItem("leftEvent");
-        }
-      };
+  //     const checkFlag = async () => {
+  //       const flag = await AsyncStorage.getItem("leftEvent");
+  //       console.log("Flag value:", flag);
+  //       if (flag === "true" && isActive) {
+  //         console.log("User came back from leaving event");
+  //         await onRefresh();
+  //         await AsyncStorage.removeItem("leftEvent");
+  //       }
+  //     };
 
-      checkFlag();
+  //     checkFlag();
 
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
+  //     return () => {
+  //       isActive = false;
+  //     };
+  //   }, [])
+  // );
 
   //Refresh if event is edited
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     let isActive = true;
 
-      const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("eventEdited");
-        console.log("Flag valueeee:", flag);
-        if (flag === "true" && isActive) {
-          console.log("User came back from leaving event");
-          await onRefresh();
-          await AsyncStorage.removeItem("eventEdited");
-        }
-      };
+  //     const checkFlag = async () => {
+  //       const flag = await AsyncStorage.getItem("eventEdited");
+  //       console.log("Flag valueeee:", flag);
+  //       if (flag === "true" && isActive) {
+  //         console.log("User came back from leaving event");
+  //         await onRefresh();
+  //         await AsyncStorage.removeItem("eventEdited");
+  //       }
+  //     };
 
-      checkFlag();
+  //     checkFlag();
 
-      return () => {
-        isActive = false;
-      };
-    }, [])
-  );
+  //     return () => {
+  //       isActive = false;
+  //     };
+  //   }, [])
+  // );
 
   const handleCreatedEvent = (newItem) => {
     setStashEvents((prevItems) => [newItem, ...prevItems]); // Append new object
@@ -372,6 +395,8 @@ export default function ViewStash() {
 
   // Function to handle pull-to-refresh
   const onRefresh = useCallback(async () => {
+    console.log("called refressssssssssshhhhh");
+
     setRefreshing(true);
     try {
       const token = authToken || (await AsyncStorage.getItem("authToken"));
@@ -399,17 +424,50 @@ export default function ViewStash() {
     }
   }, [authToken]);
 
-  const handleLeave = async () => {
-    await AsyncStorage.setItem("leftStash", "true");
-    console.log("from leaaaaveeee stashhhhhhh");
-    setTimeout(() => {
-      router.back();
-    }, 100); // Small delay to ensure flag is stored
-  };
+  // const handleLeave = async () => {
+  //   setTimeout(() => {
+  //     router.back();
+  //   }, 100); // Small delay to ensure flag is stored
+  // };
 
   //Leave stash
+  // const leaveStash = () => {
+  //   setLoading2(true);
+  //   axios
+  //     .delete(`${api}albums/${stashParams.id}/leave`, {
+  //       headers: {
+  //         Authorization: `Bearer ${authToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setLoading2(false);
+  //       if (response?.status === 200) {
+  //         console.log("ddddddddddd", refreshPageA);
+  //         setRefreshPageA(true);
+  //         console.log("ddddddddddd 2", refreshPageA);
+
+  //         setTimeout(() => {
+  //           handleLeave();
+  //         }, 0);
+  //       }
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       setLoading2(false);
+  //       console.log(err)?.response?.data?.detail;
+  //       setError(err?.response?.data?.detail);
+  //     });
+  // };
+
+  // 🚀 in your component
+  const handleLeave = () => {
+    router.back();
+  };
+
+  // Leave stash
   const leaveStash = () => {
     setLoading2(true);
+
     axios
       .delete(`${api}albums/${stashParams.id}/leave`, {
         headers: {
@@ -418,17 +476,28 @@ export default function ViewStash() {
       })
       .then((response) => {
         setLoading2(false);
+
         if (response?.status === 200) {
-          handleLeave();
+          // ✅ only set the flag
+          setRefreshPageA(true);
+          setLeaveSuccess(true);
         }
+
         console.log(response);
       })
       .catch((err) => {
         setLoading2(false);
-        console.log(err)?.response?.data?.detail;
+        console.log(err?.response?.data?.detail);
         setError(err?.response?.data?.detail);
       });
   };
+
+  // 🚀 watch the flag and navigate when it flips to true
+  useEffect(() => {
+    if (refreshPageA && leaveSuccess === true) {
+      handleLeave();
+    }
+  }, [refreshPageA]);
 
   //Make stash admin
   const makeStashAdmin = (user_id) => {
@@ -500,6 +569,8 @@ export default function ViewStash() {
           handleClosePress5();
           setStashParams(response.data); // update state with the edited data
           stashEdited();
+          // setShouldRefreshPageA(true);
+          setRefreshPageA(true);
         }
         console.log(response?.data);
         console.log(response?.status);
@@ -510,6 +581,16 @@ export default function ViewStash() {
         console.log(e.detail);
       });
   };
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (refreshPageA) {
+  //       console.log("Refreshing Page A...");
+  //       setRefreshPageA(false); // reset flag
+  //       onRefresh();
+  //     }
+  //   }, [refreshPageA])
+  // );
 
   // if (loading) {
   //   return (

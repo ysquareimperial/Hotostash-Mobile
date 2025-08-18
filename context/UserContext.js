@@ -20,6 +20,11 @@ export const UserProvider = ({ children }) => {
     phone: "",
   });
 
+  //Refresh flag
+  const [refreshPageA, setRefreshPageA] = useState(false);
+  const [eventEdited, setEventEdited] = useState(false);
+  const [leftEvent, setLeftEvent] = useState(false);
+
   // Retrieve user data from AsyncStorage when the component mounts
   useEffect(() => {
     const loadUserData = async () => {
@@ -46,7 +51,18 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, saveUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        saveUser,
+        refreshPageA,
+        setRefreshPageA,
+        eventEdited,
+        setEventEdited,
+        leftEvent,
+        setLeftEvent,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

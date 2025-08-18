@@ -224,8 +224,17 @@ const IV = ({ eventId }) => {
                     <View style={{ width: "50%" }}>
                       <QRCode value={"fasdfsdfsd" || 2121} size={100} />
                     </View>
-                    <View style={{ width: "50%", alignItems:'center', justifyContent:'center' }}>
-                      <Text>Ticket <Text style={{fontWeight:'bold'}}>12</Text> of 50 • Participant</Text>
+                    <View
+                      style={{
+                        width: "50%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text>
+                        Ticket <Text style={{ fontWeight: "bold" }}>12</Text> of
+                        50 • Participant
+                      </Text>
                     </View>
                   </View>
                   <View

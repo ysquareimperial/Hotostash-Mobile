@@ -7,27 +7,27 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { grey1, grey2, orange } from "../../../components/colors";
-import { api } from "../../../helpers/helpers";
+import { grey1, grey2, orange } from "../../components/colors";
+import { api } from "../../helpers/helpers";
 import { useEffect, useState, useRef } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { format, parseISO, isValid } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import SkeletonForWithdrawals from "../../../components/SkeletonForWithdrawals";
+import SkeletonForWithdrawals from "../../components/SkeletonForWithdrawals";
 import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Easing } from "react-native";
-import CustomButton from "../../../components/CustomButton";
-import { useUser } from "../../../context/UserContext";
+import CustomButton from "../../components/CustomButton";
+import { useUser } from "../../context/UserContext";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import CustomButton2 from "../../../components/CustomButton2";
-import CustomButton3 from "../../../components/CustomButton3";
+import CustomButton2 from "../../components/CustomButton2";
+import CustomButton3 from "../../components/CustomButton3";
 import {
   StatusBar,
   StatusBar2,
   StatusBar3,
-} from "../../../components/StatusBarComponents";
+} from "../../components/StatusBarComponents";
 
 export default function RequestStatus() {
   const { user } = useUser();
@@ -318,7 +318,7 @@ export default function RequestStatus() {
                 >
                   <View>
                     <Animated.Image
-                      source={require("../../../assets/Hotostash_PNG/image.png")}
+                      source={require("../../assets/Hotostash_PNG/image.png")}
                       style={[styles.image, animatedStyle]}
                     />
                   </View>
@@ -364,7 +364,7 @@ export default function RequestStatus() {
               >
                 <View>
                   <Image
-                    source={require("../../../assets/Hotostash_PNG/image.png")}
+                    source={require("../../assets/Hotostash_PNG/image.png")}
                     style={[styles.image]}
                   />
                 </View>

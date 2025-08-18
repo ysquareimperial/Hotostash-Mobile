@@ -25,7 +25,6 @@ import CustomModal from "../../../components/CustomModal";
 import { useRouter } from "expo-router";
 import CustomButton2 from "../../../components/CustomButton2";
 import GenerateEventLink from "../../../components/GenerateEventLink";
-
 const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
   const { user } = useUser();
   const [authToken, setAuthToken] = useState(null);
@@ -36,6 +35,7 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [loading4, setLoading4] = useState(false);
+  const { setRefreshPageA, setEventEdited } = useUser();
   const [loading3, setLoading3] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
@@ -273,11 +273,11 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
 
   const router = useRouter();
 
-  const handleLeave = async () => {
-    console.log("from left eventttttttttttttt");
-    await AsyncStorage.setItem("leftEvent", "true");
-    router.back();
-  };
+  // const handleLeave = async () => {
+  //   console.log("from left eventttttttttttttt");
+  //   await AsyncStorage.setItem("leftEvent", "true");
+  //   router.back();
+  // };
 
   //LEAVE EVENT
   const leaveEvent = () => {
@@ -293,8 +293,14 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
       .then((response) => {
         console.log(response);
         console.log("from deleteeeee");
-        setLoading4(false);
-        handleLeave();
+        if (response?.status === 200) {
+          setLoading4(false);
+          // handleLeave();
+          console.log("✅ only set the flag");
+          setRefreshPageA(true);
+          setEventEdited(true);
+          router.back();
+        }
       })
       .catch((err) => {
         setLoading4(false);
@@ -315,7 +321,7 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
         <View>
           <SkeletonForParticipants />
         </View>
-      ) : (
+      ) : (  
         <>
           <ScrollView
             refreshControl={
@@ -328,7 +334,10 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
                 participants.role === "admin"
             ) ? (
               <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
-                <TouchableOpacity onPress={() => handleSnapPress3(0)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+                <TouchableOpacity
+                  onPress={() => handleSnapPress3(0)}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                >
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -339,7 +348,10 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
                     <AntDesign name="adduser" size={25} color="white" />
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setModalVisible2(true)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible2(true)}
+                  hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                >
                   <View
                     style={{
                       backgroundColor: grey1,
@@ -496,7 +508,10 @@ const EventParticipants = ({ eventId, stashId, existingEventLink }) => {
               </View>
             ))}
 
-            <TouchableOpacity onPress={() => setModalVisible(true)} hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            >
               <View
                 style={{
                   flexDirection: "row",

@@ -58,6 +58,14 @@ const RootLayout = () => {
             options={{ presentation: "modal", headerShown: false }}
           />
           <Stack.Screen
+            name="contribution/withdrawalRequests"
+            options={{ presentation: "modal", headerShown: false }}
+          />
+          <Stack.Screen
+            name="contribution/RequestStatus"
+            options={{ headerShown: false, presentation: "modal" }}
+          />
+          <Stack.Screen
             name="invite/event"
             options={{ presentation: "modal", headerShown: false }}
           />

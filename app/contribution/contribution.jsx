@@ -28,16 +28,18 @@ import CustomButton2 from "../../components/CustomButton2";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WithdrawBottomSheet from "../../components/WithdrawBottomSheet";
 import CustomButton3 from "../../components/CustomButton3";
-const Contribution = ({ eventId, stashId, event }) => {
+
+const Contribution = ({ eventId }) => {
   const { user } = useUser();
   const [authToken, setAuthToken] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null); // To track selected user ID
   const [refreshing, setRefreshing] = useState(false);
   const [eventParticipants, setContributors] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [fetchingContributors, setFetchingContributors] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const [loading3, setLoading3] = useState(false);
+  const [fetchingContDetails, setFetchingContDetails] = useState(false);
   const [loading4, setLoading4] = useState(false);
+  const [fetchingEvent, setFetchingEvent] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [contributorsList, setContributorsList] = useState([]);
   const [contributionDetails, setContributionDetails] = useState({});
@@ -48,7 +50,10 @@ const Contribution = ({ eventId, stashId, event }) => {
   const [tappedParticipantId, setTappedParticipantId] = useState(null);
   const [errors, setErrors] = useState({});
   const [participantId, setParticipantId] = useState(null);
+  const { refreshPageA, setRefreshPageA } = useUser();
+  const [event, setEvent] = useState(null);
 
+  const [contributionLoading, setContributionLoading] = useState(false);
   const [formData, setFormData] = useState({
     contribution_id: "",
     amount: "",
@@ -72,11 +77,33 @@ const Contribution = ({ eventId, stashId, event }) => {
         console.error("Error retrieving token:", error);
       }
     };
-    console.log(eventId);
-    console.log(stashId);
-
     fetchToken();
   }, []);
+
+  // Fetch Event after token is ready
+  const fetchEvent = async () => {
+    if (!authToken) return; // avoid running with null
+    setFetchingEvent(true);
+    setContributionLoading(true);
+    try {
+      const response = await axios.get(`${api}events/${eventId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setFetchingEvent(false);
+      setEvent(response?.data);
+      console.log("Event data:", response?.data);
+    } catch (err) {
+      console.log("Fetch event error:", err);
+      setContributionLoading(false);
+    } finally {
+      setFetchingEvent(false);
+    }
+  };
+  useEffect(() => {
+    fetchEvent();
+  }, [authToken]);
 
   // Find the matching participant
   useEffect(() => {
@@ -93,39 +120,13 @@ const Contribution = ({ eventId, stashId, event }) => {
     }
   }, [event, user]);
 
-  // Fetch contribution status
-  useEffect(() => {
-    const getContributionStatus = async () => {
-      try {
-        const statusStr = await AsyncStorage.getItem("contributionStatus");
-        console.log("33333333333333333333", statusStr);
-
-        if (statusStr !== null) {
-          const status = JSON.parse(statusStr); // this gives true/false boolean
-          console.log("Contribution status retrieved:", status);
-          setContributionStatus(status);
-        }
-
-        // Clear it after reading
-        await AsyncStorage.removeItem("contributionStatus");
-        console.log("Contribution status cleared from AsyncStorage.");
-      } catch (error) {
-        console.error(
-          "Error retrieving or clearing contribution status:",
-          error
-        );
-      }
-    };
-
-    getContributionStatus();
-  }, []);
-
+  // Enable contribution
   const enableContributions = () => {
     setLoading2(true);
     axios
       .post(
-        `${api}contributions/${eventId}/contributions/`,
-        { event_id: eventId, total_amount: 0 },
+        `${api}contributions/${event?.id}/contributions/`,
+        { event_id: event?.id, total_amount: 0 },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -135,17 +136,9 @@ const Contribution = ({ eventId, stashId, event }) => {
       .then(async (response) => {
         setLoading2(false);
         if (response?.status === 200) {
-          fetchContributionDetails();
           setContributionStatus(true);
-          try {
-            await AsyncStorage.removeItem("contributionStatus");
-            console.log("Contribution status cleared from AsyncStorage.");
-          } catch (error) {
-            console.error(
-              "Error clearing contributionStatus from AsyncStorage:",
-              error
-            );
-          }
+          await fetchEvent(); // wait for event refresh
+          fetchContributionDetails(); // now event.id will exist
         }
       })
       .catch((e) => {
@@ -157,10 +150,10 @@ const Contribution = ({ eventId, stashId, event }) => {
 
   const fetchContributors = async () => {
     if (!authToken) return;
-    setLoading(true);
+    setFetchingContributors(true);
     try {
       const response = await axios.get(
-        `${api}contributions/${eventId}/contributors`,
+        `${api}contributions/${event?.id}/contributors`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -175,74 +168,100 @@ const Contribution = ({ eventId, stashId, event }) => {
 
       setContributors(response?.data);
       console.log("from contribution");
+      console.log("vvvvvvvvvvvvv", contributorsList);
       console.log(response?.data);
-      setLoading(false);
+      setFetchingContributors(false);
       // console.log(response.data);
     } catch (err) {
       setError(err.message);
       console.log("errorrrrrrrrrrrr");
       console.log(err.detail);
-      setLoading(false);
+      setFetchingContributors(false);
     }
   };
 
   const fetchContributionDetails = () => {
     if (!authToken) return;
 
-    setLoading3(true);
+    setFetchingContDetails(true);
     axios
-      .get(`${api}contributions/${eventId}/contribution`, {
+      .get(`${api}contributions/${event?.id}/contribution`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       })
       .then((response) => {
-        setLoading3(false);
+        setFetchingContDetails(false);
         setContributionDetails(response?.data);
+        setContributionLoading(false);
+
         setFormData((prevState) => ({
           ...prevState,
           contribution_id: response?.data?.id,
         }));
-        // console.log(response);
+        console.log("from contribution details", response?.data);
       })
       .catch((err) => {
-        setLoading3(false);
+        setContributionLoading(false);
+        console.log("from contribution details", err);
+        setFetchingContDetails(false);
         // console.log("error fetching data", err);
       });
   };
-  useEffect(() => {
-    fetchContributors();
-    fetchContributionDetails();
-  }, [authToken]);
 
-  // Handle refresh logic
-  const onRefresh = async () => {
-    fetchContributionDetails();
-    if (!authToken) {
-      console.error("Auth token is missing.");
-      setRefreshing(false);
-      return;
+  useEffect(() => {
+    if (authToken && event?.id) {
+      fetchContributionDetails();
+      fetchContributors();
     }
+  }, [authToken, event?.id]);
+
+  const onRefresh = async () => {
     setRefreshing(true);
+
     try {
+      let token = authToken;
+
+      // If authToken is not yet in state, try fetching from AsyncStorage
+      if (!token) {
+        token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          console.log("Token retrieved on refresh:", token);
+          setAuthToken(token);
+        } else {
+          console.error("Auth token is missing.");
+          setRefreshing(false);
+          return;
+        }
+      }
+
+      // ✅ Call your event fetcher
+      await fetchEvent();
+
+      // ✅ Call your contribution details function
+      await fetchContributionDetails();
+
+      // ✅ Then call your contributors API
       const response = await axios.get(
-        `${api}contributions/${eventId}/contributors`,
+        `${api}contributions/${event?.id}/contributors`,
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
+
       const successfulContributions = response?.data?.filter(
         (item) => item?.payment?.status === "success"
       );
+
       setContributorsList(successfulContributions);
       setContributors(response?.data);
       console.log(response?.data);
-      setRefreshing(false);
     } catch (err) {
       setError(err.message);
-      console.log(err.detail);
+      console.error(err.detail || err.message);
+    } finally {
       setRefreshing(false);
     }
   };
@@ -307,10 +326,12 @@ const Contribution = ({ eventId, stashId, event }) => {
 
       if (response.status === 200) {
         const withdrawalId = response.data?.id;
-        await AsyncStorage.setItem("withdrawalRequest", "true");
+        // await AsyncStorage.setItem("withdrawalRequest", "true");
         handleClosePress();
-        router.push(`/stashes/RequestStatus?withdrawalId=${withdrawalId}`);
+        router.push(`/contribution/RequestStatus?withdrawalId=${withdrawalId}`);
         console.log("withdrawal id:", withdrawalId);
+        setRefreshPageA(true);
+        // setShouldRefreshPageA(true);
       }
     } catch (e) {
       setLoading4(false);
@@ -363,24 +384,13 @@ const Contribution = ({ eventId, stashId, event }) => {
 
   useFocusEffect(
     useCallback(() => {
-      let isActive = true;
-
-      const checkFlag = async () => {
-        const flag = await AsyncStorage.getItem("withdrawalRequest");
-        console.log("Flag value:", flag);
-        if (flag === "true" && isActive) {
-          console.log("User requested withdrawal");
-          await fetchContributionDetails();
-          await AsyncStorage.removeItem("withdrawalRequest");
-        }
-      };
-
-      checkFlag();
-
-      return () => {
-        isActive = false;
-      };
-    }, [])
+      console.log("context flag", refreshPageA);
+      if (refreshPageA) {
+        console.log("Refreshing Page A...");
+        setRefreshPageA(false); // reset flag
+        onRefresh();
+      }
+    }, [refreshPageA])
   );
   return (
     // <SafeAreaView
@@ -397,14 +407,13 @@ const Contribution = ({ eventId, stashId, event }) => {
       }}
     >
       <View>
-        {!refreshing && loading ? (
+        {!refreshing && contributionLoading ? (
           <View>
             <SkeletonForParticipants />
           </View>
         ) : (
           <>
-            {/* {event?.contribution_status === false ? ( */}
-            {contributionStatus === false ? (
+            {event?.contribution_status === false ? (
               <View style={{ marginTop: 30 }}>
                 {event?.participants?.some(
                   (participant) =>
@@ -414,7 +423,6 @@ const Contribution = ({ eventId, stashId, event }) => {
                   <View>
                     <View
                       style={{
-                        // width: "50%",
                         flexDirection: "row",
                         alignItems: "center",
                         alignSelf: "center", // <- this centers it horizontally
@@ -451,7 +459,6 @@ const Contribution = ({ eventId, stashId, event }) => {
                     style={{
                       color: "grey",
                       textAlign: "center",
-                      // marginTop: 20,
                       fontSize: 12,
                       marginLeft: 20,
                       marginRight: 20,
@@ -480,7 +487,7 @@ const Contribution = ({ eventId, stashId, event }) => {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     gap: 10,
-                    marginBottom: 10,
+                    marginBottom: 15,
                   }}
                 >
                   <Link
@@ -488,9 +495,9 @@ const Contribution = ({ eventId, stashId, event }) => {
                       pathname: "/contribution/contribute",
                       params: {
                         eventName: event?.name,
-                        eventId: eventId,
+                        eventId: event?.id,
                         contributionId: contributionDetails?.id,
-                        participantId: participantId
+                        participantId: participantId,
                       },
                     }}
                     push
@@ -501,7 +508,7 @@ const Contribution = ({ eventId, stashId, event }) => {
                     >
                       <View
                         style={{
-                          backgroundColor: "#87FF87",
+                          backgroundColor: "#6DCD6D",
                           padding: 10,
                           borderRadius: 50,
                           flexDirection: "row",
@@ -513,6 +520,7 @@ const Contribution = ({ eventId, stashId, event }) => {
                       </View>
                     </TouchableOpacity>
                   </Link>
+
                   {event?.participants?.some(
                     (participant) =>
                       participant.user.username === user?.username &&
@@ -541,34 +549,45 @@ const Contribution = ({ eventId, stashId, event }) => {
                               <Text style={{ color: "white" }}>Withdraw</Text>
                             </View>
                           </TouchableOpacity>
-                          <TouchableOpacity
-                            hitSlop={{
-                              top: 15,
-                              bottom: 15,
-                              left: 15,
-                              right: 15,
+                          <Link
+                            href={{
+                              pathname: "/contribution/withdrawalRequests",
+                              params: {
+                                eventId: event?.id,
+                              },
                             }}
-                            onPress={() =>
-                              router.push(
-                                `/stashes/withdrawalRequests?eventId=${event?.id}`
-                              )
-                            }
+                            push
+                            asChild
                           >
-                            <View
-                              style={{
-                                backgroundColor: grey1,
-                                padding: 10,
-                                borderRadius: 50,
+                            <TouchableOpacity
+                              hitSlop={{
+                                top: 15,
+                                bottom: 15,
+                                left: 15,
+                                right: 15,
                               }}
+                              // onPress={() =>
+                              //   router.push(
+                              //     `/stashes/withdrawalRequests?eventId=${event?.id}`
+                              //   )
+                              // }
                             >
-                              {/* <AntDesign name="link" size={25} color="white" /> */}
-                              <Ionicons
-                                name="ellipsis-horizontal"
-                                size={15}
-                                color="white"
-                              />
-                            </View>
-                          </TouchableOpacity>
+                              <View
+                                style={{
+                                  backgroundColor: grey1,
+                                  padding: 10,
+                                  borderRadius: 50,
+                                }}
+                              >
+                                {/* <AntDesign name="link" size={25} color="white" /> */}
+                                <Ionicons
+                                  name="ellipsis-horizontal"
+                                  size={15}
+                                  color="white"
+                                />
+                              </View>
+                            </TouchableOpacity>
+                          </Link>
                         </View>
                       ) : (
                         <View>
@@ -601,6 +620,17 @@ const Contribution = ({ eventId, stashId, event }) => {
                     </View>
                   )}
                 </View>
+                <Text
+                  style={{
+                    color: "white",
+                    // textAlign: "center",
+                    marginBottom: 15,
+                    fontWeight: "bold",
+                    fontSize: 12,
+                  }}
+                >
+                  {contributorsList?.length} Contributors
+                </Text>
 
                 {contributorsList?.map((item, index) => {
                   // Parse and format the payment_datetime
@@ -915,6 +945,21 @@ const Contribution = ({ eventId, stashId, event }) => {
                     </View>
                   </View>
                 )}
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={{
+                      backgroundColor: "#6DCD6D",
+                      padding: 10,
+                      borderRadius: 50,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 15,
+                    }}
+                  >
+                    {/* <AntDesign name="adduser" size={25} color="white" /> */}
+                    <Text style={{ color: "black" }}>Ask to contribute</Text>
+                  </View>
+                </View>
               </ScrollView>
             )}
           </>

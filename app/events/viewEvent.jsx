@@ -29,6 +29,7 @@ import EventPhotoBottomSheet from "../../components/EventPhotoBottomSheet";
 import StashPhotosBottomSheet from "../../components/StashPhotosBottomSheet";
 import { PhotoRefreshProvider } from "../../components/PhotoRefreshContext";
 import * as Network from "expo-network";
+import CustomModal from "../../components/CustomModal";
 
 export default function ViewEvent() {
   const stashPhotosRef = useRef();
@@ -39,8 +40,12 @@ export default function ViewEvent() {
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [authToken, setAuthToken] = useState(null);
+  const [error, setError] = useState("");
+
   const [event, setEvent] = useState({});
   // const [existingLink, setExistingLink] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const { setRefreshPageA, setEventEdited } = useUser();
   const { eventId } = useLocalSearchParams();
   const { stashId } = useLocalSearchParams();
   const [overallProgress, setOverallProgress] = useState(0);
@@ -265,6 +270,13 @@ export default function ViewEvent() {
       setLoading(false);
     } catch (err) {
       setLoading(false);
+      setError(err.response.data.detail);
+      setModalVisible(true);
+      if (err) {
+        console.log("✅ only set the flag");
+        setRefreshPageA(true);
+        setEventEdited(true);
+      }
     }
   };
 
@@ -320,6 +332,13 @@ export default function ViewEvent() {
           <TouchableOpacity
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             onPress={() => handleSnapPress3(0)}
+            disabled={
+              !event?.participants?.some(
+                (member) =>
+                  member.user.username === user?.username &&
+                  member.role === "admin"
+              )
+            }
           >
             <Image
               source={{ uri: eventParams.image }}
@@ -456,6 +475,22 @@ export default function ViewEvent() {
         eventId={eventId}
         existingImage={eventParams?.image}
         onImageUpload={handleImageUpdate}
+      />
+
+      <CustomModal
+        modalTitle={"Error"}
+        modalText={error}
+        okText={"OK"}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(false);
+        }}
+        handleOkPress={() => {
+          setModalVisible(false);
+          router.back();
+        }}
+        modalVisible={modalVisible} // Pass modalVisible as a prop
+        setModalVisible={setModalVisible} // Pass the setter function to update the state
       />
       <NetworkStatus isOnline={isOnline} />
     </SafeAreaView>

@@ -38,6 +38,7 @@ export default function EditEvent({
   description,
 }) {
   const { user } = useUser();
+  const { setRefreshPageA, setEventEdited } = useUser();
   const [authToken, setAuthToken] = useState(null);
   const [album, setAlbum] = useState({});
   const [error, setError] = useState("");
@@ -84,10 +85,10 @@ export default function EditEvent({
   }, []);
 
   //Event edited
-  const handleEditEvent = async () => {
-    await AsyncStorage.setItem("eventEdited", "true");
-    console.log("event edited");
-  };
+  // const handleEditEvent = async () => {
+  //   await AsyncStorage.setItem("eventEdited", "true");
+  //   console.log("event edited");
+  // };
 
   const _editEvent = () => {
     setLoading2(true);
@@ -111,10 +112,15 @@ export default function EditEvent({
       )
       .then((response) => {
         setLoading2(false);
-        console.log("resssss", response?.data);
+        console.log("resssss", response?.status);
         handleClosePress();
         sendResToEventPage(response?.data);
-        handleEditEvent();
+        // handleEditEvent();
+        if (response?.status === 200) {
+          console.log("✅ only set the flag");
+          setRefreshPageA(true);
+          setEventEdited(true);
+        }
       })
       .catch((e) => {
         setLoading2(false);

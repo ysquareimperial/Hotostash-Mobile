@@ -173,7 +173,7 @@ export default function EventTabs({
         )}
         {activeItem === "contribution" && (
           <View>
-            <Contribution eventId={eventId} stashId={stashId} event={event} />
+            <Contribution eventId={eventId} />
           </View>
         )}
         {activeItem === "Event card" && (
